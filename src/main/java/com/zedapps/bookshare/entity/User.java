@@ -1,9 +1,14 @@
 package com.zedapps.bookshare.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -24,9 +29,18 @@ public class User {
     @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
     private Long id;
 
+    @NotBlank
+    @Size(min = 6, max = 255)
     private String username;
+
+    @Email
+    @NotBlank
+    @Size(min = 6, max = 255)
     private String email;
+
+    @NotBlank
     private String passwordHash;
+
     private String firstName;
     private String lastName;
 
@@ -34,17 +48,12 @@ public class User {
     @JoinColumn(name = "image_id")
     private Image profileImage;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        createdAt = updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }
 

@@ -1,9 +1,13 @@
 package com.zedapps.bookshare.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -32,17 +36,15 @@ public class ReadingProgress {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @Min(0)
     private Integer currentPage;
-    private Double percentageCompleted;  // Track percentage read
+
+    @Min(0)
+    @Max(100)
+    private Double percentageCompleted;
+
+    @CreationTimestamp
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdated;
-
-    @PrePersist
-    public void prePersist() {
-        lastUpdated = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdated = LocalDateTime.now();
-    }
 }
