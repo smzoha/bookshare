@@ -39,8 +39,8 @@ CREATE TABLE reviews
     review_text TEXT,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+    CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_reviews_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE rating_id_seq START WITH 1 INCREMENT BY 1;
@@ -53,8 +53,8 @@ CREATE TABLE ratings
     rating     INT CHECK (rating >= 1 AND rating <= 5),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+    CONSTRAINT fk_ratings_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_ratings_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE bookshelf_id_seq START WITH 1 INCREMENT BY 1;
@@ -66,8 +66,8 @@ CREATE TABLE bookshelves
     book_id    BIGINT       NOT NULL,
     shelf_name VARCHAR(255) NOT NULL, -- "To Read", "Currently Reading", "Read"
     added_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+    CONSTRAINT fk_bookshelves_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bookshelves_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE reading_progress_id_seq START WITH 1 INCREMENT BY 1;
@@ -80,8 +80,8 @@ CREATE TABLE reading_progress
     current_page         INT           DEFAULT 0,    -- or whatever progress unit you want
     percentage_completed DECIMAL(5, 2) DEFAULT 0.00, -- track percentage read
     last_updated         TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
+    CONSTRAINT fk_read_progress_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_read_progress_book FOREIGN KEY (book_id) REFERENCES books (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE image_id_seq START WITH 1 INCREMENT BY 1;
