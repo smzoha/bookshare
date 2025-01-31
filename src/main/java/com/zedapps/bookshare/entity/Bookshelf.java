@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -36,10 +37,6 @@ public class Bookshelf {
     @Enumerated(EnumType.STRING)
     private ShelfName shelfName;
 
+    @CreationTimestamp
     private LocalDateTime addedAt;
-
-    @PrePersist
-    public void prePersist() {
-        addedAt = LocalDateTime.now();
-    }
 }
