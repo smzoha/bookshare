@@ -43,7 +43,6 @@ public class ReadingProgress {
     @Max(100)
     private Double percentageCompleted;
 
-    @CreationTimestamp
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdated;
