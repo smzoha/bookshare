@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-sm navbar-fixed-top navbar-dark bg-primary shadow-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">BookShare</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/books">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/shelf">Shelves</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item d-flex">
+                    <form th:action="@{/search}" method="get" class="d-flex">
+                        <input type="text" class="form-control me-2" placeholder="Search"/>
+                        <button type="submit" class="btn btn-outline-light me-2">Search</button>
+                    </form>
+
+                    <a class="btn btn-danger" href="/perform_logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
