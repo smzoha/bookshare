@@ -7,6 +7,7 @@ package com.zedapps.bookshare.entity.login;
 public enum Role {
 
     ADMIN,
+    MODERATOR,
     AUTHOR,
     USER
 }
