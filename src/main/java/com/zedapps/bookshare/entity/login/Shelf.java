@@ -31,11 +31,7 @@ public class Shelf {
     @JoinColumn(name = "login_id")
     private Login user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "book_shelf",
-            joinColumns = @JoinColumn(name = "shelf_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private List<Book> books;
+    @OneToMany(mappedBy = "shelf")
+    private List<ShelvedBook> books;
 }
 
