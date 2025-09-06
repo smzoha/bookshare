@@ -1,7 +1,9 @@
 package com.zedapps.bookshare.entity.login;
 
-import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +27,11 @@ public class Shelf {
     @SequenceGenerator(name = "shelf_seq", sequenceName = "shelf_sequence", allocationSize = 1)
     private Long id;
 
+    @NotBlank
+    @Size(max = 255)
     private String name;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "login_id")
     private Login user;
