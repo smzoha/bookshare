@@ -30,12 +30,12 @@ public class Review {
     @SequenceGenerator(name = "review_seq", sequenceName = "review_sequence", allocationSize = 1)
     private Long id;
 
-    @NotBlank
-    @Size(max = 10000)
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 10000, message = "{error.max.length.exceeded}")
     private String content;
 
-    @Min(0)
-    @Max(5)
+    @Min(value = 0, message = "{error.min.value}")
+    @Max(value = 5, message = "{error.max.value}")
     private Integer rating;
 
     @CreationTimestamp

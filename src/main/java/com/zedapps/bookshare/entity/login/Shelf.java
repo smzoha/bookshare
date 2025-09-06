@@ -27,11 +27,11 @@ public class Shelf {
     @SequenceGenerator(name = "shelf_seq", sequenceName = "shelf_sequence", allocationSize = 1)
     private Long id;
 
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
     private String name;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "login_id")
     private Login user;
