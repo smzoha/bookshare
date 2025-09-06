@@ -34,26 +34,26 @@ public class Login {
     @SequenceGenerator(name = "user_seq", sequenceName = "user_sequence", allocationSize = 1)
     private Long id;
 
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
     private String name;
 
-    @Email
-    @NotBlank
-    @Size(max = 255)
+    @Email(message = "{error.email}")
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
-    @Size(max = 1024)
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 1024, message = "{error.max.length.exceeded}")
     private String password;
 
-    @Size(max = 4000)
+    @Size(max = 4000, message = "{error.max.length.exceeded}")
     private String bio;
 
     private String profilePictureUrl;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @Enumerated(EnumType.STRING)
     private Role role;
 

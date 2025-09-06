@@ -29,22 +29,22 @@ public class ShelvedBook {
     @SequenceGenerator(name = "shelved_book_seq", sequenceName = "shelved_book_seq", allocationSize = 1)
     private Long id;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Login login;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "shelf_id")
     private Shelf shelf;
 
-    @Min(0)
+    @Min(value = 0, message = "{error.min.value}")
     private Long pagesRead;
 
     @CreationTimestamp

@@ -29,7 +29,7 @@ public class Tag {
     @SequenceGenerator(name = "tag_seq", sequenceName = "tag_sequence", allocationSize = 1)
     private Long id;
 
-    @Size(max = 255)
+    @Size(max = 255, message = "{error.max.length.exceeded}")
     private String name;
 
     @ManyToMany(mappedBy = "tags")

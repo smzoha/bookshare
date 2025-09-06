@@ -36,21 +36,21 @@ public class Book {
     @SequenceGenerator(name = "book_seq", sequenceName = "book_sequence", allocationSize = 1)
     private Long id;
 
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
     private String title;
 
-    @NotBlank
-    @ISBN
+    @NotBlank(message = "{error.blank}")
+    @ISBN(message = "{error.isbn}")
     private String isbn;
 
-    @Size(max = 5000)
+    @Size(max = 5000, message = "{error.max.length.exceeded}")
     private String description;
 
     private String coverImageUrl;
 
-    @Min(0)
-    @Max(20000)
+    @Min(value = 0, message = "{error.min.value}")
+    @Max(value = 20000, message = "{error.max.value}")
     private Long pages;
 
     @Temporal(TemporalType.DATE)

@@ -23,12 +23,12 @@ public class Follow {
     @SequenceGenerator(name = "follow_seq", sequenceName = "follow_sequence", allocationSize = 1)
     private Long id;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "follower_id")
     private Login follower;
 
-    @NotNull
+    @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "following_id")
     private Login following;
