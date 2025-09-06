@@ -23,6 +23,7 @@ CREATE TABLE book
     title            VARCHAR(255) NOT NULL,
     isbn             VARCHAR(50)  NOT NULL,
     description      TEXT,
+    pages            BIGINT       NOT NULL DEFAULT 0,
     cover_image_url  VARCHAR(255),
     publication_date DATE,
     created_at       TIMESTAMPTZ  NOT NULL,
@@ -83,14 +84,20 @@ CREATE TABLE shelf
     CONSTRAINT fk_shelf_login FOREIGN KEY (login_id) REFERENCES logins (id)
 );
 
--- Shelf/Book
-CREATE TABLE book_shelf
+-- Shelved Books
+CREATE TABLE shelved_book
 (
-    shelf_id BIGINT NOT NULL,
-    book_id  BIGINT NOT NULL,
-    CONSTRAINT pk_book_shelf PRIMARY KEY (shelf_id, book_id),
-    CONSTRAINT fk_book_shelf_book FOREIGN KEY (book_id) REFERENCES book (id),
-    CONSTRAINT fk_book_shelf_shelf FOREIGN KEY (shelf_id) REFERENCES shelf (id)
+    id         BIGINT      NOT NULL,
+    user_id    BIGINT      NOT NULL,
+    book_id    BIGINT      NOT NULL,
+    shelf_id   BIGINT      NOT NULL,
+    pages_read INT DEFAULT 0,
+    shelved_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ,
+    CONSTRAINT pk_shelved_book PRIMARY KEY (id),
+    CONSTRAINT fk_shelved_book_user FOREIGN KEY (user_id) REFERENCES logins (id),
+    CONSTRAINT fk_shelved_book_book FOREIGN KEY (book_id) REFERENCES book (id),
+    CONSTRAINT fk_shelved_book_shelf FOREIGN KEY (shelf_id) REFERENCES shelf (id)
 );
 
 -- Follow
@@ -111,3 +118,4 @@ CREATE SEQUENCE review_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE shelf_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE tag_seq START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE follow_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE shelved_book_seq START WITH 1 INCREMENT BY 1;

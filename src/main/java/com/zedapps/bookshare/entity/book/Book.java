@@ -37,6 +37,8 @@ public class Book {
 
     private String coverImageUrl;
 
+    private Long pages;
+
     private LocalDate publicationDate;
 
     @ManyToMany
