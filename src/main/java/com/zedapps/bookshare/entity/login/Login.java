@@ -57,13 +57,6 @@ public class Login {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
-    @JoinTable(
-            name = "book_authors",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private List<Book> books;
-
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 
