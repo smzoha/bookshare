@@ -7,41 +7,34 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-
 /**
  * @author smzoha
- * @since 6/9/25
+ * @since 9/9/25
  **/
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Tag {
+public class Genre {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_seq")
-    @SequenceGenerator(name = "tag_seq", sequenceName = "tag_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "genre_seq")
+    @SequenceGenerator(name = "genre_seq", sequenceName = "genre_seq", allocationSize = 1)
     private Long id;
 
     @Size(max = 255, message = "{error.max.length.exceeded}")
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "genres")
     private Set<Book> books;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedAt;
 }
-

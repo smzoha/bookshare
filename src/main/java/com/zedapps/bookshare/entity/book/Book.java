@@ -33,7 +33,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_seq")
-    @SequenceGenerator(name = "book_seq", sequenceName = "book_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "book_seq", sequenceName = "book_seq", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "{error.blank}")
@@ -69,6 +69,14 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags;
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private Set<Genre> genres;
 
     @OneToMany(mappedBy = "book")
     private List<Review> reviews;

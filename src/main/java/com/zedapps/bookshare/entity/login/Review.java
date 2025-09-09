@@ -27,7 +27,7 @@ public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "review_seq")
-    @SequenceGenerator(name = "review_seq", sequenceName = "review_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "review_seq", sequenceName = "review_seq", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "{error.blank}")
