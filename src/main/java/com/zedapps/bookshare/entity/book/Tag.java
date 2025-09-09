@@ -26,7 +26,7 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tag_seq")
-    @SequenceGenerator(name = "tag_seq", sequenceName = "tag_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "tag_seq", sequenceName = "tag_seq", allocationSize = 1)
     private Long id;
 
     @Size(max = 255, message = "{error.max.length.exceeded}")

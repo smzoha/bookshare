@@ -20,7 +20,7 @@ public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "follow_seq")
-    @SequenceGenerator(name = "follow_seq", sequenceName = "follow_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "follow_seq", sequenceName = "follow_seq", allocationSize = 1)
     private Long id;
 
     @NotNull(message = "{error.required}")

@@ -24,7 +24,7 @@ public class Shelf {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shelf_seq")
-    @SequenceGenerator(name = "shelf_seq", sequenceName = "shelf_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "shelf_seq", sequenceName = "shelf_seq", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "{error.blank}")

@@ -31,7 +31,7 @@ public class Login {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "{error.blank}")
