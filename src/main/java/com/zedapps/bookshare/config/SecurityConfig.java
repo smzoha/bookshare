@@ -1,11 +1,15 @@
 package com.zedapps.bookshare.config;
 
 import com.zedapps.bookshare.entity.login.Role;
+import com.zedapps.bookshare.service.LoginDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -15,6 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final LoginDetailService loginDetailService;
+    private final PasswordEncoder passwordEncoder;
+
+    public SecurityConfig(LoginDetailService loginDetailService, PasswordEncoder passwordEncoder) {
+        this.loginDetailService = loginDetailService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
@@ -33,5 +45,12 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll())
                 .build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(loginDetailService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
     }
 }
