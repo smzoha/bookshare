@@ -37,7 +37,7 @@ public class LoginDetailService implements UserDetailsService {
                     .authorities(login.getRole().name())
                     .build();
 
-            return new LoginDetails(userDetails, login.getName());
+            return new LoginDetails(userDetails, login.getFirstName(), login.getLastName(), login.getHandle());
 
         } else {
             throw new UsernameNotFoundException("User not found with username: " + username);

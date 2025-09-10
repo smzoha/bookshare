@@ -19,14 +19,18 @@ public class LoginDetails implements UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    private String name;
+    private String handle;
+    private String firstName;
+    private String lastName;
 
-    public LoginDetails(UserDetails userDetails, String name) {
+    public LoginDetails(UserDetails userDetails, String firstName, String lastName, String handle) {
         this.email = userDetails.getUsername();
         this.password = userDetails.getPassword();
         this.authorities = userDetails.getAuthorities();
 
-        this.name = name;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.handle = handle;
     }
 
     @Override
