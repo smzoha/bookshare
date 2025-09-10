@@ -1,0 +1,7 @@
+ALTER TABLE logins
+    DROP COLUMN name;
+
+ALTER TABLE logins
+    ADD COLUMN first_name VARCHAR(255) NOT NULL,
+    ADD COLUMN last_name  VARCHAR(255) NOT NULL,
+    ADD COLUMN handle     VARCHAR(255) NOT NULL;

@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.entity.login;
 
-import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -36,7 +35,15 @@ public class Login {
 
     @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
-    private String name;
+    private String firstName;
+
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
+    private String lastName;
+
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
+    private String handle;
 
     @Email(message = "{error.email}")
     @NotBlank(message = "{error.blank}")
