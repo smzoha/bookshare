@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand fixed-top bg-bookshare">
+    <div class="container">
+        <a class="navbar-brand" href="/" th:text="#{app.name}"/>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/browse}" th:text="#{label.browse}"/>
+                </li>
+                <li>
+                    <a class="btn btn-success text-light" href="/login" th:text="#{label.login}"/>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
