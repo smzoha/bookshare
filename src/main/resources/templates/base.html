@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$LAYOUT_TITLE | $CONTENT_TITLE">BookShare — Read, Share, Connect</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/fontawesome/css/fontawesome.min.css}"/>
+    <link rel="stylesheet" th:href="@{/fontawesome/css/solid.min.css}"/>
+    <link rel="stylesheet" th:href="@{/fontawesome/css/brands.min.css}"/>
+    <link rel="stylesheet" th:href="@{/fontawesome/css/regular.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/bookshare.css}"/>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+</head>
+
+<body>
+<div th:replace="~{common/navbar :: navbar}"></div>
+<div class="pageContent" layout:fragment="pageContent">
+    <!-- Content goes here -->
+</div>
+</body>
+</html>
