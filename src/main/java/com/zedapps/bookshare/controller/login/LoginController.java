@@ -21,6 +21,6 @@ public class LoginController {
 
         model.put("login", new LoginRequestDto());
 
-        return "login";
+        return "app/login/login";
     }
 }
