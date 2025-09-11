@@ -1,0 +1,88 @@
+body {
+    background-color: #fff8f0;
+    color: #4b3b2f;
+}
+
+.bg-bookshare {
+    background-color: #d9cbb6 !important;
+}
+
+.bg-bookshare-50 {
+    background-color: #fff8f0 !important;
+}
+
+.text-bookshare {
+    color: #4b3b2f !important;
+}
+
+.book-cover {
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    width: 100%;
+    border-radius: .35rem;
+}
+
+.rating i {
+    color: #f5c542;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sidebar {
+    background-color: #f3e8dc;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.shelf-card {
+    background-color: #fff3e0;
+    border: none;
+}
+
+.author-cta {
+    background-color: #ffe8c6;
+    border-radius: .5rem;
+}
+
+.friend-activity .list-group-item {
+    border-radius: .5rem;
+    margin-bottom: .5rem;
+    display: flex;
+    gap: 1rem;
+    padding: .75rem 1rem;
+}
+
+.activity-rating {
+    background-color: #fff8e1;
+}
+
+.activity-review {
+    background-color: #fff3d6;
+}
+
+.activity-progress {
+    background-color: #e6f4ea;
+}
+
+.progress-bar {
+    transition: width 0.5s ease;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #d9cbb6;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        margin-bottom: 2rem;
+    }
+}
