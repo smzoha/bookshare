@@ -8,11 +8,16 @@ body {
 }
 
 .bg-bookshare-50 {
-    background-color: #fff8f0 !important;
+    background-color: #fffdfb !important;
 }
 
 .text-bookshare {
     color: #4b3b2f !important;
+}
+
+.btn-bookshare {
+    background-color: #4b3b2f !important;
+    color: #fffdfb !important;
 }
 
 .book-cover {

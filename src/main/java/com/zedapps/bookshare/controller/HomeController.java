@@ -3,7 +3,6 @@ package com.zedapps.bookshare.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author smzoha
@@ -14,8 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class HomeController {
 
     @GetMapping
-    @ResponseBody
-    public String getIndex() {
-        return "Welcome to Bookshare!";
+    public String getHome() {
+        return "home";
     }
 }
