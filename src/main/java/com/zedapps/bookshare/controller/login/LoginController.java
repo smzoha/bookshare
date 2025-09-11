@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.controller.login;
 
 import com.zedapps.bookshare.dto.login.LoginRequestDto;
+import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.util.Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,6 +21,7 @@ public class LoginController {
         if (Utils.isAuthenticated()) return "redirect:/";
 
         model.put("login", new LoginRequestDto());
+        model.put("register", new RegistrationRequestDto());
 
         return "app/login/login";
     }
