@@ -3,7 +3,10 @@
 <body>
 <nav th:fragment="navbar" class="navbar navbar-expand fixed-top bg-bookshare">
     <div class="container">
-        <a class="navbar-brand" href="/" th:text="#{app.name}"/>
+        <a class="navbar-brand" href="#" aria-labelledby="BookShare">
+            <img th:src="@{/img/bookshare-logo.png}" alt="Logo" class="img-fluid" style="max-height: 60px; max-width: 120px;">
+        </a>
+
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
