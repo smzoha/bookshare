@@ -19,7 +19,9 @@
         </div>
     </div>
 
-    <script type="application/javascript">
+    <script type="application/javascript" th:inline="javascript">
+        let hasRegistrationError = /*[[${#fields.hasErrors('register.*')}]]*/ false;
+
         $(function () {
             $('#loginToggle').on('click', function (e) {
                 showLoginComponent();
@@ -28,6 +30,10 @@
             $('#registrationToggle').on('click', function (e) {
                 showRegistrationComponent();
             });
+
+            if (hasRegistrationError) {
+                showRegistrationComponent();
+            }
         });
 
         function showLoginComponent() {
