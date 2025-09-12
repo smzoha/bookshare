@@ -31,13 +31,9 @@ public class RegistrationValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        if (errors.hasErrors()) {
-            return;
-        }
-
         RegistrationRequestDto registrationRequestDto = (RegistrationRequestDto) target;
 
-        if (StringUtils.isNotBlank(registrationRequestDto.getEmail())) {
+        if (!errors.hasFieldErrors("email") && StringUtils.isNotBlank(registrationRequestDto.getEmail())) {
             Optional<Login> login = loginRepository.findByEmail(registrationRequestDto.getEmail());
 
             if (login.isPresent()) {
@@ -45,7 +41,7 @@ public class RegistrationValidator implements Validator {
             }
         }
 
-        if (StringUtils.isNotBlank(registrationRequestDto.getHandle())) {
+        if (!errors.hasFieldErrors("handle") && StringUtils.isNotBlank(registrationRequestDto.getHandle())) {
             Optional<Login> login = loginRepository.findByHandle(registrationRequestDto.getHandle());
 
             if (login.isPresent()) {
@@ -53,7 +49,8 @@ public class RegistrationValidator implements Validator {
             }
         }
 
-        if (Objects.equals(registrationRequestDto.getPassword(), registrationRequestDto.getConfirmPassword())) {
+        if (!errors.hasFieldErrors("confirmPassword")
+                && !Objects.equals(registrationRequestDto.getPassword(), registrationRequestDto.getConfirmPassword())) {
             errors.rejectValue("confirmPassword", "error.password.do.not.match");
         }
     }

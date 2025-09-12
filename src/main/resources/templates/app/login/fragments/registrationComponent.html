@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div id="registrationComponent" th:fragment="registrationComponent" style="display: none">
+<div id="registrationComponent" th:fragment="registrationComponent(register)" style="display: none">
     <!--/*@thymesVar id="register" type="com.zedapps.bookshare.dto.login.RegistrationRequestDto"*/-->
-
     <form th:action="@{/register}" th:object="${register}" method="post">
         <div class="mb-3 text-start">
             <label for="email" class="form-label text-bookshare" th:text="#{label.email}"/>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control" id="email" placeholder="Enter your email">
+                <input type="email" class="form-control" id="email" th:field="*{email}" th:placeholder="#{label.email}">
             </div>
 
             <div th:if="${#fields.hasErrors('email')}" class="text-danger">

@@ -15,7 +15,7 @@
 
             <div id="loginComponent" th:replace="~{app/login/fragments/loginComponent :: loginComponent}"></div>
             <div id="registrationComponent"
-                 th:replace="~{app/login/fragments/registrationComponent :: registrationComponent}"></div>
+                 th:replace="~{app/login/fragments/registrationComponent :: registrationComponent(${register})}"></div>
         </div>
     </div>
 
