@@ -1,12 +1,11 @@
 package com.zedapps.bookshare.entity.login;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 /**
  * @author smzoha
- * @since 6/9/25
+ * @since 12/9/25
  **/
 @Entity
 @Data
@@ -15,9 +14,10 @@ import lombok.*;
 @Builder
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Follow extends BaseFollow {
+public class PendingFollow extends BaseFollow {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "follow_seq")
+    @SequenceGenerator(name = "follow_seq", sequenceName = "follow_seq", allocationSize = 1)
     private Long id;
 }
-

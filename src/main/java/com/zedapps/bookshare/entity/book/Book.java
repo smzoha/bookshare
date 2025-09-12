@@ -1,12 +1,9 @@
 package com.zedapps.bookshare.entity.book;
 
-import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.book.enums.Status;
 import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +14,8 @@ import org.hibernate.validator.constraints.ISBN;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,19 +55,23 @@ public class Book {
     @Temporal(TemporalType.DATE)
     private LocalDate publicationDate;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @ManyToMany
     @JoinTable(
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private List<Author> authors;
+    private List<Author> authors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
             name = "book_tags",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags;
+    private Set<Tag> tags = new LinkedHashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -76,10 +79,10 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<Genre> genres;
+    private Set<Genre> genres = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "book")
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

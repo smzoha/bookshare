@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.config;
 
-import com.zedapps.bookshare.entity.login.Role;
+import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.service.LoginDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

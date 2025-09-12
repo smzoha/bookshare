@@ -2,7 +2,7 @@ package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.Role;
+import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,7 @@ public class LoginService {
         login.setHandle(registrationDto.getHandle());
 
         login.setRole(Role.USER);
+        login.setActive(true);
 
         return login;
     }

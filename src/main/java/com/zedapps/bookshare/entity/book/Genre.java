@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -31,7 +32,7 @@ public class Genre {
     private String name;
 
     @ManyToMany(mappedBy = "genres")
-    private Set<Book> books;
+    private Set<Book> books = new LinkedHashSet<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

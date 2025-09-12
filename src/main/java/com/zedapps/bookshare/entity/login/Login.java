@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.entity.login;
 
+import com.zedapps.bookshare.entity.login.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +14,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,17 +67,19 @@ public class Login {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviews;
+    private boolean active;
 
     @OneToMany(mappedBy = "user")
-    private List<Shelf> shelves;
+    private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Shelf> shelves = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower")
-    private Set<Follow> following;
+    private Set<Follow> following = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "following")
-    private Set<Follow> followers;
+    private Set<Follow> followers = new LinkedHashSet<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
