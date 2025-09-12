@@ -26,7 +26,7 @@ public class LoginDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Login> loginOptional = loginRepository.findByEmail(username);
+        Optional<Login> loginOptional = loginRepository.findActiveLoginByEmail(username);
 
         if (loginOptional.isPresent()) {
             Login login = loginOptional.get();
