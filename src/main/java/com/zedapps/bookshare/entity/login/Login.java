@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.entity.login;
 
-import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -30,13 +29,21 @@ import java.util.Set;
 public class Login {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "login_seq")
+    @SequenceGenerator(name = "login_seq", sequenceName = "login_seq", allocationSize = 1)
     private Long id;
 
     @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
-    private String name;
+    private String firstName;
+
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
+    private String lastName;
+
+    @NotBlank(message = "{error.blank}")
+    @Size(max = 255, message = "{error.max.length.exceeded}")
+    private String handle;
 
     @Email(message = "{error.email}")
     @NotBlank(message = "{error.blank}")

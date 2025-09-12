@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="registrationComponent" th:fragment="registrationComponent(register)" style="display: none">
+    <!--/*@thymesVar id="register" type="com.zedapps.bookshare.dto.login.RegistrationRequestDto"*/-->
+    <form th:action="@{/register}" th:object="${register}" method="post">
+        <div class="mb-3 text-start">
+            <label for="email" class="form-label text-bookshare" th:text="#{label.email}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" class="form-control" id="email" th:field="*{email}" th:placeholder="#{label.email}">
+            </div>
+
+            <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+                <span th:errors="*{email}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="password" class="form-label text-bookshare" th:text="#{label.password}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="password" th:field="*{password}" th:placeholder="#{label.password}"/>
+                <button type="button" class="btn btn-outline-light text-muted border" id="togglePassword">
+                    <span class="far fa-eye"></span>
+                </button>
+            </div>
+
+            <div th:if="${#fields.hasErrors('password')}" class="text-danger">
+                <span th:errors="*{password}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="confirmPassword" class="form-label text-bookshare" th:text="#{label.confirm.password}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
+                       th:placeholder="#{hint.confirm.password}"/>
+            </div>
+
+            <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger">
+                <span th:errors="*{confirmPassword}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="firstName" class="form-label text-bookshare" th:text="#{label.first.name}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" class="form-control" id="firstName" th:field="*{firstName}" th:placeholder="#{label.first.name}">
+            </div>
+
+            <div th:if="${#fields.hasErrors('firstName')}" class="text-danger">
+                <span th:errors="*{firstName}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="lastName" class="form-label text-bookshare" th:text="#{label.last.name}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                <input type="text" class="form-control" id="lastName" th:field="*{lastName}" th:placeholder="#{label.last.name}">
+            </div>
+
+            <div th:if="${#fields.hasErrors('lastName')}" class="text-danger">
+                <span th:errors="*{lastName}"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 text-start">
+            <label for="handle" class="form-label text-bookshare" th:text="#{label.username}"/>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                <input type="text" class="form-control" id="handle" th:field="*{handle}" th:placeholder="#{label.username}">
+            </div>
+
+            <div th:if="${#fields.hasErrors('handle')}" class="text-danger">
+                <span th:errors="*{handle}"></span>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-3">
+            <button type="submit" class="btn btn-bookshare flex-fill" th:text="#{label.register}"/>
+        </div>
+    </form>
+
+    <script type="application/javascript">
+        $(function () {
+            bindTogglePasswordEventListener('#togglePassword', '#password');
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Home</title>
+</head>
+<body>
+<div layout:fragment="pageContent">
+    <div id="formContainer" class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
+        <div class="card text-center p-4" style="width:100%; max-width:600px;">
+            <div class="d-flex mb-3 gap-2">
+                <button id="loginToggle" type="button" class="btn btn-success flex-fill">Login</button>
+                <button id="registrationToggle" type="button" class="btn btn-success flex-fill">Register</button>
+            </div>
+
+            <div id="loginComponent" th:replace="~{app/login/fragments/loginComponent :: loginComponent}"></div>
+            <div id="registrationComponent"
+                 th:replace="~{app/login/fragments/registrationComponent :: registrationComponent(${register})}"></div>
+        </div>
+    </div>
+
+    <script type="application/javascript" th:inline="javascript">
+        let hasRegistrationError = /*[[${#fields.hasErrors('register.*')}]]*/ false;
+
+        $(function () {
+            $('#loginToggle').on('click', function (e) {
+                showLoginComponent();
+            });
+
+            $('#registrationToggle').on('click', function (e) {
+                showRegistrationComponent();
+            });
+
+            if (hasRegistrationError) {
+                showRegistrationComponent();
+            }
+        });
+
+        function showLoginComponent() {
+            $('#loginComponent').show();
+            $('#registrationComponent').hide();
+            $('#formContainer').css(
+                {
+                    'min-height': '100vh',
+                    'padding-top': '',
+                    'padding-bottom': ''
+                }
+            );
+        }
+
+        function showRegistrationComponent() {
+            $('#loginComponent').hide();
+            $('#registrationComponent').show();
+            $('#formContainer').css({
+                    'min-height': '',
+                    'padding-top': '5rem',
+                    'padding-bottom': '5rem'
+                }
+            );
+        }
+    </script>
+</div>
+</body>
+</html>
