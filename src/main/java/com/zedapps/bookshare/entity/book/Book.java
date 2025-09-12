@@ -1,12 +1,8 @@
 package com.zedapps.bookshare.entity.book;
 
-import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -55,6 +51,10 @@ public class Book {
 
     @Temporal(TemporalType.DATE)
     private LocalDate publicationDate;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ManyToMany
     @JoinTable(

@@ -64,6 +64,8 @@ public class Login {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private boolean active;
+
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 

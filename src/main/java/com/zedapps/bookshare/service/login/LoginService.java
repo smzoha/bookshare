@@ -42,6 +42,7 @@ public class LoginService {
         login.setHandle(registrationDto.getHandle());
 
         login.setRole(Role.USER);
+        login.setActive(true);
 
         return login;
     }

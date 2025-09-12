@@ -1,0 +1,21 @@
+package com.zedapps.bookshare.entity.book;
+
+import lombok.Getter;
+
+/**
+ * @author smzoha
+ * @since 12/9/25
+ **/
+@Getter
+public enum Status {
+
+    APPROVED("Approved"),
+    PENDING("Pending"),
+    ARCHIVED("Archived");
+
+    private final String naturalName;
+
+    Status(String naturalName) {
+        this.naturalName = naturalName;
+    }
+}
