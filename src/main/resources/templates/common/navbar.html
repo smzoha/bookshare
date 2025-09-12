@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand fixed-top bg-bookshare">
+<nav th:fragment="navbar" class="navbar navbar-expand-md bg-bookshare shadow-lg">
     <div class="container">
-        <a class="navbar-brand" href="#" aria-labelledby="BookShare">
+        <a class="navbar-brand" href="/" aria-label="BookShare">
             <img th:src="@{/img/bookshare-logo.png}" alt="Logo" class="img-fluid" style="max-height: 60px; max-width: 120px;">
         </a>
 
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -15,15 +15,18 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto gap-2">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/browse}" th:text="#{label.browse}"/>
-                </li>
-                <li sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-success text-light" href="/login" th:text="#{label.login}"/>
+                    <a class="nav-link text-bookshare" th:href="@{/browse}" th:text="#{label.browse}"></a>
                 </li>
 
-                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
-                    <button class="btn btn-danger text-light text-decoration-none" th:text="#{label.logout}"/>
-                </form>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-success text-light" href="/login" th:text="#{label.login}"></a>
+                </li>
+
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button class="btn btn-danger text-light" type="submit" th:text="#{label.logout}"></button>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
