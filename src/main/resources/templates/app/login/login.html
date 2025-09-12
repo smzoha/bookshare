@@ -6,8 +6,8 @@
 </head>
 <body>
 <div layout:fragment="pageContent">
-    <div class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
-        <div class="card text-center p-4" style="width:100%; max-width:400px;">
+    <div id="formContainer" class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
+        <div class="card text-center p-4" style="width:100%; max-width:600px;">
             <div class="d-flex mb-3 gap-2">
                 <button id="loginToggle" type="button" class="btn btn-success flex-fill">Login</button>
                 <button id="registrationToggle" type="button" class="btn btn-success flex-fill">Register</button>
@@ -22,15 +22,36 @@
     <script type="application/javascript">
         $(function () {
             $('#loginToggle').on('click', function (e) {
-                $('#loginComponent').show();
-                $('#registrationComponent').hide();
+                showLoginComponent();
             });
 
             $('#registrationToggle').on('click', function (e) {
-                $('#loginComponent').hide();
-                $('#registrationComponent').show();
+                showRegistrationComponent();
             });
         });
+
+        function showLoginComponent() {
+            $('#loginComponent').show();
+            $('#registrationComponent').hide();
+            $('#formContainer').css(
+                {
+                    'min-height': '100vh',
+                    'padding-top': '',
+                    'padding-bottom': ''
+                }
+            );
+        }
+
+        function showRegistrationComponent() {
+            $('#loginComponent').hide();
+            $('#registrationComponent').show();
+            $('#formContainer').css({
+                    'min-height': '',
+                    'padding-top': '5rem',
+                    'padding-bottom': '5rem'
+                }
+            );
+        }
     </script>
 </div>
 </body>
