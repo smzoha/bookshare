@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 
@@ -33,7 +34,7 @@ public class Tag {
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Book> books;
+    private Set<Book> books = new LinkedHashSet<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
