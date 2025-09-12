@@ -9,13 +9,29 @@
     <div class="d-flex justify-content-center align-items-center" style="min-height:100vh;">
         <div class="card text-center p-4" style="width:100%; max-width:400px;">
             <div class="d-flex mb-3 gap-2">
-                <button type="button" class="btn btn-success flex-fill">Login</button>
-                <button type="button" class="btn btn-success flex-fill">Register</button>
+                <button id="loginToggle" type="button" class="btn btn-success flex-fill">Login</button>
+                <button id="registrationToggle" type="button" class="btn btn-success flex-fill">Register</button>
             </div>
 
             <div id="loginComponent" th:replace="~{app/login/fragments/loginComponent :: loginComponent}"></div>
+            <div id="registrationComponent"
+                 th:replace="~{app/login/fragments/registrationComponent :: registrationComponent}"></div>
         </div>
     </div>
+
+    <script type="application/javascript">
+        $(function () {
+            $('#loginToggle').on('click', function (e) {
+                $('#loginComponent').show();
+                $('#registrationComponent').hide();
+            });
+
+            $('#registrationToggle').on('click', function (e) {
+                $('#loginComponent').hide();
+                $('#registrationComponent').show();
+            });
+        });
+    </script>
 </div>
 </body>
 </html>

@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="loginComponent">
+<div id="loginComponent" th:fragment="loginComponent">
     <div id="invalidLoginMsg" th:if="${param.error}" class="alert alert-danger py-2 text-center"
          th:text="#{error.invalid.email.password}"/>
 
     <!--/*@thymesVar id="login" type="com.zedapps.bookshare.dto.login.LoginRequestDto"*/-->
     <form th:action="@{/login}" th:object="${login}" method="post">
         <div class="mb-3 text-start">
-            <label for="email" class="form-label" th:text="#{label.email}"/>
+            <label for="loginEmail" class="form-label" th:text="#{label.email}"/>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                <input type="email" class="form-control" id="email" th:field="*{username}"
+                <input type="email" class="form-control" id="loginEmail" th:field="*{username}"
                        th:placeholder="#{hint.email}" maxlength="254" required="required"/>
             </div>
         </div>
         <div class="mb-3 text-start">
-            <label for="password" class="form-label" th:text="#{label.password}"/>
+            <label for="loginPass" class="form-label" th:text="#{label.password}"/>
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <input type="password" class="form-control" id="password" th:field="*{password}"
+                <input type="password" class="form-control" id="loginPassword" th:field="*{password}"
                        th:placeholder="#{hint.password}" maxlength="32" required="required"/>
-                <button type="button" class="btn btn-outline-light text-muted border" id="togglePassword">
+                <button type="button" class="btn btn-outline-light text-muted border" id="toggleLoginPassword">
                     <span class="far fa-eye"></span>
                 </button>
             </div>
@@ -29,17 +29,11 @@
         <div class="d-grid mb-3">
             <button type="submit" class="btn btn-bookshare" th:text="#{label.login}"/>
         </div>
-
-        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
     </form>
 
     <script type="application/javascript">
         $(function () {
-            $('#togglePassword').on('mousedown touchstart', function () {
-                $('#password').attr('type', 'text');
-            }).on('mouseup mouseleave touchend', function () {
-                $('#password').attr('type', 'password');
-            });
+            bindTogglePasswordEventListener('#toggleLoginPassword', '#loginPassword');
         });
     </script>
 </div>
