@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.entity.book;
 
+import com.zedapps.bookshare.entity.book.enums.Status;
 import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

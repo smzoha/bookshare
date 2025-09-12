@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.entity.book;
+package com.zedapps.bookshare.entity.book.enums;
 
 import lombok.Getter;
 
