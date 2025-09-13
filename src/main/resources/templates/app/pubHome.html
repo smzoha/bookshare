@@ -17,8 +17,15 @@
             <div class="recent-books-slider">
                 <!--/*@thymesVar id="featuredBooks" type="java.util.List"*/-->
                 <!--/*@thymesVar id="book" type="com.zedapps.bookshare.entity.book.Book"*/-->
+                <!--/*@thymesVar id="image" type="com.zedapps.bookshare.entity.image.Image"*/-->
                 <div class="text-center" th:each="book : ${featuredBooks}">
-                    <img th:src="@{${book.coverImageUrl}}" th:alt="${book.title}" class="book-cover">
+                    <img th:src="@{/image/{id}(id=${book.image.id})}" th:alt="${book.title}"
+                         class="book-cover" th:if="${book.image ne null}"/>
+
+                    <img th:src="@{/img/book-placeholder.png}" th:alt="${book.title}"
+                         class="book-cover" th:if="${book.image eq null}"/>
+
+                    <span th:text="${book.title}" class="text-center text-bookshare"></span>
                 </div>
             </div>
         </section>
