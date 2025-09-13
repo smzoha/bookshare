@@ -8,7 +8,7 @@
 <body>
 <div layout:fragment="pageContent">
     <div th:replace="~{app/pubHome :: pubHome}" sec:authorize="!isAuthenticated()"></div>
-    <div th:fragment="~{app/home :: home}" sec:authorize="isAuthenticated()"></div>
+    <div th:replace="~{app/userHome :: userHome}" sec:authorize="isAuthenticated()"></div>
 </div>
 </body>
 </html>
