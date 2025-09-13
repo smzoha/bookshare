@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<body>
+<!-- Place inside a form -->
+<div class="mb-3 row" th:fragment="imageUpload(fieldName)">
+    <label for="image" class="col-sm-3 col-form-label text-md-end">
+        <strong th:text="#{label.upload.image}"/>
+    </label>
+
+    <div class="col-6">
+        <input type="file" id="image" class="form-control" accept="image/jpeg,image/png,image/webp,image/svg+xml"/>
+    </div>
+
+    <div class="col-3">
+        <button id="imageUpload" type="button" class="btn btn-bookshare" th:text="#{label.upload}"/>
+    </div>
+
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        let inputName = /*[[${fieldName}]]*/ '';
+        /*]]>*/
+
+        const imageUpload = $('#imageUpload');
+
+        $(function () {
+            imageUpload.on('click', function (e) {
+                let files = $('#image')[0].files, uploadBtn = e.target;
+
+                if (files.length === 0) {
+                    alert('Please select a file first.');
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append('file', files[0]);
+
+                $.ajax({
+                    type: 'POST',
+                    async: true,
+                    url: '/image/upload',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        imageUpload.hide();
+                        showLoader();
+                    },
+                    success: function (data) {
+                        let imageInput = $('<input>', {
+                            type: 'hidden',
+                            id: inputName,
+                            name: inputName,
+                            value: data.id
+                        });
+
+                        $(uploadBtn).closest('form').append(imageInput);
+
+                        imageUpload.parent().hide();
+                        $('#image').parent().hide();
+
+                        let $img = $('<img>', {
+                            'src': '/image/' + data.id,
+                            'class': 'img-fluid thumb-img me-3',
+                            'alt': 'Image'
+                        });
+
+                        let $removeLink = $('<button>', {
+                            'type': 'button',
+                            'text': '×',
+                            'class': 'btn btn-danger remove-image',
+                            'data-file-id': data.id,
+
+                        }).on('click', (e) => {
+                            removeImage(data.id);
+                            $(e.target).parent().remove();
+
+                            imageUpload.parent().show();
+                            $('#image').parent().show();
+                        });
+
+                        let $imgContainer = $('<div>', {class: 'col-4 col-form-label'})
+                            .append($img)
+                            .append($removeLink);
+
+                        imageUpload.parent().parent().append($imgContainer);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Upload was not successful!');
+                    },
+                    complete: function () {
+                        $('#image').val('');
+                        imageUpload.show();
+                        removeLoader();
+                    }
+                });
+            });
+        });
+
+        function removeImage(imageId) {
+            $('input[name^="images"], input[name="imageIds"], input[name="image.id"]').each((index, input) => {
+                if (Number.parseInt($(input).val()) === imageId) {
+                    $(input).remove();
+                }
+            });
+        }
+    </script>
+</div>
+</body>

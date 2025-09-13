@@ -40,7 +40,6 @@ public class Image {
     @JdbcTypeCode(Types.BINARY)
     private byte[] content;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime uploadDate;
