@@ -33,7 +33,7 @@ body {
 
 .line-clamp-2 {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -49,7 +49,7 @@ body {
     border: none;
 }
 
-.author-cta {
+.block-section {
     background-color: #ffe8c6;
     border-radius: .5rem;
 }
@@ -89,5 +89,62 @@ body {
 @media (max-width: 992px) {
     .sidebar {
         margin-bottom: 2rem;
+    }
+}
+
+.hero {
+    background: linear-gradient(135deg, #d9cbb6, #fffddf);
+    padding: 4rem 1rem;
+    text-align: center;
+    border-radius: .5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.recent-books-slider {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    scroll-behavior: smooth;
+}
+
+.recent-books-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.recent-books-slider::-webkit-scrollbar-thumb {
+    background-color: rgba(75, 59, 47, 0.5);
+    border-radius: 4px;
+}
+
+.recent-books-slider::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.recent-books-slider .text-center {
+    flex-shrink: 0;
+    width: 140px;
+    transition: transform 0.2s;
+}
+
+@media (max-width: 768px) {
+    .book-cover {
+        width: 120px;
+        height: 180px;
+    }
+
+    .recent-books-slider .text-center {
+        width: 120px;
     }
 }

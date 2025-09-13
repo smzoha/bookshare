@@ -34,6 +34,14 @@
             if (hasRegistrationError) {
                 showRegistrationComponent();
             }
+
+            if (window.location.hash) {
+                if (window.location.hash === '#login') {
+                    showLoginComponent();
+                } else {
+                    showRegistrationComponent();
+                }
+            }
         });
 
         function showLoginComponent() {
