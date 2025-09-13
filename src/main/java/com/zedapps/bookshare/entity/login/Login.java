@@ -15,9 +15,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author smzoha
@@ -76,10 +74,10 @@ public class Login {
     private List<Shelf> shelves = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower")
-    private Set<Follow> following = new LinkedHashSet<>();
+    private List<Follow> following = new ArrayList<>();
 
     @OneToMany(mappedBy = "following")
-    private Set<Follow> followers = new LinkedHashSet<>();
+    private List<Follow> followers = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

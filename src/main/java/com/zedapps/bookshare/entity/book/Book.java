@@ -16,9 +16,7 @@ import org.hibernate.validator.constraints.ISBN;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author smzoha
@@ -74,7 +72,7 @@ public class Book {
             name = "book_tags",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new LinkedHashSet<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -82,7 +80,7 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<Genre> genres = new LinkedHashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     private List<Review> reviews = new ArrayList<>();
