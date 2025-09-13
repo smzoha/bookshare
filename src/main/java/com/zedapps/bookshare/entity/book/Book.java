@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.entity.book;
 
 import com.zedapps.bookshare.entity.book.enums.Status;
+import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -46,7 +47,9 @@ public class Book {
     @Size(max = 5000, message = "{error.max.length.exceeded}")
     private String description;
 
-    private String coverImageUrl;
+    @ManyToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Min(value = 0, message = "{error.min.value}")
     @Max(value = 20000, message = "{error.max.value}")
