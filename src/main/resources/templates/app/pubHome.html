@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="pubHome">
+    <div class="container my-4">
+        <section class="hero">
+            <h1 th:text="#{label.hero.anon.home}"/>
+            <p th:text="#{label.hero.anon.home.subtitle}"/>
+            <div>
+                <a th:href="@{/login#login}" class="btn btn-outline-dark" th:text="#{button.login}"/>
+                <a th:href="@{/login#register}" class="btn btn-bookshare" th:text="#{button.sign.up}"/>
+            </div>
+        </section>
+
+        <section class="mb-4">
+            <h5 class="mb-3" th:text="#{label.featured.books}"/>
+            <div class="recent-books-slider">
+                <!--/*@thymesVar id="featuredBooks" type="java.util.List"*/-->
+                <!--/*@thymesVar id="book" type="com.zedapps.bookshare.entity.book.Book"*/-->
+                <div class="text-center" th:each="book : ${featuredBooks}">
+                    <img th:src="@{${book.coverImageUrl}}" th:alt="${book.title}" class="book-cover">
+                </div>
+            </div>
+        </section>
+
+        <h5 th:text="#{label.discover.more}"/>
+        <section class="block-section p-4 my-4">
+            <div class="row mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-book"></i></span>
+                    <input type="text" class="form-control" id="isbnNameSearch"
+                           th:placeholder="#{label.search.isbn.name}" maxlength="255"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <!--/*@thymesVar id="genres" type="java.util.List"*/-->
+                <!--/*@thymesVar id="genre" type="com.zedapps.bookshare.entity.book.Genre"*/-->
+                <div class="col-3" th:each="col : ${#numbers.sequence(0, (genres.size() / 10) - 1)}">
+                    <ul>
+                        <li th:each="genre, stat : ${genres}"
+                            th:if="${stat.index >= col * 10 and stat.index < (col + 1) * 10}">
+                            <a class="text-decoration-none text-bookshare" href="#" th:text="${genre.name}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="block-section p-4 text-center my-4">
+            <h5 th:text="#{label.author.request.book.add}"/>
+            <p th:text="#{label.author.request.book.add.subtitle}"></p>
+            <a th:href="@{/book/addRequest}" class="btn btn-bookshare" th:text="#{label.add.your.book}"/>
+        </section>
+    </div>
+</div>
+</body>
+</html>

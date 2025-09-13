@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public enum Status {
 
-    APPROVED("Approved"),
+    ACTIVE("Active"),
     PENDING("Pending"),
     ARCHIVED("Archived");
 
