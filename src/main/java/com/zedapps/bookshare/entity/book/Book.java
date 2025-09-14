@@ -10,9 +10,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.ISBN;
 
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +44,8 @@ public class Book {
     @ISBN(message = "{error.isbn}")
     private String isbn;
 
-    @Size(max = 5000, message = "{error.max.length.exceeded}")
+    @Lob
+    @JdbcTypeCode(Types.CLOB)
     private String description;
 
     @ManyToOne
