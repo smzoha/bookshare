@@ -3,11 +3,11 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
 <head>
-    <title>Home</title>
+    <title th:text="${#authorization.expression('isAuthenticated()') ? 'Home' : 'Read, Share, Connect'}"></title>
 </head>
 <body>
 <div layout:fragment="pageContent">
-    <div th:replace="~{app/pubHome :: pubHome}" sec:authorize="!isAuthenticated()"></div>
+    <div th:replace="~{app/pubHome :: pubHome}" sec:authorize="not isAuthenticated()"></div>
     <div th:replace="~{app/userHome :: userHome}" sec:authorize="isAuthenticated()"></div>
 </div>
 </body>
