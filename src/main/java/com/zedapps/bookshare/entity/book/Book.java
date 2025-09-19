@@ -10,15 +10,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.ISBN;
+import org.springframework.util.CollectionUtils;
 
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author smzoha
@@ -44,7 +47,6 @@ public class Book {
     @ISBN(message = "{error.isbn}")
     private String isbn;
 
-    @Size(max = 5000, message = "{error.max.length.exceeded}")
     private String description;
 
     @ManyToOne
@@ -74,7 +76,7 @@ public class Book {
             name = "book_tags",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new LinkedHashSet<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -82,7 +84,7 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<Genre> genres = new LinkedHashSet<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     private List<Review> reviews = new ArrayList<>();
@@ -95,5 +97,36 @@ public class Book {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    public String getAuthorNames() {
+        if (CollectionUtils.isEmpty(authors)) {
+            return "";
+        }
+
+        return getAuthors().stream()
+                .map(Author::getName)
+                .sorted()
+                .collect(Collectors.joining(", "));
+    }
+
+    public String getGenresNames() {
+        if (CollectionUtils.isEmpty(genres)) {
+            return "";
+        }
+
+        return getGenres().stream()
+                .map(Genre::getName)
+                .sorted()
+                .collect(Collectors.joining(", "));
+    }
+
+    public Double getAverageRating() {
+        if (CollectionUtils.isEmpty(reviews)) return 0d;
+
+        return reviews.stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0d);
+    }
 }
 

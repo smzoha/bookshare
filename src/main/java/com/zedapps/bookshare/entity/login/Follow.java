@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.entity.login;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.*;
 
 /**

@@ -4,6 +4,7 @@ import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import jakarta.persistence.NoResultException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,10 @@ public class LoginService {
     public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder) {
         this.loginRepository = loginRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public Login getLogin(String email) {
+        return loginRepository.findActiveLoginByEmail(email).orElseThrow(NoResultException::new);
     }
 
     @Transactional

@@ -23,8 +23,44 @@ body {
 .book-cover {
     aspect-ratio: 2/3;
     object-fit: cover;
-    width: 100%;
+    width: 120px;
+    height: 180px;
     border-radius: .35rem;
+    display: block;
+    margin-bottom: .5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-display-cover {
+    width: 240px;
+    height: 360px;
+    object-fit: cover;
+    border-radius: 0.35rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-display-cover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .book-display-cover {
+        width: 180px;
+        height: 270px;
+        margin: 0 auto 0.5rem auto; /* Center on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .book-display-cover {
+        width: 140px;
+        height: 210px;
+    }
 }
 
 .rating i {
@@ -132,10 +168,23 @@ body {
     background: transparent;
 }
 
-.recent-books-slider .text-center {
+.book-box {
     flex-shrink: 0;
     width: 140px;
     transition: transform 0.2s;
+}
+
+.book-description {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.book-description.collapsed {
+    max-height: 200px;
+}
+
+.review-text {
+    white-space: pre-wrap;
 }
 
 @media (max-width: 768px) {
