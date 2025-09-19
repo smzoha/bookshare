@@ -10,15 +10,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.ISBN;
+import org.springframework.util.CollectionUtils;
 
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author smzoha
@@ -44,8 +47,6 @@ public class Book {
     @ISBN(message = "{error.isbn}")
     private String isbn;
 
-    @Lob
-    @JdbcTypeCode(Types.CLOB)
     private String description;
 
     @ManyToOne
@@ -96,5 +97,36 @@ public class Book {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    public String getAuthorNames() {
+        if (CollectionUtils.isEmpty(authors)) {
+            return "";
+        }
+
+        return getAuthors().stream()
+                .map(Author::getName)
+                .sorted()
+                .collect(Collectors.joining(", "));
+    }
+
+    public String getGenresNames() {
+        if (CollectionUtils.isEmpty(genres)) {
+            return "";
+        }
+
+        return getGenres().stream()
+                .map(Genre::getName)
+                .sorted()
+                .collect(Collectors.joining(", "));
+    }
+
+    public Double getAverageRating() {
+        if (CollectionUtils.isEmpty(reviews)) return 0d;
+
+        return reviews.stream()
+                .mapToDouble(Review::getRating)
+                .average()
+                .orElse(0d);
+    }
 }
 
