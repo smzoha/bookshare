@@ -18,7 +18,7 @@
                 <!--/*@thymesVar id="featuredBooks" type="java.util.List"*/-->
                 <!--/*@thymesVar id="book" type="com.zedapps.bookshare.entity.book.Book"*/-->
                 <!--/*@thymesVar id="image" type="com.zedapps.bookshare.entity.image.Image"*/-->
-                <div class="text-center" th:each="book : ${featuredBooks}">
+                <div class="d-flex flex-column align-items-center book-box" th:each="book : ${featuredBooks}">
                     <a th:href="@{/book/{id}(id=${book.id})}">
                         <img th:src="@{/image/{id}(id=${book.image.id})}" th:alt="${book.title}"
                              class="book-cover" th:if="${book.image ne null}"/>

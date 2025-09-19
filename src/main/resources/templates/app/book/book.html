@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:text="${book.title}"></title>
+</head>
+<body>
+<div layout:fragment="pageContent">
+    <div class="container mt-5">
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="d-flex justify-content-center">
+                    <img th:src="@{/image/{id}(id=${book.image.id})}" th:alt="${book.title}"
+                         class="book-display-cover mb-3"
+                         th:if="${book.image ne null}"/>
+
+                    <img th:src="@{/img/book-placeholder.png}" th:alt="${book.title}" class="book-display-cover mb-3"
+                         th:if="${book.image eq null}"/>
+                </div>
+                <div class="d-flex justify-content-center gap-2" sec:authorize="isAuthenticated()">
+                    <button class="btn btn-bookshare">
+                        <i class="fa-regular fa-bookmark me-1"></i> <span th:text="#{label.want.to.read}"></span>
+                    </button>
+
+                    <button class="btn btn-bookshare">
+                        <i class="fa-regular fa-check-circle me-1"></i> <span th:text="#{label.read}"></span>
+                    </button>
+
+                    <div class="dropdown">
+                        <button class="btn btn-bookshare dropdown-toggle" type="button" id="shelfDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" th:text="#{label.add.shelf}">
+                        </button>
+
+                        <ul class="dropdown-menu" aria-labelledby="shelfDropdown">
+                            <li th:each="shelf : ${shelves}">
+                                <a class="dropdown-item" th:data-shelf-id="${shelf.id}" th:text="${shelf.name}"/>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#" th:text="#{label.add.new.shelf}"/></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 text-bookshare">
+                <h2 class="fw-bold" th:text="${book.title}"></h2>
+                <p class="text-muted mb-1"><strong th:text="${book.authorNames}"></strong></p>
+                <p class="mb-2"><i class="fa-solid fa-tag me-1"></i>&nbsp;<span th:text="${book.genresNames}"></span></p>
+
+                <div class="mt-1 mb-1 rating">
+                    <ul class="list-inline">
+                        <th:block th:each="i : ${#numbers.sequence(1, book.averageRating)}" th:if="${book.averageRating >= 1}">
+                            <li class="fa-solid fa-star"></li>
+                        </th:block>
+
+                        <li class="fa-solid fa-star-half-stroke"
+                            th:if="${(book.averageRating % 1) >= 0.25 and (book.averageRating % 1) < 0.75}">
+                        </li>
+
+                        <th:block th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(book.averageRating))}">
+                            <li class="fa-regular fa-star"></li>
+                        </th:block>
+                    </ul>
+
+                    <small class="text-muted">
+                        <span th:text="|#{label.average.ratings}: ${#numbers.formatDecimal(book.averageRating, 1, 2)}|"></span>
+                        <i class="fa-solid fa-diamond text-bookshare"></i>
+                        <span th:text="|${book.reviews.size()} #{label.reviews}|"></span>
+                    </small>
+                </div>
+
+                <div class="book-description collapsed">
+                    <p th:utext="${book.description}"></p>
+                </div>
+
+                <button id="toggleDescription" class="btn btn-link text-bookshare mt-2" th:text="#{label.show.more}"></button>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <h4 class="text-bookshare mb-3" th:text="#{label.reviews}"/>
+
+                <div class="mb-4 p-3 block-section rounded shadow-sm">
+                    <h6>Add a Review</h6>
+                    <div class="mb-2 rating">
+                        <i class="fa-regular fa-star me-1" id="rating-input-1" data-rating="1"></i>
+                        <i class="fa-regular fa-star me-1" id="rating-input-2" data-rating="2"></i>
+                        <i class="fa-regular fa-star me-1" id="rating-input-3" data-rating="3"></i>
+                        <i class="fa-regular fa-star me-1" id="rating-input-4" data-rating="4"></i>
+                        <i class="fa-regular fa-star me-1" id="rating-input-5" data-rating="5"></i>
+                        <input type="hidden" id="ratingValue" name="ratingValue"/>
+                    </div>
+
+                    <label for="review" class="visually-hidden" th:text="#{label.reviews}"/>
+                    <textarea id="review" name="review" class="form-control mb-2" rows="3" th:placeholder="#{label.review.placeholder}"></textarea>
+
+                    <button class="btn btn-bookshare" th:text="#{label.post.review}"/>
+                </div>
+
+                <div class="mb-3 p-3 bg-bookshare-50 rounded shadow-sm" th:each="review : ${book.reviews}">
+                    <div class="d-flex align-items-center mb-2">
+                        <img th:src="@{/img/user-avatar.png}" class="avatar me-2" alt="Reviewer">
+                        <strong th:text="${review.user.firstName}"></strong>
+                        <small class="text-muted ms-2"
+                               th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy, hh:mm a')}"></small>
+                    </div>
+
+                    <div class="mb-2 rating">
+                        <th:block th:each="i : ${#numbers.sequence(1, review.rating)}">
+                            <li class="fa-solid fa-star text-warning"></li>
+                        </th:block>
+                        <th:block th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" th:if="${5 - review.rating >= 1}">
+                            <li class="fa-regular fa-star text-warning"></li>
+                        </th:block>
+                    </div>
+
+                    <p class="review-text" th:text="${review.content}"></p>
+
+                    <button class="btn btn-sm btn-bookshare me-2">
+                        <i class="fa-regular fa-thumbs-up me-1"></i>&nbsp;<span th:text="#{label.like}"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h4 class="text-bookshare mb-3" th:text="#{label.related.books}"/>
+                <div class="gap-3 recent-books-slider">
+                    <div class="d-flex flex-column align-items-center book-box" th:each="book : ${relatedBooks}">
+                        <a th:href="@{/book/{id}(id=${book.id})}">
+                            <img th:src="@{/image/{id}(id=${book.image.id})}" th:alt="${book.title}"
+                                 class="book-cover mb-3"
+                                 th:if="${book.image ne null}"/>
+
+                            <img th:src="@{/img/book-placeholder.png}" th:alt="${book.title}" class="book-cover mb-3"
+                                 th:if="${book.image eq null}"/>
+                        </a>
+
+                        <p class="mb-0 mt-1 text-bookshare text-center" th:text="${book.title}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="application/javascript" th:inline="javascript">
+        const showMoreText = /*[[#{label.show.more}]]*/ '';
+        const showLessText = /*[[#{label.show.less}]]*/ '';
+
+        const toggleDescriptionButton = $('#toggleDescription');
+        const descriptionPanel = $('.book-description');
+
+        const ratingValueInputSelector = $('#ratingValue');
+
+        $(function () {
+            toggleDescriptionButton.on('click', function () {
+                descriptionPanel.toggleClass('collapsed');
+                toggleDescriptionButton.text(descriptionPanel.hasClass('collapsed') ? showMoreText : showLessText);
+            });
+
+            $('[id^="rating-input"]').on('click', function (e) {
+                let rating = $(e.target).data('rating'), currentRating = parseInt(ratingValueInputSelector.val() || 0);
+
+                if (rating === currentRating) {
+                    for (let i = 1; i <= 5; i++) {
+                        $('#rating-input-' + i).removeClass('fa-solid').addClass('fa-regular');
+                    }
+
+                    ratingValueInputSelector.val('');
+
+                } else {
+                    ratingValueInputSelector.val(rating);
+
+                    for (let i = 1; i <= rating; i++) {
+                        $('#rating-input-' + i).removeClass('fa-regular').addClass('fa-solid');
+                    }
+
+                    for (let i = rating + 1; i <= 5; i++) {
+                        $('#rating-input-' + i).removeClass('fa-solid').addClass('fa-regular');
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

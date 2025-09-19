@@ -1,11 +1,14 @@
 package com.zedapps.bookshare.repository.book;
 
 import com.zedapps.bookshare.entity.book.Book;
+import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.book.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author smzoha
@@ -24,4 +27,15 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             FETCH FIRST 10 ROWS ONLY
             """)
     List<Book> getFeaturedBooks();
+
+    @Query("""
+            SELECT b
+            FROM Book b
+            LEFT JOIN b.genres g
+            LEFT JOIN b.tags t
+            WHERE g IN (:genres) OR t IN (:tags)
+            """)
+    List<Book> getRelatedBooks(List<Genre> genres, List<Tag> tags);
+
+    Optional<Book> findBookById(Long id);
 }
