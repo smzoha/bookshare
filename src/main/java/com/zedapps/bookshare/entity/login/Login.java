@@ -38,7 +38,6 @@ public class Login {
     @Size(max = 255, message = "{error.max.length.exceeded}")
     private String firstName;
 
-    @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
     private String lastName;
 

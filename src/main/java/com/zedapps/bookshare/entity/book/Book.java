@@ -9,14 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.ISBN;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -104,7 +102,7 @@ public class Book {
         }
 
         return getAuthors().stream()
-                .map(Author::getName)
+                .map(author -> StringUtils.join(" ", author.getFirstName(), author.getLastName()))
                 .sorted()
                 .collect(Collectors.joining(", "));
     }

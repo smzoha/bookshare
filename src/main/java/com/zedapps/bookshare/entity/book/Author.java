@@ -34,7 +34,10 @@ public class Author {
 
     @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
-    private String name;
+    private String firstName;
+
+    @Size(max = 255, message = "{error.max.length.exceeded}")
+    private String lastName;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "login_id")

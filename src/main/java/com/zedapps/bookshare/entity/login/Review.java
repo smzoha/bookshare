@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author smzoha
@@ -50,4 +52,10 @@ public class Review {
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @ManyToMany
+    @JoinTable(name = "review_like",
+            joinColumns = @JoinColumn(name = "review_id"),
+            inverseJoinColumns = @JoinColumn(name = "login_id"))
+    private List<Login> userLikes = new ArrayList<>();
 }
