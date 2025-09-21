@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="reviewList(reviews)">
-    <div class="mb-3 p-3 bg-bookshare-50 rounded shadow-sm" th:each="review : ${book.reviews}">
+<!--/*@thymesVar id="reviews" type="org.springframework.data.domain.Page"*/-->
+<!--/*@thymesVar id="review" type="com.zedapps.bookshare.entity.login.Review"*/-->
+<div th:fragment="reviewList">
+    <div class="mb-3 p-3 bg-bookshare-50 rounded shadow-sm" th:each="review : ${reviews.content}">
         <div class="d-flex align-items-center mb-2">
             <img th:src="@{/img/user-avatar.png}" class="avatar me-2" alt="Reviewer">
             <strong th:text="${review.user.firstName}"></strong>
