@@ -1,12 +1,15 @@
 package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.entity.book.Book;
+import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.repository.book.BookRepository;
+import com.zedapps.bookshare.repository.book.ReviewRepository;
 import jakarta.persistence.NoResultException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author smzoha
@@ -16,9 +19,13 @@ import java.util.Objects;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final ReviewRepository reviewRepository;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository,
+                       ReviewRepository reviewRepository) {
+
         this.bookRepository = bookRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public Book getBook(Long bookId) {
@@ -30,5 +37,9 @@ public class BookService {
         relatedBooks.remove(book);
 
         return relatedBooks;
+    }
+
+    public Page<Review> getReviewsByBook(Book book, int pageNumber) {
+        return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
 }

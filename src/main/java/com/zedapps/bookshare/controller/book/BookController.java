@@ -43,6 +43,7 @@ public class BookController {
             model.put("shelves", login.getShelves());
         }
 
+        model.put("reviews", bookService.getReviewsByBook(book, 0));
         model.put("relatedBooks", bookService.getRelatedBooks(book));
 
         return "app/book/book";
