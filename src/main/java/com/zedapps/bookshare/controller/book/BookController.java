@@ -1,16 +1,16 @@
 package com.zedapps.bookshare.controller.book;
 
+import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.book.Book;
-import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.service.book.BookService;
 import com.zedapps.bookshare.service.login.LoginService;
+import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
@@ -35,17 +35,27 @@ public class BookController {
                        @PathVariable Long id,
                        ModelMap model) {
 
-        Book book = bookService.getBook(id);
-        model.put("book", book);
-
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
-            model.put("shelves", login.getShelves());
-        }
-
-        model.put("reviews", bookService.getReviewsByBook(book, 0));
-        model.put("relatedBooks", bookService.getRelatedBooks(book));
+        bookService.setupReferenceData(loginDetails, id, model);
+        model.put("reviewDto", new BookReviewDto());
 
         return "app/book/book";
+    }
+
+    @PostMapping("/addReview")
+    public String addReview(@Valid @ModelAttribute("reviewDto") BookReviewDto reviewDto,
+                            Errors errors,
+                            @AuthenticationPrincipal LoginDetails loginDetails,
+                            ModelMap model) {
+
+        assert Objects.nonNull(loginDetails);
+
+        if (errors.hasErrors()) {
+            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model);
+            return "app/book/book";
+        }
+
+        Review review = bookService.saveReview(reviewDto, loginDetails);
+
+        return "redirect:/book/" + review.getBook().getId();
     }
 }
