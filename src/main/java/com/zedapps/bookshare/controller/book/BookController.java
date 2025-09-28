@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +50,7 @@ public class BookController {
                             @AuthenticationPrincipal LoginDetails loginDetails,
                             ModelMap model) {
 
-        assert Objects.nonNull(loginDetails);
+        Assert.notNull(loginDetails, "User is not logged in!");
 
         if (errors.hasErrors()) {
             bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model);
@@ -66,7 +67,7 @@ public class BookController {
     public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
                                                             @AuthenticationPrincipal LoginDetails loginDetails) {
 
-        assert Objects.nonNull(loginDetails);
+        Assert.notNull(loginDetails, "User is not logged in!");
 
         ReviewLikeResponseDto responseDto = bookService.updateReviewLikes(reviewId, loginDetails);
 
