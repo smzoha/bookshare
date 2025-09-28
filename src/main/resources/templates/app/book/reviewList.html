@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <!--/*@thymesVar id="reviews" type="org.springframework.data.domain.Page"*/-->
 <!--/*@thymesVar id="review" type="com.zedapps.bookshare.entity.login.Review"*/-->
@@ -23,10 +23,38 @@
 
         <p class="review-text" th:text="${review.content}"></p>
 
-        <button class="btn btn-sm btn-bookshare me-2">
-            <i class="fa-regular fa-thumbs-up me-1"></i>&nbsp;<span th:text="#{label.like}"></span>
-        </button>
+        <div sec:authorize="isAuthenticated()">
+            <button class="btn btn-sm btn-bookshare me-2 toggle-like" th:data-review-id="${review.id}">
+                <i class="fa-regular fa-thumbs-up me-1"></i>
+                &nbsp;<span th:text="#{label.like}"></span>
+                <span class="like-count" th:text="| (${review.userLikes.size()})|"></span>
+            </button>
+        </div>
     </div>
+
+    <script type="application/javascript" th:inline="javascript">
+        $(function () {
+            $('.toggle-like').on('click', function (e) {
+                toggleLike(e.currentTarget, $(e.currentTarget).data('review-id'));
+            });
+        });
+
+        function toggleLike(likeBtn, reviewId) {
+            $.ajax({
+                url: 'like',
+                method: 'POST',
+                data: {
+                    reviewId: reviewId,
+                },
+                beforeSend: () => showLoader(),
+                success: function (result) {
+                    $(likeBtn).children('.like-count').text(`(${result['likeCount']})`);
+                },
+                error: () => alert('Failed to add like'),
+                complete: () => removeLoader()
+            })
+        }
+    </script>
 </div>
 </body>
 </html>
