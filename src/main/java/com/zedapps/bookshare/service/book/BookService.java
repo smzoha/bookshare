@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.book.BookReviewDto;
+import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
@@ -12,6 +13,7 @@ import jakarta.persistence.NoResultException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.util.List;
@@ -65,6 +67,7 @@ public class BookService {
         model.put("relatedBooks", getRelatedBooks(book));
     }
 
+    @Transactional
     public Review saveReview(BookReviewDto reviewDto, LoginDetails loginDetails) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(reviewDto.getBookId());
@@ -73,6 +76,24 @@ public class BookService {
         review = reviewRepository.save(review);
 
         return review;
+    }
+
+    @Transactional
+    public ReviewLikeResponseDto updateReviewLikes(Long reviewId, LoginDetails loginDetails) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(NoResultException::new);
+        Login login = loginService.getLogin(loginDetails.getUsername());
+
+        boolean liked = !review.getUserLikes().contains(login);
+
+        if (liked) {
+            review.getUserLikes().add(login);
+        } else {
+            review.getUserLikes().remove(login);
+        }
+
+        review = reviewRepository.save(review);
+
+        return new ReviewLikeResponseDto(reviewId, false, review.getUserLikes().size());
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {

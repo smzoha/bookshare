@@ -54,7 +54,7 @@ public class Review {
     private Book book;
 
     @ManyToMany
-    @JoinTable(name = "review_like",
+    @JoinTable(name = "review_likes",
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "login_id"))
     private List<Login> userLikes = new ArrayList<>();

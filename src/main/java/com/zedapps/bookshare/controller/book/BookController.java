@@ -1,11 +1,13 @@
 package com.zedapps.bookshare.controller.book;
 
 import com.zedapps.bookshare.dto.book.BookReviewDto;
+import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.service.book.BookService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -57,5 +59,17 @@ public class BookController {
         Review review = bookService.saveReview(reviewDto, loginDetails);
 
         return "redirect:/book/" + review.getBook().getId();
+    }
+
+    @ResponseBody
+    @PostMapping("/like")
+    public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
+                                                            @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        assert Objects.nonNull(loginDetails);
+
+        ReviewLikeResponseDto responseDto = bookService.updateReviewLikes(reviewId, loginDetails);
+
+        return ResponseEntity.ok().body(responseDto);
     }
 }
