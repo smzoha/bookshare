@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<!--/*@thymesVar id="reviews" type="org.springframework.data.domain.Page"*/-->
+<!--/*@thymesVar id="review" type="com.zedapps.bookshare.entity.login.Review"*/-->
+<div th:fragment="reviewList">
+    <div class="mb-3 p-3 bg-bookshare-50 rounded shadow-sm" th:each="review : ${reviews.content}">
+        <div class="d-flex align-items-center mb-2">
+            <img th:src="@{/img/user-avatar.png}" class="avatar me-2" alt="Reviewer">
+            <strong th:text="${review.user.firstName}"></strong>
+            <small class="text-muted ms-2"
+                   th:text="${#temporals.format(review.reviewDate, 'dd MMM yyyy, hh:mm a')}"></small>
+        </div>
+
+        <div class="mb-2 rating">
+            <th:block th:each="i : ${#numbers.sequence(1, review.rating)}">
+                <li class="fa-solid fa-star text-warning"></li>
+            </th:block>
+            <th:block th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" th:if="${5 - review.rating >= 1}">
+                <li class="fa-regular fa-star text-warning"></li>
+            </th:block>
+        </div>
+
+        <p class="review-text" th:text="${review.content}"></p>
+
+        <div sec:authorize="isAuthenticated()">
+            <button class="btn btn-sm btn-bookshare me-2 toggle-like" th:data-review-id="${review.id}">
+                <i class="fa-regular fa-thumbs-up me-1"></i>
+                &nbsp;<span th:text="#{label.like}"></span>
+                <span class="like-count" th:text="| (${review.userLikes.size()})|"></span>
+            </button>
+        </div>
+    </div>
+
+    <script type="application/javascript" th:inline="javascript">
+        $(function () {
+            $('.toggle-like').on('click', function (e) {
+                toggleLike(e.currentTarget, $(e.currentTarget).data('review-id'));
+            });
+        });
+
+        function toggleLike(likeBtn, reviewId) {
+            $.ajax({
+                url: 'like',
+                method: 'POST',
+                data: {
+                    reviewId: reviewId,
+                },
+                beforeSend: () => showLoader(),
+                success: function (result) {
+                    $(likeBtn).children('.like-count').text(`(${result['likeCount']})`);
+                },
+                error: () => alert('Failed to add like'),
+                complete: () => removeLoader()
+            })
+        }
+    </script>
+</div>
+</body>
+</html>

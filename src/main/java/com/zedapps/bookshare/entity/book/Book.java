@@ -85,6 +85,7 @@ public class Book {
     private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
+    @OrderBy("reviewDate DESC")
     private List<Review> reviews = new ArrayList<>();
 
     @CreationTimestamp
