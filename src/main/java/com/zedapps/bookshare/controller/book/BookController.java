@@ -5,7 +5,6 @@ import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.service.book.BookService;
-import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,8 +13,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 /**
  * @author smzoha
@@ -26,11 +23,9 @@ import java.util.Objects;
 public class BookController {
 
     private final BookService bookService;
-    private final LoginService loginService;
 
-    public BookController(BookService bookService, LoginService loginService) {
+    public BookController(BookService bookService) {
         this.bookService = bookService;
-        this.loginService = loginService;
     }
 
     @GetMapping("/{id}")
