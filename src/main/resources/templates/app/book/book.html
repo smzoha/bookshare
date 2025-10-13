@@ -194,12 +194,12 @@
                 $.ajax({
                     url: `reviews/${bookId}?page=${page}`,
                     type: 'GET',
+                    beforeSend: () => showLoader(),
                     success: function (fragment) {
                         $('#reviewSection').html(fragment);
                     },
-                    error: function () {
-                        console.error('Unable to retrieve reviews!');
-                    }
+                    error: () => console.error('Unable to retrieve reviews!'),
+                    complete: () => removeLoader()
                 })
             });
         });
