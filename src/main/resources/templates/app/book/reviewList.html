@@ -32,6 +32,29 @@
         </div>
     </div>
 
+    <nav>
+        <ul class="pagination justify-content-end">
+            <li class="page-item" th:classappend="${reviews.first} ? 'disabled'">
+                <a class="page-link page-btn bg-bookshare-50" href="#" th:attr="data-page=${reviews.number - 1}">
+                    <i class="fas fa-caret-left text-bookshare"></i>
+                </a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Page <span th:text="${reviews.number + 1}"></span> of
+                    <span th:text="${reviews.totalPages}"></span>
+                </span>
+            </li>
+
+            <li class="page-item" th:classappend="${reviews.last} ? 'disabled'">
+                <a class="page-link page-btn bg-bookshare-50" href="#" th:attr="data-page=${reviews.number + 1}">
+                    <i class="fas fa-caret-right text-bookshare"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
     <script type="application/javascript" th:inline="javascript">
         $(function () {
             $('.toggle-like').on('click', function (e) {
