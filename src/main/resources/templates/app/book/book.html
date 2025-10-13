@@ -123,7 +123,7 @@
                     </th:block>
                 </div>
 
-                <div th:replace="~{app/book/reviewList :: reviewList}"></div>
+                <div id="reviewSection" th:insert="~{app/book/reviewList :: reviewList}"></div>
             </div>
         </div>
 
@@ -151,6 +151,7 @@
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';
         const showLessText = /*[[#{label.show.less}]]*/ '';
+        const bookId = /*[[${book.id}]]*/ 0;
 
         const toggleDescriptionButton = $('#toggleDescription');
         const descriptionPanel = $('.book-description');
@@ -184,6 +185,22 @@
                         $('#rating-input-' + i).removeClass('fa-solid').addClass('fa-regular');
                     }
                 }
+            });
+
+            $(document).on('click', '.page-btn', function (e) {
+                e.preventDefault();
+                let page = $(this).data('page');
+
+                $.ajax({
+                    url: `reviews/${bookId}?page=${page}`,
+                    type: 'GET',
+                    success: function (fragment) {
+                        $('#reviewSection').html(fragment);
+                    },
+                    error: function () {
+                        console.error('Unable to retrieve reviews!');
+                    }
+                })
             });
         });
     </script>
