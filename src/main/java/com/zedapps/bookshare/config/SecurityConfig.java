@@ -32,10 +32,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers("/admin/**").hasRole(Role.ADMIN.name())
-                            .requestMatchers("/manage/**").hasAnyRole(Role.ADMIN.name(), Role.MODERATOR.name())
-                            .requestMatchers("/manage/book").hasRole(Role.AUTHOR.name())
-                            .requestMatchers("/profile/**").hasAnyRole(Role.getAllRoleNames())
+                    requests.requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
+                            .requestMatchers("/manage/**").hasAnyAuthority(Role.ADMIN.name(), Role.MODERATOR.name())
+                            .requestMatchers("/manage/book").hasAuthority(Role.AUTHOR.name())
+                            .requestMatchers("/profile/**").hasAnyAuthority(Role.getAllRoleNames())
                             .anyRequest().permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login")
