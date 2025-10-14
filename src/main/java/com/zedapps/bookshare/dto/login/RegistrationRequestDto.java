@@ -15,5 +15,9 @@ public class RegistrationRequestDto extends LoginBaseDto {
 
     @NotBlank(message = "{error.blank}")
     @Size(min = 8, max = 32, message = "{error.min.max.length.exceeded}")
+    private String password;
+
+    @NotBlank(message = "{error.blank}")
+    @Size(min = 8, max = 32, message = "{error.min.max.length.exceeded}")
     private String confirmPassword;
 }

@@ -22,10 +22,6 @@ public class LoginBaseDto {
     private String email;
 
     @NotBlank(message = "{error.blank}")
-    @Size(min = 8, max = 32, message = "{error.min.max.length.exceeded}")
-    private String password;
-
-    @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
     private String firstName;
 

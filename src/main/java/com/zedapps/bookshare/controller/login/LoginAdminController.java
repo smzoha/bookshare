@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.controller.login;
 
 import com.zedapps.bookshare.dto.login.LoginManageDto;
+import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.validator.LoginDtoValidator;
@@ -8,10 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author smzoha
@@ -39,6 +37,17 @@ public class LoginAdminController {
     public String addNewUser(ModelMap model) {
         LoginManageDto loginDto = new LoginManageDto();
         loginDto.setRole(Role.USER);
+
+        model.put("user", loginDto);
+        model.put("roles", Role.values());
+
+        return "admin/users/userForm";
+    }
+
+    @GetMapping("/{handle}")
+    public String getUser(@PathVariable String handle, ModelMap model) {
+        Login login = loginService.getLoginByHandle(handle);
+        LoginManageDto loginDto = new LoginManageDto(login);
 
         model.put("user", loginDto);
         model.put("roles", Role.values());

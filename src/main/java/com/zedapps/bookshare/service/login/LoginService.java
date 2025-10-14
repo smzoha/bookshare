@@ -36,9 +36,16 @@ public class LoginService {
         return loginRepository.findActiveLoginByEmail(email).orElseThrow(NoResultException::new);
     }
 
+    public Login getLoginByHandle(String handle) {
+        return loginRepository.findByHandle(handle).orElseThrow(NoResultException::new);
+    }
+
     @Transactional
     public Login saveLogin(@Valid LoginManageDto loginDto) {
-        Login login = loginRepository.findActiveLoginByEmail(loginDto.getEmail()).orElse(new Login());
+        Login login = (loginDto.getId() != null
+                ? loginRepository.findById(loginDto.getId())
+                : loginRepository.findByEmail(loginDto.getEmail())).orElse(new Login());
+
         updateLoginFromManageDto(loginDto, login);
 
         login = loginRepository.save(login);
@@ -73,7 +80,11 @@ public class LoginService {
     private void updateLoginFromManageDto(LoginManageDto loginManageDto, Login login) {
         login.setEmail(loginManageDto.getEmail());
 
-        if (login.getId() == null || passwordEncoder.matches(loginManageDto.getPassword(), login.getPassword())) {
+        if (login.getId() == null ||
+                (loginManageDto.getPassword() != null
+                        && !loginManageDto.getPassword().isEmpty()
+                        && !passwordEncoder.matches(loginManageDto.getPassword(), login.getPassword()))) {
+
             login.setPassword(passwordEncoder.encode(loginManageDto.getPassword()));
         }
 

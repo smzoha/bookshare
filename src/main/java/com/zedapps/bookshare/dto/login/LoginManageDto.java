@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.dto.login;
 
+import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +21,8 @@ public class LoginManageDto extends LoginBaseDto {
 
     private Long id;
 
+    private String password;
+
     @Size(max = 4000, message = "{error.max.length.exceeded}")
     private String bio;
 
@@ -28,4 +31,17 @@ public class LoginManageDto extends LoginBaseDto {
     private Role role;
 
     private boolean active;
+
+    public LoginManageDto(Login login) {
+        this.id = login.getId();
+        this.bio = login.getBio();
+        this.role = login.getRole();
+        this.active = login.isActive();
+
+        setFirstName(login.getFirstName());
+        setLastName(login.getLastName());
+        setEmail(login.getEmail());
+        setPassword(login.getPassword());
+        setHandle(login.getHandle());
+    }
 }
