@@ -67,16 +67,16 @@ public class Login {
     private boolean active;
 
     @OneToMany(mappedBy = "user")
-    private List<Review> reviews = new ArrayList<>();
+    private final List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Shelf> shelves = new ArrayList<>();
+    private final List<Shelf> shelves = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower")
-    private List<Follow> following = new ArrayList<>();
+    private final List<Follow> following = new ArrayList<>();
 
     @OneToMany(mappedBy = "following")
-    private List<Follow> followers = new ArrayList<>();
+    private final List<Follow> followers = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

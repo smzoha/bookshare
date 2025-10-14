@@ -57,5 +57,5 @@ public class Review {
     @JoinTable(name = "review_likes",
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "login_id"))
-    private List<Login> userLikes = new ArrayList<>();
+    private final List<Login> userLikes = new ArrayList<>();
 }
