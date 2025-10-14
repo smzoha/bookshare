@@ -29,12 +29,18 @@ public class LoginAdminController {
         this.loginDtoValidator = loginDtoValidator;
     }
 
+    @GetMapping
+    public String getLoginList(ModelMap model) {
+        model.put("logins", loginService.getLoginList());
+        return "admin/users/userList";
+    }
+
     @GetMapping("/new")
     public String addNewUser(ModelMap model) {
-        LoginManageDto login = new LoginManageDto();
-        login.setRole(Role.USER);
+        LoginManageDto loginDto = new LoginManageDto();
+        loginDto.setRole(Role.USER);
 
-        model.put("user", login);
+        model.put("user", loginDto);
         model.put("roles", Role.values());
 
         return "admin/users/userForm";

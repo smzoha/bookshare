@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author smzoha
  * @since 12/9/25
@@ -24,6 +26,10 @@ public class LoginService {
     public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder) {
         this.loginRepository = loginRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<Login> getLoginList() {
+        return loginRepository.findAll();
     }
 
     public Login getLogin(String email) {
