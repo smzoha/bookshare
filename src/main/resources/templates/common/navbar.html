@@ -27,6 +27,10 @@
                         <a class="nav-link text-bookshare" th:href="@{/connections}" th:text="#{label.connections}"/>
                     </li>
 
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'MODERATOR')">
+                        <a class="nav-link text-bookshare" th:href="@{/admin}" th:text="#{title.admin.dashboard}"/>
+                    </li>
+
                     <li class="nav-item">
                         <button class="btn btn-bookshare rounded-5">
                             <i class="fa-solid fa-bell"></i>
