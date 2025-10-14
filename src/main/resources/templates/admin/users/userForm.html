@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>User Form</title>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.user.information}"></h2>
+            <p class="text-muted" th:text="#{label.user.information.subtitle}"></p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-sm">
+                    <div class="card-body rounded-5 bg-bookshare-50 p-4">
+                        <form th:action="@{/admin/users/save}" method="post" th:object="${user}">
+                            <div class="mb-3">
+                                <label for="email" class="form-label" th:text="#{label.email}"></label>
+                                <input type="email" id="email" th:field="*{email}"
+                                       class="form-control" placeholder="example@email.com" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label" th:text="#{label.password}"></label>
+                                <input type="password" id="password" th:field="*{password}"
+                                       class="form-control" placeholder="Enter password"
+                                       th:attrappend="required=${user.id == null}">
+
+                                <div class="form-text" th:text="#{hint.password.change}"></div>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label" th:text="#{label.first.name}"></label>
+                                <input type="text" id="firstName" th:field="*{firstName}"
+                                       class="form-control" placeholder="Enter first name" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('firstName')}"
+                                     th:errors="*{firstName}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label" th:text="#{label.last.name}"></label>
+                                <input type="text" id="lastName" th:field="*{lastName}"
+                                       class="form-control" placeholder="Enter last name" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('lastName')}"
+                                     th:errors="*{lastName}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="handle" class="form-label" th:text="#{label.username}"></label>
+                                <input type="text" id="handle" th:field="*{handle}"
+                                       class="form-control" placeholder="e.g., awesome-llama, flying-toast" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('handle')}"
+                                     th:errors="*{handle}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="role" class="form-label" th:text="#{label.role}"></label>
+                                <select id="role" th:field="*{role}" class="form-select" required>
+                                    <option value="" disabled selected>Select a role</option>
+                                    <option th:each="role : ${roles}"
+                                            th:value="${role.name()}"
+                                            th:text="${role.naturalName}">
+                                    </option>
+                                </select>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('role')}"
+                                     th:errors="*{role}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="bio" class="form-label" th:text="#{label.short.bio}"></label>
+                                <textarea id="bio" th:field="*{bio}" rows="4" class="form-control" maxlength="1000"></textarea>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('bio')}"
+                                     th:errors="*{bio}"></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
+                                <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
