@@ -7,6 +7,7 @@ import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,10 +81,8 @@ public class LoginService {
     private void updateLoginFromManageDto(LoginManageDto loginManageDto, Login login) {
         login.setEmail(loginManageDto.getEmail());
 
-        if (login.getId() == null ||
-                (loginManageDto.getPassword() != null
-                        && !loginManageDto.getPassword().isEmpty()
-                        && !passwordEncoder.matches(loginManageDto.getPassword(), login.getPassword()))) {
+        if (login.getId() == null || (StringUtils.isNotBlank(loginManageDto.getPassword())
+                && !passwordEncoder.matches(loginManageDto.getPassword(), login.getPassword()))) {
 
             login.setPassword(passwordEncoder.encode(loginManageDto.getPassword()));
         }

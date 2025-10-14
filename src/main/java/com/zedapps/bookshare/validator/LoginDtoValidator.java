@@ -36,44 +36,63 @@ public class LoginDtoValidator implements Validator {
         LoginBaseDto loginDto = (LoginBaseDto) target;
 
         if (!errors.hasFieldErrors("email") && StringUtils.isNotBlank(loginDto.getEmail())) {
-            Optional<Login> login = loginRepository.findByEmail(loginDto.getEmail());
-
-            boolean emailExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
-                    ? login.isPresent() && !Objects.equals(loginDto.getEmail(), login.get().getEmail())
-                    : login.isPresent();
-
-            if (emailExists) {
-                errors.rejectValue("email", "error.email.exists");
-            }
+            validateIfEmailExists(loginDto, errors);
         }
 
         if (!errors.hasFieldErrors("handle") && StringUtils.isNotBlank(loginDto.getHandle())) {
-            Optional<Login> login = loginRepository.findByHandle(loginDto.getHandle());
-
-            boolean handleExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
-                    ? login.isPresent() && !Objects.equals(loginDto.getHandle(), login.get().getHandle())
-                    : login.isPresent();
-
-            if (handleExists) {
-                errors.rejectValue("handle", "error.handle.exists");
-            }
+            validateIfHandleExists(loginDto, errors);
         }
 
-        if (loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() == null) {
-            String password = ((LoginManageDto) loginDto).getPassword();
+        if (loginDto instanceof LoginManageDto) {
+            validatePasswordForAdminPanel(((LoginManageDto) loginDto), errors);
+        }
 
-            if (Objects.isNull(password) || password.isEmpty()) {
+        if (loginDto instanceof RegistrationRequestDto) {
+            validateConfirmPassword(((RegistrationRequestDto) loginDto), errors);
+        }
+    }
+
+    private void validateIfEmailExists(LoginBaseDto loginDto, Errors errors) {
+        Optional<Login> login = loginRepository.findByEmail(loginDto.getEmail());
+
+        boolean emailExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
+                ? login.isPresent() && !Objects.equals(loginDto.getEmail(), login.get().getEmail())
+                : login.isPresent();
+
+        if (emailExists) {
+            errors.rejectValue("email", "error.email.exists");
+        }
+    }
+
+    private void validateIfHandleExists(LoginBaseDto loginDto, Errors errors) {
+        Optional<Login> login = loginRepository.findByHandle(loginDto.getHandle());
+
+        boolean handleExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
+                ? login.isPresent() && !Objects.equals(loginDto.getHandle(), login.get().getHandle())
+                : login.isPresent();
+
+        if (handleExists) {
+            errors.rejectValue("handle", "error.handle.exists");
+        }
+    }
+
+    private void validateConfirmPassword(RegistrationRequestDto loginDto, Errors errors) {
+        if (!errors.hasFieldErrors("confirmPassword")
+                && !Objects.equals(loginDto.getPassword(), loginDto.getConfirmPassword())) {
+
+            errors.rejectValue("confirmPassword", "error.password.do.not.match");
+        }
+    }
+
+    private void validatePasswordForAdminPanel(LoginManageDto loginDto, Errors errors) {
+        if (loginDto.getId() == null) {
+            String password = loginDto.getPassword();
+
+            if (StringUtils.isBlank(password)) {
                 errors.rejectValue("password", "error.blank");
             } else if (password.length() < 8 || password.length() > 32) {
                 errors.rejectValue("password", "error.password.length");
             }
-        }
-
-        if (loginDto instanceof RegistrationRequestDto
-                && !errors.hasFieldErrors("confirmPassword")
-                && !Objects.equals(((RegistrationRequestDto) loginDto).getPassword(), ((RegistrationRequestDto) loginDto).getConfirmPassword())) {
-
-            errors.rejectValue("confirmPassword", "error.password.do.not.match");
         }
     }
 }

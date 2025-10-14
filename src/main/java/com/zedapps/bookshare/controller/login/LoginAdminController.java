@@ -37,6 +37,7 @@ public class LoginAdminController {
     public String addNewUser(ModelMap model) {
         LoginManageDto loginDto = new LoginManageDto();
         loginDto.setRole(Role.USER);
+        loginDto.setActive(true);
 
         model.put("user", loginDto);
         model.put("roles", Role.values());
