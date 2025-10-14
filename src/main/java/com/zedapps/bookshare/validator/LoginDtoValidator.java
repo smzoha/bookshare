@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.validator;
 
+import com.zedapps.bookshare.dto.login.LoginBaseDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.login.LoginRepository;
@@ -16,33 +17,33 @@ import java.util.Optional;
  * @since 12/9/25
  **/
 @Component
-public class RegistrationValidator implements Validator {
+public class LoginDtoValidator implements Validator {
 
-    private LoginRepository loginRepository;
+    private final LoginRepository loginRepository;
 
-    public RegistrationValidator(LoginRepository loginRepository) {
+    public LoginDtoValidator(LoginRepository loginRepository) {
         this.loginRepository = loginRepository;
     }
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return RegistrationRequestDto.class.isAssignableFrom(clazz);
+        return LoginBaseDto.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        RegistrationRequestDto registrationRequestDto = (RegistrationRequestDto) target;
+        LoginBaseDto loginDto = (LoginBaseDto) target;
 
-        if (!errors.hasFieldErrors("email") && StringUtils.isNotBlank(registrationRequestDto.getEmail())) {
-            Optional<Login> login = loginRepository.findByEmail(registrationRequestDto.getEmail());
+        if (!errors.hasFieldErrors("email") && StringUtils.isNotBlank(loginDto.getEmail())) {
+            Optional<Login> login = loginRepository.findByEmail(loginDto.getEmail());
 
             if (login.isPresent()) {
                 errors.rejectValue("email", "error.email.exists");
             }
         }
 
-        if (!errors.hasFieldErrors("handle") && StringUtils.isNotBlank(registrationRequestDto.getHandle())) {
-            Optional<Login> login = loginRepository.findByHandle(registrationRequestDto.getHandle());
+        if (!errors.hasFieldErrors("handle") && StringUtils.isNotBlank(loginDto.getHandle())) {
+            Optional<Login> login = loginRepository.findByHandle(loginDto.getHandle());
 
             if (login.isPresent()) {
                 errors.rejectValue("handle", "error.handle.exists");
@@ -50,7 +51,9 @@ public class RegistrationValidator implements Validator {
         }
 
         if (!errors.hasFieldErrors("confirmPassword")
-                && !Objects.equals(registrationRequestDto.getPassword(), registrationRequestDto.getConfirmPassword())) {
+                && loginDto instanceof RegistrationRequestDto
+                && !Objects.equals(loginDto.getPassword(), ((RegistrationRequestDto) loginDto).getConfirmPassword())) {
+
             errors.rejectValue("confirmPassword", "error.password.do.not.match");
         }
     }
