@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{title.admin.dashboard}"></h2>
+            <p class="text-muted" th:text="#{title.admin.dashboard.subtitle}"></p>
+        </div>
+
+        <div class="row justify-content-center g-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card shadow-sm bg-bookshare-50 h-100 text-center">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title">
+                            <i class="fa fa-users"></i>&nbsp;<span th:text="#{label.users}"></span>
+                        </h5>
+                        <p class="card-text text-muted" th:text="#{label.admin.users.subtitle}"></p>
+                        <div class="d-grid gap-2 mt-3">
+                            <a th:href="@{/admin/users}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-list"></i>&nbsp;<span th:text="#{label.view.all}"></span>
+                            </a>
+                            <a th:href="@{/admin/users/new}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-plus"></i>&nbsp;<span th:text="#{label.add.new}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card shadow-sm bg-bookshare-50 h-100 text-center">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title">
+                            <i class="fa fa-book"></i>&nbsp;<span th:text="#{label.books}"></span>
+                        </h5>
+                        <p class="card-text" th:text="#{label.admin.books.subtitle}"></p>
+                        <div class="d-grid gap-2 mt-3">
+                            <a th:href="@{/admin/books}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-list"></i>&nbsp;<span th:text="#{label.view.all}"></span>
+                            </a>
+                            <a th:href="@{/admin/books/new}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-plus"></i>&nbsp;<span th:text="#{label.add.new}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card shadow-sm bg-bookshare-50 h-100 text-center">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title">
+                            <i class="fa fa-theater-masks"></i>&nbsp;<span th:text="#{label.genres}"></span>
+                        </h5>
+                        <p class="card-text" th:text="#{label.admin.genres.subtitle}"></p>
+                        <div class="d-grid gap-2 mt-3">
+                            <a th:href="@{/admin/genres}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-list"></i>&nbsp;<span th:text="#{label.view.all}"></span>
+                            </a>
+                            <a th:href="@{/admin/genres/new}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-plus"></i>&nbsp;<span th:text="#{label.add.new}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAGS -->
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card shadow-sm bg-bookshare-50 h-100 text-center">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title">
+                            <i class="fa fa-tag"></i>&nbsp;<span th:text="#{label.tags}"></span>
+                        </h5>
+                        <p class="card-text" th:text="#{label.admin.tags.subtitle}"></p>
+                        <div class="d-grid gap-2 mt-3">
+                            <a th:href="@{/admin/tags}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-list"></i>&nbsp;<span th:text="#{label.view.all}"></span>
+                            </a>
+                            <a th:href="@{/admin/tags/new}" class="btn btn-bookshare btn-sm">
+                                <i class="fa fa-plus"></i>&nbsp;<span th:text="#{label.add.new}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

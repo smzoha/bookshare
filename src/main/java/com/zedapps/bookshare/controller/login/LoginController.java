@@ -5,7 +5,7 @@ import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.util.Utils;
-import com.zedapps.bookshare.validator.RegistrationValidator;
+import com.zedapps.bookshare.validator.LoginDtoValidator;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoginController {
 
     private final LoginService loginService;
-    private final RegistrationValidator registrationValidator;
+    private final LoginDtoValidator loginDtoValidator;
 
-    public LoginController(LoginService loginService, RegistrationValidator registrationValidator) {
+    public LoginController(LoginService loginService, LoginDtoValidator loginDtoValidator) {
         this.loginService = loginService;
-        this.registrationValidator = registrationValidator;
+        this.loginDtoValidator = loginDtoValidator;
     }
 
     @GetMapping("/login")
@@ -46,7 +46,7 @@ public class LoginController {
                            Errors errors,
                            ModelMap model) {
 
-        registrationValidator.validate(registrationRequestDto, errors);
+        loginDtoValidator.validate(registrationRequestDto, errors);
 
         if (errors.hasErrors()) {
             model.put("login", new LoginRequestDto());

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>User List</title>
+    <link rel="stylesheet" th:href="@{/css/datatables.min.css}"/>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.user.information}"></h2>
+
+            <table id="userList" class="table table-responsive table-striped">
+                <thead>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.email}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.first.name}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.last.name}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.username}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.role}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.action}"></td>
+                </thead>
+                <tbody>
+                <tr th:each="login : ${logins}">
+                    <td th:text="${login.email}"></td>
+                    <td th:text="${login.firstName}"></td>
+                    <td th:text="${login.lastName}"></td>
+                    <td th:text="${login.handle}"></td>
+                    <td th:text="${login.role.naturalName}"></td>
+                    <td>
+                        <a class="btn btn-bookshare" th:href="@{/admin/users/{handle}(handle=${login.handle})}" th:text="#{label.edit}"></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/datatables.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            let userList = $('#userList').DataTable({
+                scrollX: true,
+                layout: {
+                    bottomStart: {
+                        buttons: ['excel', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
