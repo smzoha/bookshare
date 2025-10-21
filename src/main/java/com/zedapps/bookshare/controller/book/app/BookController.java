@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.controller.book;
+package com.zedapps.bookshare.controller.book.app;
 
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
