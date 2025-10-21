@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Genre List</title>
+    <link rel="stylesheet" th:href="@{/css/datatables.min.css}"/>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.genres}"></h2>
+
+            <table id="genreList" class="table table-responsive table-striped">
+                <thead>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.name}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.created.date}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.action}"></td>
+                </thead>
+                <tbody>
+                <tr th:each="genre : ${genres}">
+                    <td th:text="${genre.name}"></td>
+                    <td th:text="${#temporals.format(genre.createdAt, 'dd/MM/yyyy hh:mm a')}"></td>
+                    <td>
+                        <a class="btn btn-bookshare" th:href="@{/admin/genres/{id}(id=${genre.id})}" th:text="#{label.edit}"></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/datatables.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            let genreList = $('#genreList').DataTable({
+                scrollX: true,
+                layout: {
+                    bottomStart: {
+                        buttons: ['excel', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
