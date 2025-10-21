@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.repository.book;
 
-import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.book.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,10 +8,10 @@ import java.util.Optional;
 
 /**
  * @author smzoha
- * @since 13/9/25
+ * @since 21/10/25
  **/
 @Repository
-public interface GenreRepository extends JpaRepository<Genre, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    Optional<Genre> findGenreByName(String name);
+    Optional<Tag> findTagByName(String name);
 }
