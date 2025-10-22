@@ -124,6 +124,19 @@
             </div>
         </div>
     </div>
+
+    <script th:src="@{/js/tinymce/tinymce.min.js}"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: 'textarea[name="description"]',
+            license_key: 'gpl',
+            menubar: false,
+            plugins: 'lists link image table code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+            height: 300,
+            branding: false
+        });
+    </script>
 </div>
 </body>
 </html>
