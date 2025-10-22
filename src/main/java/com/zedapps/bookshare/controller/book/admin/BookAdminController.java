@@ -1,10 +1,26 @@
 package com.zedapps.bookshare.controller.book.admin;
 
+import com.zedapps.bookshare.editor.AuthorEditor;
+import com.zedapps.bookshare.editor.GenreEditor;
+import com.zedapps.bookshare.editor.TagEditor;
+import com.zedapps.bookshare.entity.book.Author;
+import com.zedapps.bookshare.entity.book.Book;
+import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.entity.book.enums.Status;
 import com.zedapps.bookshare.repository.book.BookRepository;
+import com.zedapps.bookshare.repository.book.GenreRepository;
+import com.zedapps.bookshare.repository.book.TagRepository;
+import com.zedapps.bookshare.repository.login.AuthorRepository;
+import jakarta.persistence.NoResultException;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author smzoha
@@ -15,9 +31,46 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class BookAdminController {
 
     private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+    private final GenreRepository genreRepository;
+    private final TagRepository tagRepository;
 
-    public BookAdminController(BookRepository bookRepository) {
+    public BookAdminController(BookRepository bookRepository, AuthorRepository authorRepository,
+                               GenreRepository genreRepository, TagRepository tagRepository) {
+
         this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+        this.genreRepository = genreRepository;
+        this.tagRepository = tagRepository;
+    }
+
+    @ModelAttribute("statusList")
+    public Status[] getStatusList() {
+        return Status.values();
+    }
+
+    @ModelAttribute("authorList")
+    public List<Author> getAuthorList() {
+        return authorRepository.findAll();
+    }
+
+    @ModelAttribute("genreList")
+    public List<Genre> getGenreList() {
+        return genreRepository.findAll();
+    }
+
+    @ModelAttribute("tagList")
+    public List<Tag> getTagList() {
+        return tagRepository.findAll();
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Author.class, new AuthorEditor(authorRepository));
+        binder.registerCustomEditor(Genre.class, new GenreEditor(genreRepository));
+        binder.registerCustomEditor(Tag.class, new TagEditor(tagRepository));
+
+        binder.setDisallowedFields("reviews*");
     }
 
     @GetMapping
@@ -25,5 +78,32 @@ public class BookAdminController {
         model.put("books", bookRepository.findAll());
 
         return "admin/books/bookList";
+    }
+
+    @GetMapping("/new")
+    public String createNewBook(ModelMap model) {
+        model.put("book", new Book());
+
+        return "admin/books/bookForm";
+    }
+
+    @GetMapping("/{id}")
+    public String saveBook(@PathVariable long id, ModelMap model) {
+        model.put("book", bookRepository.findBookById(id).orElseThrow(NoResultException::new));
+
+        return "admin/books/bookForm";
+    }
+
+    @PostMapping("/save")
+    public String saveBook(@Valid @ModelAttribute Book book,
+                           Errors errors) {
+
+        if (errors.hasErrors()) {
+            return "admin/books/bookForm";
+        }
+
+        bookRepository.save(book);
+
+        return "redirect:/admin";
     }
 }
