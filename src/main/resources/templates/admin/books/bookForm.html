@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
 <head>
     <title>Book</title>
+    <link rel="stylesheet" th:href="@{/css/select2.min.css}">
 </head>
 
 <body>
@@ -126,6 +127,7 @@
     </div>
 
     <script th:src="@{/js/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/js/select2.min.js}"></script>
     <script type="text/javascript">
         tinymce.init({
             selector: 'textarea[name="description"]',
@@ -135,6 +137,12 @@
             toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
             height: 300,
             branding: false
+        });
+
+        $(function () {
+            $('#authors').select2();
+            $('#genres').select2();
+            $('#tags').select2();
         });
     </script>
 </div>
