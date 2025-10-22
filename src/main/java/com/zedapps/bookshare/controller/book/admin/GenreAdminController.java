@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.controller.book;
+package com.zedapps.bookshare.controller.book.admin;
 
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.repository.book.GenreRepository;

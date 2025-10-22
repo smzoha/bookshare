@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Author List</title>
+    <link rel="stylesheet" th:href="@{/css/datatables.min.css}"/>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.authors}"></h2>
+
+            <table id="authorList" class="table table-responsive table-striped">
+                <thead>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.first.name}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.last.name}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.associated.user}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.created.date}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.update.date}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.action}"></td>
+                </thead>
+                <tbody>
+                <tr th:each="author : ${authors}">
+                    <td th:text="${author.firstName}"></td>
+                    <td th:text="${author.lastName}"></td>
+                    <td th:text="${author.login != null ? author.login.firstName + ' ' + author.login.lastName : ''}"></td>
+                    <td th:text="${#temporals.format(author.createdAt, 'dd/MM/yyyy hh:mm a')}"></td>
+                    <td th:text="${#temporals.format(author.updatedAt, 'dd/MM/yyyy hh:mm a')}"></td>
+                    <td>
+                        <a class="btn btn-bookshare" th:href="@{/admin/author/{id}(id=${author.id})}" th:text="#{label.edit}"></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/datatables.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            let authorList = $('#authorList').DataTable({
+                scrollX: true,
+                layout: {
+                    bottomStart: {
+                        buttons: ['excel', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

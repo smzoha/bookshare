@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Book</title>
+    <link rel="stylesheet" th:href="@{/css/select2.min.css}">
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.book}"></h2>
+            <p class="text-muted" th:text="#{label.book.information.subtitle}"></p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-sm">
+                    <div class="card-body rounded-5 bg-bookshare-50 p-4">
+                        <form th:action="@{/admin/books/save}" method="post" th:object="${book}">
+                            <input type="hidden" th:field="*{id}"/>
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label" th:text="#{label.title}"></label>
+                                <input type="text" id="title" th:field="*{title}" class="form-control" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('title')}"
+                                     th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="isbn" class="form-label" th:text="#{label.isbn}"></label>
+                                <input type="text" id="isbn" th:field="*{isbn}" class="form-control" required>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('isbn')}"
+                                     th:errors="*{isbn}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label" th:text="#{label.description}"></label>
+                                <textarea id="description" th:field="*{description}" rows="4" class="form-control" maxlength="1000"></textarea>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('description')}"
+                                     th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="pages" class="form-label" th:text="#{label.pages}"></label>
+                                <input type="number" id="pages" th:field="*{pages}" class="form-control" min="0" max="20000">
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('pages')}"
+                                     th:errors="*{pages}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="publicationDate" class="form-label" th:text="#{label.publication.date}"></label>
+                                <input type="date" id="publicationDate" class="form-control" th:field="*{publicationDate}">
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('publicationDate')}"
+                                     th:errors="*{publicationDate}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label" th:text="#{label.status}"></label>
+                                <select id="status" th:field="*{status}" class="form-select" required>
+                                    <option value="" selected>Select a status</option>
+                                    <option th:each="status : ${statusList}"
+                                            th:value="${status}"
+                                            th:text="${status.naturalName}">
+                                    </option>
+                                </select>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('status')}"
+                                     th:errors="*{status}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="authors" class="form-label" th:text="#{label.authors}"></label>
+                                <select id="authors" th:field="*{authors}" class="form-select" multiple>
+                                    <option th:each="author : ${authorList}"
+                                            th:value="${author.id}"
+                                            th:text="|${author.firstName} ${author.lastName}|">
+                                    </option>
+                                </select>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('authors')}"
+                                     th:errors="*{authors}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="genres" class="form-label" th:text="#{label.genres}"></label>
+                                <select id="genres" th:field="*{genres}" class="form-select" multiple>
+                                    <option th:each="genre : ${genreList}"
+                                            th:value="${genre.id}"
+                                            th:text="${genre.name}">
+                                    </option>
+                                </select>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('genres')}"
+                                     th:errors="*{genres}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags" class="form-label" th:text="#{label.tags}"></label>
+                                <select id="tags" th:field="*{tags}" class="form-select" multiple>
+                                    <option th:each="tag : ${tagList}"
+                                            th:value="${tag.id}"
+                                            th:text="${tag.name}">
+                                    </option>
+                                </select>
+
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('tags')}"
+                                     th:errors="*{tags}"></div>
+                            </div>
+
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
+                                <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/js/select2.min.js}"></script>
+    <script type="text/javascript">
+        tinymce.init({
+            selector: 'textarea[name="description"]',
+            license_key: 'gpl',
+            menubar: false,
+            plugins: 'lists link image table code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
+            height: 300,
+            branding: false
+        });
+
+        $(function () {
+            $('#authors').select2();
+            $('#genres').select2();
+            $('#tags').select2();
+        });
+    </script>
+</div>
+</body>
+</html>

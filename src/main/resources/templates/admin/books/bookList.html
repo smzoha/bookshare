@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Book List</title>
+    <link rel="stylesheet" th:href="@{/css/datatables.min.css}"/>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.books}"></h2>
+
+            <table id="bookList" class="table table-responsive table-striped">
+                <thead>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.title}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.isbn}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.authors}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.genres}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.status}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.created.date}"></td>
+                <td class="bg-bookshare fw-bold text-center" th:text="#{label.update.date}"></td>
+                <td class="bg-bookshare fw-bold text-center"  th:text="#{label.action}"></td>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.title}"></td>
+                    <td th:text="${book.isbn}"></td>
+                    <td th:text="${book.authorNames}"></td>
+                    <td th:text="${book.genresNames}"></td>
+                    <td th:text="${book.status.naturalName}"></td>
+                    <td th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy hh:mm a')}"></td>
+                    <td th:text="${#temporals.format(book.updatedAt, 'dd/MM/yyyy hh:mm a')}"></td>
+                    <td>
+                        <a class="btn btn-bookshare" th:href="@{/admin/books/{id}(id=${book.id})}" th:text="#{label.edit}"></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/datatables.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            let bookList = $('#bookList').DataTable({
+                scrollX: true,
+                layout: {
+                    bottomStart: {
+                        buttons: ['excel', 'print']
+                    }
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
