@@ -53,7 +53,7 @@ public class Author {
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private final List<Book> books = new ArrayList<>();
+    private List<Book> books = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

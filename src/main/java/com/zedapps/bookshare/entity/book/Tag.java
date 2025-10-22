@@ -34,7 +34,7 @@ public class Tag {
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    private final List<Book> books = new ArrayList<>();
+    private List<Book> books = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

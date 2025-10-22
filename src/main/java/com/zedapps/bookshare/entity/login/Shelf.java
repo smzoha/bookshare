@@ -38,6 +38,6 @@ public class Shelf {
     private Login user;
 
     @OneToMany(mappedBy = "shelf")
-    private final List<ShelvedBook> books = new ArrayList<>();
+    private List<ShelvedBook> books = new ArrayList<>();
 }
 

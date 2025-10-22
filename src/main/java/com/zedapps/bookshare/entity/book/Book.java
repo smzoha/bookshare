@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.ISBN;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
@@ -56,6 +57,7 @@ public class Book {
     private Long pages;
 
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
     @NotNull
@@ -67,14 +69,14 @@ public class Book {
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    private final List<Author> authors = new ArrayList<>();
+    private List<Author> authors = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
             name = "book_tags",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private final List<Tag> tags = new ArrayList<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -82,11 +84,11 @@ public class Book {
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private final List<Genre> genres = new ArrayList<>();
+    private List<Genre> genres = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     @OrderBy("reviewDate DESC")
-    private final List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

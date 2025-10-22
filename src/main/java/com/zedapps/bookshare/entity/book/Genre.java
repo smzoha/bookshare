@@ -32,7 +32,7 @@ public class Genre {
     private String name;
 
     @ManyToMany(mappedBy = "genres")
-    private final List<Book> books = new ArrayList<>();
+    private List<Book> books = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
