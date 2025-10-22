@@ -103,7 +103,7 @@ public class Book {
         }
 
         return getAuthors().stream()
-                .map(author -> StringUtils.join(" ", author.getFirstName(), author.getLastName()))
+                .map(author -> StringUtils.joinWith(" ", author.getFirstName(), author.getLastName()))
                 .sorted()
                 .collect(Collectors.joining(", "));
     }
