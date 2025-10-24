@@ -200,6 +200,25 @@ body {
     justify-content: center;
 }
 
+.thumbnail-container {
+    width: 120px;
+    height: 80px;
+    display: inline-block;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+    border-radius: .25rem;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .05);
+    background-color: #f8f9fa;
+    vertical-align: middle;
+}
+
+.thumbnail-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 @media (max-width: 768px) {
     .book-cover {
         width: 120px;
