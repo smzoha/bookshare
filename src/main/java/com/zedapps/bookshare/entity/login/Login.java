@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.entity.login;
 
+import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -58,7 +59,9 @@ public class Login {
     @Size(max = 4000, message = "{error.max.length.exceeded}")
     private String bio;
 
-    private String profilePictureUrl;
+    @ManyToOne
+    @JoinColumn(name = "profile_picture_id")
+    private Image profilePicture;
 
     @NotNull(message = "{error.required}")
     @Enumerated(EnumType.STRING)

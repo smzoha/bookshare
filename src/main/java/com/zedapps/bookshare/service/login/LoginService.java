@@ -4,6 +4,7 @@ import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.enums.Role;
+import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -23,10 +25,12 @@ public class LoginService {
 
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ImageRepository imageRepository;
 
-    public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder) {
+    public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder, ImageRepository imageRepository) {
         this.loginRepository = loginRepository;
         this.passwordEncoder = passwordEncoder;
+        this.imageRepository = imageRepository;
     }
 
     public List<Login> getLoginList() {
@@ -92,5 +96,7 @@ public class LoginService {
         login.setHandle(loginManageDto.getHandle());
         login.setRole(loginManageDto.getRole());
         login.setActive(loginManageDto.isActive());
+        login.setProfilePicture(Objects.isNull(loginManageDto.getProfilePictureId()) ? null
+                : imageRepository.findById(loginManageDto.getProfilePictureId()).orElse(null));
     }
 }

@@ -114,6 +114,27 @@
                                      th:errors="*{tags}"></div>
                             </div>
 
+                            <th:block th:if="${book.image != null}">
+                                <div class="mb-3 cover-picture-section">
+                                    <label class="form-label" for="coverPicture" th:text="#{label.cover.picture}"></label>
+
+                                    <div class="image-display">
+                                        <img id="coverPicture" th:src="@{/image/{id}(id=${book.image.id})}"
+                                             class="book-display-cover"
+                                             style="display: inline"
+                                             aria-labelledby="Book Cover"/>
+
+                                        <button type="button" class="btn btn-danger remove-image ms-1">×</button>
+                                    </div>
+                                </div>
+                            </th:block>
+
+                            <input type="hidden" th:field="*{image.id}" th:if="${book.image != null}"/>
+
+                            <th:block th:if="${book.image == null}">
+                                <div th:replace="~{common/imageUploader :: imageUploader('image.id', 'label.cover.picture')}"></div>
+                            </th:block>
+
 
                             <div class="d-flex justify-content-between mt-4">
                                 <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
@@ -143,6 +164,13 @@
             $('#authors').select2();
             $('#genres').select2();
             $('#tags').select2();
+
+            $('.remove-image').on('click', function (e) {
+                $('input[name="image.id"]').val('');
+
+                const coverPictureSection = $(e.target).closest('.cover-picture-section');
+                coverPictureSection.remove();
+            });
         });
     </script>
 </div>
