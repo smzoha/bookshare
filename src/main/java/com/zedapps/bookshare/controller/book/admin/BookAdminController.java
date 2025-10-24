@@ -2,15 +2,18 @@ package com.zedapps.bookshare.controller.book.admin;
 
 import com.zedapps.bookshare.editor.AuthorEditor;
 import com.zedapps.bookshare.editor.GenreEditor;
+import com.zedapps.bookshare.editor.ImageEditor;
 import com.zedapps.bookshare.editor.TagEditor;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.book.enums.Status;
+import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
+import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.AuthorRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
@@ -34,14 +37,17 @@ public class BookAdminController {
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
+    private final ImageRepository imageRepository;
 
     public BookAdminController(BookRepository bookRepository, AuthorRepository authorRepository,
-                               GenreRepository genreRepository, TagRepository tagRepository) {
+                               GenreRepository genreRepository, TagRepository tagRepository,
+                               ImageRepository imageRepository) {
 
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.tagRepository = tagRepository;
+        this.imageRepository = imageRepository;
     }
 
     @ModelAttribute("statusList")
@@ -69,6 +75,7 @@ public class BookAdminController {
         binder.registerCustomEditor(Author.class, new AuthorEditor(authorRepository));
         binder.registerCustomEditor(Genre.class, new GenreEditor(genreRepository));
         binder.registerCustomEditor(Tag.class, new TagEditor(tagRepository));
+        binder.registerCustomEditor(Image.class, new ImageEditor(imageRepository));
 
         binder.setDisallowedFields("reviews*");
     }
@@ -100,6 +107,10 @@ public class BookAdminController {
 
         if (errors.hasErrors()) {
             return "admin/books/bookForm";
+        }
+
+        if (book.getImage() != null && book.getImage().getId() == null) {
+            book.setImage(null);
         }
 
         bookRepository.save(book);
