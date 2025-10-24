@@ -94,6 +94,27 @@
                                 <label class="form-check-label" for="active" th:text="#{label.active}"></label>
                             </div>
 
+                            <th:block th:if="${user.profilePictureId != null}">
+                                <div class="mb-3 profile-picture-section">
+                                    <label class="form-label" for="profilePicture" th:text="#{label.profile.picture}"></label>
+
+                                    <div class="image-display">
+                                        <div class="thumbnail-container">
+                                            <img id="profilePicture" th:src="@{/image/{id}(id=${user.profilePictureId})}"
+                                                 aria-labelledby="Profile Picture"/>
+                                        </div>
+
+                                        <button type="button" class="btn btn-danger remove-image ms-1">×</button>
+                                    </div>
+                                </div>
+                            </th:block>
+
+                            <input type="hidden" th:field="*{profilePictureId}" th:if="${user.profilePictureId != null}"/>
+
+                            <th:block th:if="${user.profilePictureId == null}">
+                                <div th:replace="~{common/imageUploader :: imageUploader('profilePictureId', 'label.profile.picture')}"></div>
+                            </th:block>
+
                             <div class="d-flex justify-content-between mt-4">
                                 <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
                                 <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
@@ -104,6 +125,17 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.remove-image').on('click', function (e) {
+                $('input[name="profilePictureId"]').val('');
+
+                const profilePictureSection = $(e.target).closest('.profile-picture-section');
+                profilePictureSection.remove();
+            });
+        });
+    </script>
 </div>
 </body>
 </html>

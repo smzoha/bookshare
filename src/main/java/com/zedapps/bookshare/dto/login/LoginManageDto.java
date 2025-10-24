@@ -30,6 +30,8 @@ public class LoginManageDto extends LoginBaseDto {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private Long profilePictureId;
+
     private boolean active;
 
     public LoginManageDto(Login login) {
@@ -43,5 +45,9 @@ public class LoginManageDto extends LoginBaseDto {
         setEmail(login.getEmail());
         setPassword(login.getPassword());
         setHandle(login.getHandle());
+
+        if (login.getProfilePicture() != null) {
+            setProfilePictureId(login.getProfilePicture().getId());
+        }
     }
 }
