@@ -30,6 +30,15 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    @GetMapping("/list")
+    public String getBookList(@RequestParam(defaultValue = "0") int page,
+                              ModelMap model) {
+
+        model.put("bookPage", bookService.getPaginatedBooks(page));
+
+        return "app/book/bookList";
+    }
+
     @GetMapping("/{id}")
     public String getBookPage(@AuthenticationPrincipal LoginDetails loginDetails,
                               @PathVariable Long id,

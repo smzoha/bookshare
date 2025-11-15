@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Books</title>
+</head>
+<body>
+<div layout:fragment="pageContent" class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0" th:text="#{label.books}"></h2>
+    </div>
+
+    <div id="booksWrapper" th:insert="~{app/book/bookGridFragment :: bookGrid}"></div>
+
+    <script type="text/javascript">
+        $(function () {
+            $('.pagination a').on('click', function (e) {
+                e.preventDefault();
+                let url = $(this).attr("href");
+
+                $.ajax({
+                    url: url,
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    success: function (data) {
+                        $("#booksWrapper").html(data);
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
