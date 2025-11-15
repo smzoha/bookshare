@@ -18,7 +18,7 @@ import java.util.Optional;
  * @since 21/10/25
  **/
 @Controller
-@RequestMapping("/admin/tags")
+@RequestMapping("/admin/tag")
 public class TagAdminController {
 
     private final TagRepository tagRepository;
@@ -31,14 +31,14 @@ public class TagAdminController {
     public String getTagList(ModelMap model) {
         model.put("tags", tagRepository.findAll());
 
-        return "admin/tags/tagList";
+        return "admin/tag/tagList";
     }
 
     @GetMapping("/new")
     public String createTag(ModelMap model) {
         model.put("tag", new Tag());
 
-        return "admin/tags/tagForm";
+        return "admin/tag/tagForm";
     }
 
     @GetMapping("{id}")
@@ -46,7 +46,7 @@ public class TagAdminController {
         Tag tag = tagRepository.findById(id).orElseThrow(NoResultException::new);
         model.put("tag", tag);
 
-        return "admin/tags/tagForm";
+        return "admin/tag/tagForm";
     }
 
     @PostMapping("/save")
@@ -56,7 +56,7 @@ public class TagAdminController {
         validateTagUniqueness(tag, errors);
 
         if (errors.hasErrors()) {
-            return "admin/tags/tagForm";
+            return "admin/tag/tagForm";
         }
 
         tagRepository.save(tag);

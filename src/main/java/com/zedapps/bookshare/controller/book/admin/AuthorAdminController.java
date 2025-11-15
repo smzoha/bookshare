@@ -40,21 +40,21 @@ public class AuthorAdminController {
     public String getAuthorList(ModelMap model) {
         model.put("authors", authorRepository.findAll());
 
-        return "admin/books/authorList";
+        return "admin/book/authorList";
     }
 
     @GetMapping("/new")
     public String createNewAuthor(ModelMap model) {
         model.put("author", new Author());
 
-        return "admin/books/authorForm";
+        return "admin/book/authorForm";
     }
 
     @GetMapping("{id}")
     public String getAuthor(@PathVariable Long id, ModelMap model) {
         model.put("author", authorRepository.findById(id).orElseThrow(NoResultException::new));
 
-        return "admin/books/authorForm";
+        return "admin/book/authorForm";
     }
 
     @PostMapping("/save")
@@ -64,7 +64,7 @@ public class AuthorAdminController {
         validateAuthorLoginLink(author, errors);
 
         if (errors.hasErrors()) {
-            return "admin/books/authorForm";
+            return "admin/book/authorForm";
         }
 
         authorRepository.save(author);

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 14/10/25
  **/
 @Controller
-@RequestMapping("/admin/users")
+@RequestMapping("/admin/user")
 public class LoginAdminController {
 
     private final LoginService loginService;
@@ -30,7 +30,7 @@ public class LoginAdminController {
     @GetMapping
     public String getLoginList(ModelMap model) {
         model.put("logins", loginService.getLoginList());
-        return "admin/users/userList";
+        return "admin/user/userList";
     }
 
     @GetMapping("/new")
@@ -42,7 +42,7 @@ public class LoginAdminController {
         model.put("user", loginDto);
         model.put("roles", Role.values());
 
-        return "admin/users/userForm";
+        return "admin/user/userForm";
     }
 
     @GetMapping("/{handle}")
@@ -53,7 +53,7 @@ public class LoginAdminController {
         model.put("user", loginDto);
         model.put("roles", Role.values());
 
-        return "admin/users/userForm";
+        return "admin/user/userForm";
     }
 
     @PostMapping("/save")
@@ -62,7 +62,7 @@ public class LoginAdminController {
 
         if (errors.hasErrors()) {
             model.put("roles", Role.values());
-            return "admin/users/userForm";
+            return "admin/user/userForm";
         }
 
         loginService.saveLogin(login);
