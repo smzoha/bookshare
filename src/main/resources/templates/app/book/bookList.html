@@ -11,10 +11,9 @@
     </div>
 
     <form id="filterForm" class="mb-4">
-        <div class="row d-flex justify-content-center gap-2">
-            <div class="col-auto">
-                <label class="form-label small mb-0" for="sortSelect" th:text="#{label.sort.by} + ':'"></label>
-
+        <div class="d-flex flex-wrap justify-content-center align-items-end gap-2">
+            <div class="d-flex flex-column">
+                <label class="form-label small mb-1" for="sortSelect" th:text="#{label.sort.by} + ':'"></label>
                 <select id="sortSelect" name="sort" class="form-select" onchange="submitFilterForm();">
                     <option value="title,asc" th:selected="${param.sort == null or param.sort == 'title,asc'}" th:text="#{label.name.asc}"/>
                     <option value="title,desc" th:selected="${param.sort == 'title,desc'}" th:text="#{label.name.desc}"/>
@@ -25,20 +24,20 @@
                 </select>
             </div>
 
-            <div class="col-auto">
-                <label class="form-label small mb-0" for="ratingFilter" th:text="#{label.rating} + ':'"/>
+            <div class="d-flex flex-column">
+                <label class="form-label small mb-1" for="ratingFilter" th:text="#{label.rating} + ':'"></label>
                 <select id="ratingFilter" name="rating" class="form-select" onchange="submitFilterForm();">
                     <option value="" th:text="#{label.all}"/>
-                    <option value="5" th:selected="${param.rating =='5'}" th:text="#{label.rating.five.star}"/>
-                    <option value="4" th:selected="${param.rating =='4'}" th:text="#{label.rating.four.star}"/>
-                    <option value="3" th:selected="${param.rating =='3'}" th:text="#{label.rating.three.star}"/>
-                    <option value="2" th:selected="${param.rating =='2'}" th:text="#{label.rating.two.star}"/>
-                    <option value="1" th:selected="${param.rating =='1'}" th:text="#{label.rating.one.star}"/>
+                    <option value="5" th:selected="${param.rating == '5'}" th:text="#{label.rating.five.star}"/>
+                    <option value="4" th:selected="${param.rating == '4'}" th:text="#{label.rating.four.star}"/>
+                    <option value="3" th:selected="${param.rating == '3'}" th:text="#{label.rating.three.star}"/>
+                    <option value="2" th:selected="${param.rating == '2'}" th:text="#{label.rating.two.star}"/>
+                    <option value="1" th:selected="${param.rating == '1'}" th:text="#{label.rating.one.star}"/>
                 </select>
             </div>
 
-            <div class="col-auto">
-                <label class="form-label small mb-0" for="genreFilter" th:text="#{label.genre} + ':'"/>
+            <div class="d-flex flex-column">
+                <label class="form-label small mb-1" for="genreFilter" th:text="#{label.genre} + ':'"></label>
                 <select id="genreFilter" name="genre" class="form-select" onchange="submitFilterForm();">
                     <option value="" th:text="#{label.all}"/>
                     <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}"
@@ -46,13 +45,17 @@
                 </select>
             </div>
 
-            <div class="col-auto">
-                <label class="form-label small mb-0" for="tagFilter" th:text="#{label.tag} + ':'"/>
+            <div class="d-flex flex-column">
+                <label class="form-label small mb-1" for="tagFilter" th:text="#{label.tag} + ':'"></label>
                 <select id="tagFilter" name="tag" class="form-select" onchange="submitFilterForm();">
                     <option value="" th:text="#{label.all}"/>
                     <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"
                             th:selected="${param.tag == tag}"/>
                 </select>
+            </div>
+
+            <div class="d-flex align-items-end">
+                <button type="button" class="btn btn-bookshare clear-filter" th:text="#{label.clear.all}"></button>
             </div>
         </div>
     </form>
@@ -91,6 +94,14 @@
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 });
+            });
+
+            $('.clear-filter').on('click', function () {
+                $('#sortSelect').val('title,asc');
+                $('#ratingFilter').val('');
+                $('#genreFilter').val('');
+                $('#tagFilter').val('');
+                submitFilterForm();
             });
         });
     </script>
