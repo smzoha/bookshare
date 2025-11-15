@@ -11,10 +11,10 @@ import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -49,10 +49,11 @@ public class BookService {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
     }
 
-    public Page<Book> getPaginatedBooks(int page) {
-        Pageable pageable = PageRequest.of(page, 18, Sort.by("title").ascending());
+    public Page<Book> getPaginatedBooks(int page, String sort, String rating, String genre, String tag) {
+        Pageable pageable = PageRequest.of(page, 18);
 
-        return bookListRepository.findAll(pageable);
+        String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
+        return bookListRepository.getPaginatedBooks(pageable, rating, genre, tag, sortComponents[0], sortComponents[1]);
     }
 
     public List<Book> getRelatedBooks(Book book) {

@@ -10,19 +10,85 @@
         <h2 class="fw-bold m-0" th:text="#{label.books}"></h2>
     </div>
 
+    <form id="filterForm" class="mb-4">
+        <div class="row d-flex justify-content-center gap-2">
+            <div class="col-auto">
+                <label class="form-label small mb-0" for="sortSelect" th:text="#{label.sort.by} + ':'"></label>
+
+                <select id="sortSelect" name="sort" class="form-select" onchange="submitFilterForm();">
+                    <option value="title,asc" th:selected="${param.sort == null or param.sort == 'title,asc'}" th:text="#{label.name.asc}"/>
+                    <option value="title,desc" th:selected="${param.sort == 'title,desc'}" th:text="#{label.name.desc}"/>
+                    <option value="author,asc" th:selected="${param.sort == 'author,asc'}" th:text="#{label.author.asc}"/>
+                    <option value="author,desc" th:selected="${param.sort == 'author,desc'}" th:text="#{label.author.desc}"/>
+                    <option value="rating,desc" th:selected="${param.sort == 'rating,desc'}" th:text="#{label.rating.desc}"/>
+                    <option value="rating,asc" th:selected="${param.sort == 'rating,asc'}" th:text="#{label.rating.asc}"/>
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-0" for="ratingFilter" th:text="#{label.rating} + ':'"/>
+                <select id="ratingFilter" name="rating" class="form-select" onchange="submitFilterForm();">
+                    <option value="" th:text="#{label.all}"/>
+                    <option value="5" th:selected="${param.rating =='5'}" th:text="#{label.rating.five.star}"/>
+                    <option value="4" th:selected="${param.rating =='4'}" th:text="#{label.rating.four.star}"/>
+                    <option value="3" th:selected="${param.rating =='3'}" th:text="#{label.rating.three.star}"/>
+                    <option value="2" th:selected="${param.rating =='2'}" th:text="#{label.rating.two.star}"/>
+                    <option value="1" th:selected="${param.rating =='1'}" th:text="#{label.rating.one.star}"/>
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-0" for="genreFilter" th:text="#{label.genre} + ':'"/>
+                <select id="genreFilter" name="genre" class="form-select" onchange="submitFilterForm();">
+                    <option value="" th:text="#{label.all}"/>
+                    <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}"
+                            th:selected="${param.genre == genre}"/>
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <label class="form-label small mb-0" for="tagFilter" th:text="#{label.tag} + ':'"/>
+                <select id="tagFilter" name="tag" class="form-select" onchange="submitFilterForm();">
+                    <option value="" th:text="#{label.all}"/>
+                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"
+                            th:selected="${param.tag == tag}"/>
+                </select>
+            </div>
+        </div>
+    </form>
+
     <div id="booksWrapper" th:insert="~{app/book/bookGridFragment :: bookGrid}"></div>
 
-    <script type="text/javascript">
+    <script type="text/javascript" th:inline="javascript">
+        function submitFilterForm() {
+            let url = '/book/list';
+            const params = $('#filterForm').serialize();
+
+            $.ajax({
+                url: url + '?' + params,
+                headers: {"X-Requested-With": "XMLHttpRequest"},
+                success: function (data) {
+                    $("#booksWrapper").html(data);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        }
+
         $(function () {
             $('.pagination a').on('click', function (e) {
                 e.preventDefault();
                 let url = $(this).attr("href");
+                const params = $('#filterForm').serialize();
+
+                url += url.indexOf('?') >= 0 ? '&' : '?';
+                url += params;
 
                 $.ajax({
                     url: url,
                     headers: {"X-Requested-With": "XMLHttpRequest"},
                     success: function (data) {
                         $("#booksWrapper").html(data);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 });
             });

@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <nav class="mt-4">
+    <nav class="mt-4" th:if="${bookPage.totalPages > 1}">
         <ul class="pagination justify-content-end">
             <li class="page-item" th:classappend="${bookPage.first} ? 'disabled'">
                 <a class="page-link text-bookshare bg-bookshare-50 border-0"
