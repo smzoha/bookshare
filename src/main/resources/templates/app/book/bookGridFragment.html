@@ -38,22 +38,24 @@
     <nav class="mt-4" th:if="${bookPage.totalPages > 1}">
         <ul class="pagination justify-content-end">
             <li class="page-item" th:classappend="${bookPage.first} ? 'disabled'">
-                <a class="page-link text-bookshare bg-bookshare-50 border-0"
-                   th:href="@{/book/list(page=${bookPage.number - 1})}" th:value="#{label.previous}">
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
+                   th:href="@{/book/list(page=${bookPage.number - 1})}">
+                    <span class="fas fa-caret-left"></span>
                 </a>
             </li>
 
             <li class="page-item" th:classappend="${pageNum == bookPage.number} ? 'active'"
                 th:each="pageNum : ${#numbers.sequence(0, bookPage.totalPages - 1)}">
-                <a class="page-link text-bookshare bg-bookshare-50 border-0"
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
                    th:classappend="${pageNum == bookPage.number} ? ' btn-bookshare'"
                    th:href="@{/book/list(page=${pageNum})}" th:text="${pageNum + 1}">
                 </a>
             </li>
 
             <li class="page-item" th:classappend="${bookPage.last} ? 'disabled'">
-                <a class="page-link text-bookshare bg-bookshare-50 border-0"
-                   th:href="@{/book/list(page=${bookPage.number + 1})}" th:text="#{label.next}">
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
+                   th:href="@{/book/list(page=${bookPage.number + 1})}">
+                    <span class="fas fa-caret-right"></span>
                 </a>
             </li>
         </ul>
