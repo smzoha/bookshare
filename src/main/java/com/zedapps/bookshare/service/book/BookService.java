@@ -6,12 +6,15 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -27,20 +30,30 @@ import java.util.Objects;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookListRepository bookListRepository;
     private final ReviewRepository reviewRepository;
     private final LoginService loginService;
 
     public BookService(BookRepository bookRepository,
+                       BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
                        LoginService loginService) {
 
         this.bookRepository = bookRepository;
+        this.bookListRepository = bookListRepository;
         this.reviewRepository = reviewRepository;
         this.loginService = loginService;
     }
 
     public Book getBook(Long bookId) {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
+    }
+
+    public Page<Book> getPaginatedBooks(int page, String sort, String rating, String genre, String tag) {
+        Pageable pageable = PageRequest.of(page, 18);
+
+        String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
+        return bookListRepository.getPaginatedBooks(pageable, rating, genre, tag, sortComponents[0], sortComponents[1]);
     }
 
     public List<Book> getRelatedBooks(Book book) {

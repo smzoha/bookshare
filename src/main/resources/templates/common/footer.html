@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer class="mt-5 py-3 border-top footer" th:fragment="footer">
+    <div class="container text-center">
+        © <span th:text="${T(java.time.Year).now()}">2025</span> BookShare
+        | Powered by ZedApps |
+        <a href="https://github.com/smzoha" class="text-decoration-none" target="_blank">
+            <i class="fab fa-github fa-lg"></i>
+        </a>
+    </div>
+</footer>
+</body>
+</html>

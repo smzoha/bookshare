@@ -29,7 +29,7 @@
                     <td th:text="${login.handle}"></td>
                     <td th:text="${login.role.naturalName}"></td>
                     <td>
-                        <a class="btn btn-bookshare" th:href="@{/admin/users/{handle}(handle=${login.handle})}" th:text="#{label.edit}"></a>
+                        <a class="btn btn-bookshare" th:href="@{/admin/user/{handle}(handle=${login.handle})}" th:text="#{label.edit}"></a>
                     </td>
                 </tr>
                 </tbody>

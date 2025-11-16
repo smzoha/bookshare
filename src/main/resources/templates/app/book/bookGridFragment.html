@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="bookGrid">
+    <div id="booksContainer" class="row g-4">
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 book-item" th:each="book : ${bookPage.content}">
+            <div class="card bg-bookshare-50 border-0 shadow-sm h-100 p-2">
+                <a th:href="@{/book/{id}(id=${book.id})}">
+                    <img th:src="@{/img/book-placeholder.png}" th:if="${book.image == null}" class="book-cover mx-auto" alt="Book Cover">
+                    <img th:src="@{/image/{id}(id=${book.image.id})}" th:if="${book.image != null}" class="book-cover mx-auto" alt="Book Cover">
+                </a>
+
+                <div class="mt-2 text-center">
+                    <h6 class="fw-bold line-clamp-2 mb-1" th:text="${book.title}"></h6>
+                    <div class="small text-muted line-clamp-2" th:text="${book.authorNames}"></div>
+
+                    <div class="rating mt-1">
+                        <ul class="list-inline">
+                            <th:block th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(book.averageRating))}" th:if="${book.averageRating >= 1}">
+                                <li class="fa-solid fa-star"></li>
+                            </th:block>
+
+                            <li class="fa-solid fa-star-half-stroke"
+                                th:if="${(book.averageRating % 1) >= 0.25 and (book.averageRating % 1) < 0.75}">
+                            </li>
+
+                            <th:block th:each="i : ${#numbers.sequence(1, (5 - T(java.lang.Math).ceil(book.averageRating)))}"
+                                      th:if="${(5 - T(java.lang.Math).ceil(book.averageRating))} > 0">
+                                <li class="fa-regular fa-star"></li>
+                            </th:block>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="mt-4" th:if="${bookPage.totalPages > 1}">
+        <ul class="pagination justify-content-end">
+            <li class="page-item" th:classappend="${bookPage.first} ? 'disabled'">
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
+                   th:href="@{/book/list(page=${bookPage.number - 1})}">
+                    <span class="fas fa-caret-left"></span>
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${pageNum == bookPage.number} ? 'active'"
+                th:each="pageNum : ${#numbers.sequence(0, bookPage.totalPages - 1)}">
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
+                   th:classappend="${pageNum == bookPage.number} ? ' btn-bookshare'"
+                   th:href="@{/book/list(page=${pageNum})}" th:text="${pageNum + 1}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${bookPage.last} ? 'disabled'">
+                <a class="page-link text-bookshare bg-bookshare-50 border-dark"
+                   th:href="@{/book/list(page=${bookPage.number + 1})}">
+                    <span class="fas fa-caret-right"></span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>

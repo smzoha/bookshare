@@ -15,7 +15,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto gap-2">
                 <li class="nav-item">
-                    <a class="nav-link text-bookshare" th:href="@{/browse}" th:text="#{label.browse}"></a>
+                    <a class="nav-link text-bookshare" th:href="@{/book/list}" th:text="#{label.browse}"></a>
                 </li>
 
                 <li class="nav-item" sec:authorize="!isAuthenticated()">

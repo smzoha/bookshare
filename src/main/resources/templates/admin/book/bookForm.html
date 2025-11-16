@@ -18,7 +18,7 @@
             <div class="col-lg-8 col-md-10">
                 <div class="card shadow-sm">
                     <div class="card-body rounded-5 bg-bookshare-50 p-4">
-                        <form th:action="@{/admin/books/save}" method="post" th:object="${book}">
+                        <form th:action="@{/admin/book/save}" method="post" th:object="${book}">
                             <input type="hidden" th:field="*{id}"/>
 
                             <div class="mb-3">

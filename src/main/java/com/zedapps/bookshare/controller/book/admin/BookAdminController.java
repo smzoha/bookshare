@@ -30,7 +30,7 @@ import java.util.List;
  * @since 22/10/25
  **/
 @Controller
-@RequestMapping("/admin/books")
+@RequestMapping("/admin/book")
 public class BookAdminController {
 
     private final BookRepository bookRepository;
@@ -84,21 +84,21 @@ public class BookAdminController {
     public String getBookList(ModelMap model) {
         model.put("books", bookRepository.findAll());
 
-        return "admin/books/bookList";
+        return "admin/book/bookList";
     }
 
     @GetMapping("/new")
     public String createNewBook(ModelMap model) {
         model.put("book", new Book());
 
-        return "admin/books/bookForm";
+        return "admin/book/bookForm";
     }
 
     @GetMapping("/{id}")
     public String saveBook(@PathVariable long id, ModelMap model) {
         model.put("book", bookRepository.findBookById(id).orElseThrow(NoResultException::new));
 
-        return "admin/books/bookForm";
+        return "admin/book/bookForm";
     }
 
     @PostMapping("/save")
@@ -106,7 +106,7 @@ public class BookAdminController {
                            Errors errors) {
 
         if (errors.hasErrors()) {
-            return "admin/books/bookForm";
+            return "admin/book/bookForm";
         }
 
         if (book.getImage() != null && book.getImage().getId() == null) {

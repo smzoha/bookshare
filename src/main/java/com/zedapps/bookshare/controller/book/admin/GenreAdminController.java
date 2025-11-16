@@ -18,7 +18,7 @@ import java.util.Optional;
  * @since 21/10/25
  **/
 @Controller
-@RequestMapping("/admin/genres")
+@RequestMapping("/admin/genre")
 public class GenreAdminController {
 
     private final GenreRepository genreRepository;
@@ -31,14 +31,14 @@ public class GenreAdminController {
     public String getGenreList(ModelMap model) {
         model.put("genres", genreRepository.findAll());
 
-        return "admin/genres/genreList";
+        return "admin/genre/genreList";
     }
 
     @GetMapping("/new")
     public String createGenre(ModelMap model) {
         model.put("genre", new Genre());
 
-        return "admin/genres/genreForm";
+        return "admin/genre/genreForm";
     }
 
     @GetMapping("{id}")
@@ -46,7 +46,7 @@ public class GenreAdminController {
         Genre genre = genreRepository.findById(id).orElseThrow(NoResultException::new);
         model.put("genre", genre);
 
-        return "admin/genres/genreForm";
+        return "admin/genre/genreForm";
     }
 
     @PostMapping("/save")
@@ -56,7 +56,7 @@ public class GenreAdminController {
         validateGenreUniqueness(genre, errors);
 
         if (errors.hasErrors()) {
-            return "admin/genres/genreForm";
+            return "admin/genre/genreForm";
         }
 
         genreRepository.save(genre);

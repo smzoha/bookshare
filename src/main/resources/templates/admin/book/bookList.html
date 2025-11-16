@@ -33,7 +33,7 @@
                     <td th:text="${#temporals.format(book.createdAt, 'dd/MM/yyyy hh:mm a')}"></td>
                     <td th:text="${#temporals.format(book.updatedAt, 'dd/MM/yyyy hh:mm a')}"></td>
                     <td>
-                        <a class="btn btn-bookshare" th:href="@{/admin/books/{id}(id=${book.id})}" th:text="#{label.edit}"></a>
+                        <a class="btn btn-bookshare" th:href="@{/admin/book/{id}(id=${book.id})}" th:text="#{label.edit}"></a>
                     </td>
                 </tr>
                 </tbody>
