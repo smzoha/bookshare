@@ -1,6 +1,13 @@
 body {
     background-color: #fff8f0;
     color: #4b3b2f;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pageContent {
+    flex: 1;
 }
 
 .bg-bookshare {
@@ -217,6 +224,24 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+.footer {
+    background-color: #4b3b2f !important;
+    color: #fff8f0 !important;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid #3a2f25;
+    font-size: 0.9rem;
+}
+
+.footer a {
+    color: #fff8f0 !important;
+    text-decoration: none;
+}
+
+.footer i {
+    color: #fff8f0 !important;
 }
 
 @media (max-width: 768px) {
