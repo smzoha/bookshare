@@ -16,11 +16,10 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 - [Features](#features)
 - [Technology Stack](#technology-stack)
-- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Running](#running)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the Application](#running)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -28,7 +27,7 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 ---
 
-## ✨ Features
+<h2 id="features">✨ Features</h2>
 
 - User registration, login, and authentication
 - Add books and track reading progress
@@ -39,7 +38,7 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 ---
 
-## 🛠 Technology Stack
+<h2 id="technology-stack"> 🛠 Technology Stack</h2>
 
 | Layer      | Technology                                 |
 |------------|--------------------------------------------|
@@ -51,16 +50,16 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 ---
 
-## 🚀 Getting Started
+<h2 id="getting-started">🚀 Getting Started</h2>
 
-### Prerequisites
+<h3 id="prerequisites">Prerequisites</h3>
 
 - Java 25+
 - Gradle 8+
 - Database setup (PostgreSQL)
 - Git
 
-### Installation
+<h3 id="installation">Installation</h3>
 
 ```bash
 # Clone the repository
@@ -73,7 +72,8 @@ spring.datasource.username=your_db_user
 spring.datasource.password=your_db_password
 ```
 
-### Running the Application
+<h3 id="running">Running the Application</h3>
+
 ```bash
 # Run with Gradle
 ./gradlew bootRun
@@ -84,7 +84,7 @@ spring.datasource.password=your_db_password
 http://localhost:6001
 ```
 
-## 💻 Usage
+<h2 id="usage">💻 Usage</h2>
 
 1. Register a new account or log in with an existing account.
 2. Add books to your library.
@@ -92,12 +92,12 @@ http://localhost:6001
 4. Connect with other users to view their activity.
 5. Manage your book collection across shelves.
 
-## 🤝 Contributing
+<h2 id="contributing">🤝 Contributing</h2>
 
 We welcome contributions! Follow these steps:
 
 1. Fork the repository
-2. Create a branch: `git checkout -b feature/my-feature` for features, `git checkout -b bugfix/my-fix` for bugfixes
+2. Create a branch: `git checkout -b feat/my-feature` for features, `git checkout -b bugfix/my-fix` for bugfixes
 3. Commit your changes: `git commit -m "Add feature"`
 4. Push to the branch: `git push origin feature/my-feature`
 5. Open a Pull Request
@@ -109,7 +109,7 @@ We welcome contributions! Follow these steps:
 
 ---
 
-## 📄 License
+<h2 id="license">📄 License</h2>
 
 This project is licensed under the **GNU General Public License v2 (GPL-2.0)**.  
 See the full license text in the [LICENSE](LICENSE) file for details.
@@ -123,7 +123,7 @@ You are free to:
 
 ---
 
-## 📫 Contact
+<h2 id="contact">📫 Contact</h2>
 
 **BookShare** — Powered by ZedApps
 
