@@ -16,7 +16,7 @@
 
                     <div class="rating mt-1">
                         <ul class="list-inline">
-                            <th:block th:each="i : ${#numbers.sequence(1, book.averageRating)}" th:if="${book.averageRating >= 1}">
+                            <th:block th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(book.averageRating))}" th:if="${book.averageRating >= 1}">
                                 <li class="fa-solid fa-star"></li>
                             </th:block>
 
@@ -24,7 +24,8 @@
                                 th:if="${(book.averageRating % 1) >= 0.25 and (book.averageRating % 1) < 0.75}">
                             </li>
 
-                            <th:block th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).ceil(book.averageRating))}">
+                            <th:block th:each="i : ${#numbers.sequence(1, (5 - T(java.lang.Math).ceil(book.averageRating)))}"
+                                      th:if="${(5 - T(java.lang.Math).ceil(book.averageRating))} > 0">
                                 <li class="fa-regular fa-star"></li>
                             </th:block>
                         </ul>
