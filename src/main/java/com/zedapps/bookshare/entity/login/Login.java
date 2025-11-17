@@ -72,7 +72,7 @@ public class Login {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Shelf> shelves = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower")

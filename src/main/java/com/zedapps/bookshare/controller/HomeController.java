@@ -1,11 +1,14 @@
 package com.zedapps.bookshare.controller;
 
+import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Comparator;
 
 /**
  * @author smzoha
@@ -26,7 +29,7 @@ public class HomeController {
     @GetMapping
     public String getHome(ModelMap model) {
         model.put("featuredBooks", bookRepository.getFeaturedBooks());
-        model.put("genres", genreRepository.findAll());
+        model.put("genres", genreRepository.findAll().stream().sorted(Comparator.comparing(Genre::getName)).toList());
 
         return "home";
     }

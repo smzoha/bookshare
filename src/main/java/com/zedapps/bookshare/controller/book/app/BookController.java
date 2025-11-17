@@ -63,8 +63,8 @@ public class BookController {
             return "app/book/bookGridFragment :: bookGrid";
         }
 
-        model.put("genres", genreRepository.findAll().stream().sorted(Comparator.comparing(Genre::getName)));
-        model.put("tags", tagRepository.findAll().stream().sorted(Comparator.comparing(Tag::getName)));
+        model.put("genres", genreRepository.findAll().stream().sorted(Comparator.comparing(Genre::getName)).toList());
+        model.put("tags", tagRepository.findAll().stream().sorted(Comparator.comparing(Tag::getName)).toList());
 
         return "app/book/bookList";
     }
