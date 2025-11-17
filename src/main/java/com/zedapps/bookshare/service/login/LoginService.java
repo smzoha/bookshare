@@ -3,6 +3,7 @@ package com.zedapps.bookshare.service.login;
 import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
@@ -22,6 +23,8 @@ import java.util.Objects;
  **/
 @Service
 public class LoginService {
+
+    private static final List<String> DEFAULT_SHELF_NAMES = List.of("Currently Reading", "Want to Read", "Read");
 
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
@@ -53,6 +56,10 @@ public class LoginService {
 
         updateLoginFromManageDto(loginDto, login);
 
+        if (login.getId() == null) {
+            setupShelvesForNewLogin(login);
+        }
+
         login = loginRepository.save(login);
 
         return login;
@@ -61,6 +68,7 @@ public class LoginService {
     @Transactional
     public Login createLogin(RegistrationRequestDto registrationDto) {
         Login login = createLoginFromRegistrationDto(registrationDto);
+        setupShelvesForNewLogin(login);
 
         login = loginRepository.save(login);
 
@@ -98,5 +106,15 @@ public class LoginService {
         login.setActive(loginManageDto.isActive());
         login.setProfilePicture(Objects.isNull(loginManageDto.getProfilePictureId()) ? null
                 : imageRepository.findById(loginManageDto.getProfilePictureId()).orElse(null));
+    }
+
+    private void setupShelvesForNewLogin(Login login) {
+        DEFAULT_SHELF_NAMES.forEach(shelfName -> {
+            Shelf shelf = new Shelf();
+            shelf.setName(shelfName);
+            shelf.setUser(login);
+
+            login.getShelves().add(shelf);
+        });
     }
 }
