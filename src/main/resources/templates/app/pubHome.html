@@ -49,7 +49,9 @@
                     <ul>
                         <li th:each="genre, stat : ${genres}"
                             th:if="${stat.index >= col * 10 and stat.index < (col + 1) * 10}">
-                            <a class="text-decoration-none text-bookshare" href="#" th:text="${genre.name}"></a>
+                            <a class="text-decoration-none text-bookshare"
+                               th:href="@{/book/list(genre=${genre.id})}"
+                               th:text="${genre.name}"></a>
                         </li>
                     </ul>
                 </div>
