@@ -6,6 +6,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
@@ -75,6 +76,9 @@ public class BookService {
             Login login = loginService.getLogin(loginDetails.getEmail());
             model.put("shelves", login.getShelves());
         }
+
+        model.put("tmpShelf", new Shelf());
+        model.put("reviewDto", new BookReviewDto());
 
         model.put("reviews", getReviewsByBook(book, 0));
         model.put("relatedBooks", getRelatedBooks(book));

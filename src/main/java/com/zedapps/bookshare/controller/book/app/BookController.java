@@ -75,7 +75,6 @@ public class BookController {
                               ModelMap model) {
 
         bookService.setupReferenceData(loginDetails, id, model);
-        model.put("reviewDto", new BookReviewDto());
 
         return "app/book/book";
     }
