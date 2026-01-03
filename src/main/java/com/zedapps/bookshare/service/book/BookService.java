@@ -74,7 +74,8 @@ public class BookService {
 
         if (Objects.nonNull(loginDetails)) {
             Login login = loginService.getLogin(loginDetails.getEmail());
-            model.put("shelves", login.getShelves());
+            model.put("shelves", login.getShelves().subList(0, Math.min(login.getShelves().size(), 5)));
+            model.put("shelvesTruncated", login.getShelves().size() > 5);
         }
 
         model.put("tmpShelf", new Shelf());

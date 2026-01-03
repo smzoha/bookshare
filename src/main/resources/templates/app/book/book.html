@@ -40,6 +40,12 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            <li th:if="${shelvesTruncated}">
+                                <a class="dropdown-item" th:text="#{label.show.more}"/>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="#" th:text="#{label.create.new.shelf}"
                                    data-bs-toggle="modal" data-bs-target="#addShelfModal"/></li>
                         </ul>
