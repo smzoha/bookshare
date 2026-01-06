@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.entity.login;
 
+import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,9 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -39,5 +42,13 @@ public class Shelf {
 
     @OneToMany(mappedBy = "shelf")
     private List<ShelvedBook> books = new ArrayList<>();
+
+    public boolean containsBook(Book book) {
+        if (CollectionUtils.isEmpty(books)) {
+            return false;
+        }
+
+        return books.stream().anyMatch(b -> Objects.equals(b.getBook(), book));
+    }
 }
 

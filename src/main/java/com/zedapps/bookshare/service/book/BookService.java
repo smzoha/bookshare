@@ -7,9 +7,11 @@ import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.entity.login.ShelvedBook;
 import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
@@ -34,16 +36,19 @@ public class BookService {
     private final BookListRepository bookListRepository;
     private final ReviewRepository reviewRepository;
     private final LoginService loginService;
+    private final ShelvedBookRepository shelvedBookRepository;
 
     public BookService(BookRepository bookRepository,
                        BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
-                       LoginService loginService) {
+                       LoginService loginService,
+                       ShelvedBookRepository shelvedBookRepository) {
 
         this.bookRepository = bookRepository;
         this.bookListRepository = bookListRepository;
         this.reviewRepository = reviewRepository;
         this.loginService = loginService;
+        this.shelvedBookRepository = shelvedBookRepository;
     }
 
     public Book getBook(Long bookId) {
@@ -112,6 +117,24 @@ public class BookService {
         review = reviewRepository.save(review);
 
         return new ReviewLikeResponseDto(reviewId, false, review.getUserLikes().size());
+    }
+
+    @Transactional
+    public void addToShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
+        Login login = loginService.getLogin(loginDetails.getUsername());
+        Book book = getBook(bookId);
+
+        Shelf shelf = login.getShelves().stream()
+                .filter(s -> Objects.equals(s.getId(), shelfId))
+                .findFirst()
+                .orElseThrow();
+
+        ShelvedBook shelvedBook = new ShelvedBook();
+        shelvedBook.setLogin(login);
+        shelvedBook.setShelf(shelf);
+        shelvedBook.setBook(book);
+
+        shelvedBookRepository.save(shelvedBook);
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {

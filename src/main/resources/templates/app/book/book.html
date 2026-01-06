@@ -35,7 +35,11 @@
 
                         <ul class="dropdown-menu" aria-labelledby="shelfDropdown">
                             <li th:each="shelf : ${shelves}">
-                                <a class="dropdown-item" th:data-shelf-id="${shelf.id}" th:text="${shelf.name}"/>
+                                <a class="dropdown-item" th:data-shelf-id="${shelf.id}"
+                                   th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
+                                    <span th:text="${shelf.name}"/>
+                                    <span th:if="${shelf.containsBook(book)}">&#10006;</span>
+                                </a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -238,6 +242,26 @@
                         $('#reviewSection').html(fragment);
                     },
                     error: () => console.error('Unable to retrieve reviews!'),
+                    complete: () => removeLoader()
+                })
+            });
+
+            $('.add-to-shelf').on('click', function (e) {
+                let shelfOption = $(e.currentTarget);
+                let shelfId = shelfOption.data('shelfId');
+
+                $.ajax({
+                    url: 'addShelf',
+                    type: 'POST',
+                    data: {
+                        'bookId': bookId,
+                        'shelfId': shelfId
+                    },
+                    beforeSend: () => showLoader(),
+                    success: function () {
+                        window.location.href = `/book/${bookId}`;
+                    },
+                    error: () => console.error('Unable to add book to shelf!'),
                     complete: () => removeLoader()
                 })
             });

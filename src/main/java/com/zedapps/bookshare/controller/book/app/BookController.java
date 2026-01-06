@@ -111,6 +111,18 @@ public class BookController {
     }
 
     @ResponseBody
+    @PostMapping("/addShelf")
+    public ResponseEntity<?> addToShelf(@AuthenticationPrincipal LoginDetails loginDetails,
+                                        @RequestParam Long bookId,
+                                        @RequestParam Long shelfId) {
+
+        Assert.notNull(loginDetails, "User is not logged in!");
+        bookService.addToShelf(loginDetails, bookId, shelfId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @ResponseBody
     @PostMapping("/like")
     public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
                                                             @AuthenticationPrincipal LoginDetails loginDetails) {
