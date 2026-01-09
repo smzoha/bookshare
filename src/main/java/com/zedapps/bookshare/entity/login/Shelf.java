@@ -43,6 +43,8 @@ public class Shelf {
     @OneToMany(mappedBy = "shelf")
     private List<ShelvedBook> books = new ArrayList<>();
 
+    private boolean defaultShelf;
+
     public boolean containsBook(Book book) {
         if (CollectionUtils.isEmpty(books)) {
             return false;
