@@ -13,11 +13,12 @@
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-3" th:each="shelf : ${allShelves}">
-                            <a href="#" class="btn btn-bookshare w-100" th:data-shelf-id="${shelf.id}"
-                               th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
+                            <a href="#" class="btn w-100" th:data-shelf-id="${shelf.id}"
+                               th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf btn-success'
+                                        : 'add-to-shelf btn-bookshare'}">
 
                                 <span class="text-light" th:text="${shelf.name}"/>&nbsp;
-                                <span class="text-light fa fa-xmark-circle" th:if="${shelf.containsBook(book)}"></span>
+                                <span class="text-light fa fa-check-circle" th:if="${shelf.containsBook(book)}"></span>
                             </a>
                         </div>
                     </div>

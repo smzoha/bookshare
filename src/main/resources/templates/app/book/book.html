@@ -20,12 +20,13 @@
                          th:if="${book.image eq null}"/>
                 </div>
                 <div class="d-flex justify-content-center gap-2" sec:authorize="isAuthenticated()">
-                    <a href="#" class="btn btn-bookshare want-to-read"
+                    <a href="#" class="btn want-to-read"
                        th:data-shelf-id="${wantToReadShelf.id}"
-                       th:classappend="${wantToReadShelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
+                       th:classappend="${wantToReadShelf.containsBook(book) ? 'remove-from-shelf btn-success'
+                                        : 'add-to-shelf btn-bookshare'}">
 
                         <i class="fa-regular fa-bookmark me-1"></i> <span th:text="#{label.want.to.read}"></span>
-                        <span class="fa fa-xmark-circle" th:if="${wantToReadShelf.containsBook(book)}"></span>
+                        <span class="fa fa-check-circle" th:if="${wantToReadShelf.containsBook(book)}"></span>
                     </a>
 
                     <div class="dropdown">
@@ -38,11 +39,11 @@
                                 <a href="#" class="dropdown-item" th:data-shelf-id="${shelf.id}"
                                    th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
                                     <span th:text="${shelf.name}"/>&nbsp;
-                                    <span class="fa fa-xmark-circle" th:if="${shelf.containsBook(book)}"></span>
+                                    <span class="fa fa-check-circle" th:if="${shelf.containsBook(book)}"></span>
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider" th:if="${shelvesTruncated}">
                             </li>
                             <li th:if="${shelvesTruncated}">
                                 <a href="#" class="dropdown-item" th:text="#{label.show.more}" data-bs-toggle="modal" data-bs-target="#shelfModal"/>

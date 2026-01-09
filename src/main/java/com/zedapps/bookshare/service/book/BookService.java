@@ -145,21 +145,21 @@ public class BookService {
     private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
         if (Objects.nonNull(loginDetails)) {
             Login login = loginService.getLogin(loginDetails.getEmail());
-            List<Shelf> shelves = login.getShelves();
+            List<Shelf> shelves = login.getShelves().stream()
+                    .filter(s -> !s.isDefaultShelf())
+                    .toList();
 
-            model.put("allShelves", shelves);
-            model.put("shelvesTruncated", shelves.size() > 5);
-
-            Shelf wantToReadShelf = shelves.stream()
+            Shelf wantToReadShelf = login.getShelves().stream()
                     .filter(s -> Objects.equals(s.getName(), Shelf.SHELF_WANT_TO_READ))
                     .findFirst()
                     .orElseThrow();
 
+            model.put("allShelves", shelves);
+            model.put("shelvesTruncated", shelves.size() > 5);
+
             model.put("wantToReadShelf", wantToReadShelf);
 
-            model.put("shelves", shelves
-                    .stream()
-                    .filter(s -> !Objects.equals(s, wantToReadShelf))
+            model.put("shelves", shelves.stream()
                     .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
                     .limit(5)
                     .toList());
