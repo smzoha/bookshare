@@ -163,35 +163,7 @@
         </div>
     </div>
 
-    <div id="addShelfModal" class="modal fade" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-bookshare">
-                    <h5 class="modal-title text-bookshare fw-bold" th:text="#{label.create.new.shelf}"/>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!--/*@thymesVar id="tmpShelf" type="com.zedapps.bookshare.entity.login.Shelf"*/-->
-                    <form id="addShelfForm" th:action="@{/shelf/add}" method="post" th:object="${tmpShelf}">
-                        <div class="mb-3">
-                            <label for="name" class="form-label" th:text="#{label.name}"></label>
-                            <input type="text" id="name" th:field="*{name}"
-                                   class="form-control" placeholder="Read, Currently Reading, Favorites, etc." required>
-
-                            <div class="text-danger mt-1" th:if="${#fields.hasErrors('name')}"
-                                 th:errors="*{name}"></div>
-                        </div>
-
-                        <input type="hidden" name="bookId" th:value="${book.id}"/>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="addShelfFragment" th:insert="~{app/book/shelfAddFragment :: shelfAddModal}"></div>
 
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';
