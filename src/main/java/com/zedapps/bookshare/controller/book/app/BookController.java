@@ -123,6 +123,18 @@ public class BookController {
     }
 
     @ResponseBody
+    @PostMapping("/removeShelf")
+    public ResponseEntity<?> removeFromShelf(@AuthenticationPrincipal LoginDetails loginDetails,
+                                             @RequestParam Long bookId,
+                                             @RequestParam Long shelfId) {
+
+        Assert.notNull(loginDetails, "User is not logged in!");
+        bookService.removeFromShelf(loginDetails, bookId, shelfId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @ResponseBody
     @PostMapping("/like")
     public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
                                                             @AuthenticationPrincipal LoginDetails loginDetails) {

@@ -17,6 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -89,4 +90,11 @@ public class Login {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    public Shelf getShelf(Long shelfId) {
+        return getShelves().stream()
+                .filter(s -> Objects.equals(s.getId(), shelfId))
+                .findFirst()
+                .orElseThrow();
+    }
 }

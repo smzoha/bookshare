@@ -35,7 +35,7 @@
 
                         <ul class="dropdown-menu" aria-labelledby="shelfDropdown">
                             <li th:each="shelf : ${shelves}">
-                                <a class="dropdown-item" th:data-shelf-id="${shelf.id}"
+                                <a href="#" class="dropdown-item" th:data-shelf-id="${shelf.id}"
                                    th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
                                     <span th:text="${shelf.name}"/>
                                     <span th:if="${shelf.containsBook(book)}">&#10006;</span>
@@ -45,7 +45,7 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li th:if="${shelvesTruncated}">
-                                <a class="dropdown-item" th:text="#{label.show.more}"/>
+                                <a href="#" class="dropdown-item" th:text="#{label.show.more}"/>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -246,12 +246,13 @@
                 })
             });
 
-            $('.add-to-shelf').on('click', function (e) {
+            $('.add-to-shelf, .remove-from-shelf').on('click', function (e) {
                 let shelfOption = $(e.currentTarget);
                 let shelfId = shelfOption.data('shelfId');
+                let add = shelfOption.hasClass('add-to-shelf');
 
                 $.ajax({
-                    url: 'addShelf',
+                    url: add ? 'addShelf' : 'removeShelf',
                     type: 'POST',
                     data: {
                         'bookId': bookId,
@@ -261,7 +262,7 @@
                     success: function () {
                         window.location.href = `/book/${bookId}`;
                     },
-                    error: () => console.error('Unable to add book to shelf!'),
+                    error: () => console.error('Unable to add/remove book to shelf!'),
                     complete: () => removeLoader()
                 })
             });

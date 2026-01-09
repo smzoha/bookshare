@@ -123,11 +123,7 @@ public class BookService {
     public void addToShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(bookId);
-
-        Shelf shelf = login.getShelves().stream()
-                .filter(s -> Objects.equals(s.getId(), shelfId))
-                .findFirst()
-                .orElseThrow();
+        Shelf shelf = login.getShelf(shelfId);
 
         ShelvedBook shelvedBook = new ShelvedBook();
         shelvedBook.setLogin(login);
@@ -135,6 +131,18 @@ public class BookService {
         shelvedBook.setBook(book);
 
         shelvedBookRepository.save(shelvedBook);
+    }
+
+    @Transactional
+    public void removeFromShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
+        Login login = loginService.getLogin(loginDetails.getUsername());
+        Book book = getBook(bookId);
+        Shelf shelf = login.getShelf(shelfId);
+
+        ShelvedBook shelvedBook = shelvedBookRepository.findShelvedBookByLoginAndShelfAndBook(login, shelf, book)
+                .orElseThrow();
+
+        shelvedBookRepository.delete(shelvedBook);
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {
