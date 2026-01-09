@@ -78,18 +78,7 @@ public class BookService {
         Book book = getBook(bookId);
         model.put("book", book);
 
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
-
-            model.put("allShelves", login.getShelves());
-            model.put("shelvesTruncated", login.getShelves().size() > 5);
-
-            model.put("shelves", login.getShelves()
-                    .stream()
-                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
-                    .limit(5)
-                    .toList());
-        }
+        setupShelfReferenceData(loginDetails, model, book);
 
         model.put("tmpShelf", new Shelf());
         model.put("reviewDto", new BookReviewDto());
@@ -151,6 +140,30 @@ public class BookService {
                 .orElseThrow();
 
         shelvedBookRepository.delete(shelvedBook);
+    }
+
+    private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
+        if (Objects.nonNull(loginDetails)) {
+            Login login = loginService.getLogin(loginDetails.getEmail());
+            List<Shelf> shelves = login.getShelves();
+
+            model.put("allShelves", shelves);
+            model.put("shelvesTruncated", shelves.size() > 5);
+
+            Shelf wantToReadShelf = shelves.stream()
+                    .filter(s -> Objects.equals(s.getName(), Shelf.SHELF_WANT_TO_READ))
+                    .findFirst()
+                    .orElseThrow();
+
+            model.put("wantToReadShelf", wantToReadShelf);
+
+            model.put("shelves", shelves
+                    .stream()
+                    .filter(s -> !Objects.equals(s, wantToReadShelf))
+                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
+                    .limit(5)
+                    .toList());
+        }
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {

@@ -20,13 +20,13 @@
                          th:if="${book.image eq null}"/>
                 </div>
                 <div class="d-flex justify-content-center gap-2" sec:authorize="isAuthenticated()">
-                    <button class="btn btn-bookshare">
-                        <i class="fa-regular fa-bookmark me-1"></i> <span th:text="#{label.want.to.read}"></span>
-                    </button>
+                    <a href="#" class="btn btn-bookshare want-to-read"
+                       th:data-shelf-id="${wantToReadShelf.id}"
+                       th:classappend="${wantToReadShelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
 
-                    <button class="btn btn-bookshare">
-                        <i class="fa-regular fa-check-circle me-1"></i> <span th:text="#{label.read}"></span>
-                    </button>
+                        <i class="fa-regular fa-bookmark me-1"></i> <span th:text="#{label.want.to.read}"></span>
+                        <span class="fa fa-xmark-circle" th:if="${wantToReadShelf.containsBook(book)}"></span>
+                    </a>
 
                     <div class="dropdown">
                         <button class="btn btn-bookshare dropdown-toggle" type="button" id="shelfDropdown"
