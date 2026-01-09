@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,8 +80,15 @@ public class BookService {
 
         if (Objects.nonNull(loginDetails)) {
             Login login = loginService.getLogin(loginDetails.getEmail());
-            model.put("shelves", login.getShelves().subList(0, Math.min(login.getShelves().size(), 5)));
+
+            model.put("allShelves", login.getShelves());
             model.put("shelvesTruncated", login.getShelves().size() > 5);
+
+            model.put("shelves", login.getShelves()
+                    .stream()
+                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
+                    .limit(5)
+                    .toList());
         }
 
         model.put("tmpShelf", new Shelf());
