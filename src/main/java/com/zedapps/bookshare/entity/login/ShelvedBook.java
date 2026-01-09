@@ -45,7 +45,7 @@ public class ShelvedBook {
     private Shelf shelf;
 
     @Min(value = 0, message = "{error.min.value}")
-    private Long pagesRead;
+    private Long pagesRead = 0L;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

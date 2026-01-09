@@ -75,7 +75,6 @@ public class BookController {
                               ModelMap model) {
 
         bookService.setupReferenceData(loginDetails, id, model);
-        model.put("reviewDto", new BookReviewDto());
 
         return "app/book/book";
     }
@@ -109,6 +108,30 @@ public class BookController {
         Review review = bookService.saveReview(reviewDto, loginDetails);
 
         return "redirect:/book/" + review.getBook().getId();
+    }
+
+    @ResponseBody
+    @PostMapping("/addShelf")
+    public ResponseEntity<?> addToShelf(@AuthenticationPrincipal LoginDetails loginDetails,
+                                        @RequestParam Long bookId,
+                                        @RequestParam Long shelfId) {
+
+        Assert.notNull(loginDetails, "User is not logged in!");
+        bookService.addToShelf(loginDetails, bookId, shelfId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @ResponseBody
+    @PostMapping("/removeShelf")
+    public ResponseEntity<?> removeFromShelf(@AuthenticationPrincipal LoginDetails loginDetails,
+                                             @RequestParam Long bookId,
+                                             @RequestParam Long shelfId) {
+
+        Assert.notNull(loginDetails, "User is not logged in!");
+        bookService.removeFromShelf(loginDetails, bookId, shelfId);
+
+        return ResponseEntity.ok().build();
     }
 
     @ResponseBody

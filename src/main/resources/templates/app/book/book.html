@@ -8,6 +8,7 @@
 <body>
 <div layout:fragment="pageContent">
     <div class="container mt-5">
+        <!--/*@thymesVar id="book" type="com.zedapps.bookshare.entity.book.Book"*/-->
         <div class="row g-4">
             <div class="col-md-4 text-center">
                 <div class="d-flex justify-content-center">
@@ -34,12 +35,23 @@
 
                         <ul class="dropdown-menu" aria-labelledby="shelfDropdown">
                             <li th:each="shelf : ${shelves}">
-                                <a class="dropdown-item" th:data-shelf-id="${shelf.id}" th:text="${shelf.name}"/>
+                                <a href="#" class="dropdown-item" th:data-shelf-id="${shelf.id}"
+                                   th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
+                                    <span th:text="${shelf.name}"/>
+                                    <span th:if="${shelf.containsBook(book)}">&#10006;</span>
+                                </a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#" th:text="#{label.add.new.shelf}"/></li>
+                            <li th:if="${shelvesTruncated}">
+                                <a href="#" class="dropdown-item" th:text="#{label.show.more}"/>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#" th:text="#{label.create.new.shelf}"
+                                   data-bs-toggle="modal" data-bs-target="#addShelfModal"/></li>
                         </ul>
                     </div>
                 </div>
@@ -149,6 +161,36 @@
         </div>
     </div>
 
+    <div id="addShelfModal" class="modal fade" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-bookshare">
+                    <h5 class="modal-title text-bookshare fw-bold" th:text="#{label.create.new.shelf}"/>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!--/*@thymesVar id="tmpShelf" type="com.zedapps.bookshare.entity.login.Shelf"*/-->
+                    <form id="addShelfForm" th:action="@{/shelf/add}" method="post" th:object="${tmpShelf}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label" th:text="#{label.name}"></label>
+                            <input type="text" id="name" th:field="*{name}"
+                                   class="form-control" placeholder="Read, Currently Reading, Favorites, etc." required>
+
+                            <div class="text-danger mt-1" th:if="${#fields.hasErrors('name')}"
+                                 th:errors="*{name}"></div>
+                        </div>
+
+                        <input type="hidden" name="bookId" th:value="${book.id}"/>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';
         const showLessText = /*[[#{label.show.less}]]*/ '';
@@ -200,6 +242,27 @@
                         $('#reviewSection').html(fragment);
                     },
                     error: () => console.error('Unable to retrieve reviews!'),
+                    complete: () => removeLoader()
+                })
+            });
+
+            $('.add-to-shelf, .remove-from-shelf').on('click', function (e) {
+                let shelfOption = $(e.currentTarget);
+                let shelfId = shelfOption.data('shelfId');
+                let add = shelfOption.hasClass('add-to-shelf');
+
+                $.ajax({
+                    url: add ? 'addShelf' : 'removeShelf',
+                    type: 'POST',
+                    data: {
+                        'bookId': bookId,
+                        'shelfId': shelfId
+                    },
+                    beforeSend: () => showLoader(),
+                    success: function () {
+                        window.location.href = `/book/${bookId}`;
+                    },
+                    error: () => console.error('Unable to add/remove book to shelf!'),
                     complete: () => removeLoader()
                 })
             });

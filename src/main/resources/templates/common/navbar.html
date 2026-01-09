@@ -24,11 +24,19 @@
 
                 <th:block sec:authorize="isAuthenticated()">
                     <li class="nav-item">
+                        <a class="nav-link text-bookshare" th:href="@{/shelf}" th:text="#{label.my.collection}"/>
+                    </li>
+
+                    <li class="nav-item">
                         <a class="nav-link text-bookshare" th:href="@{/connections}" th:text="#{label.connections}"/>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link text-bookshare" th:href="@{/profile}" th:text="#{label.profile}"/>
+                    </li>
+
                     <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'MODERATOR')">
-                        <a class="nav-link text-bookshare" th:href="@{/admin}" th:text="#{title.admin.dashboard}"/>
+                        <a class="nav-link text-bookshare" th:href="@{/admin}" th:text="#{label.manage}"/>
                     </li>
 
                     <li class="nav-item">
