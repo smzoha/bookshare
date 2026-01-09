@@ -37,15 +37,15 @@
                             <li th:each="shelf : ${shelves}">
                                 <a href="#" class="dropdown-item" th:data-shelf-id="${shelf.id}"
                                    th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf' : 'add-to-shelf'}">
-                                    <span th:text="${shelf.name}"/>
-                                    <span th:if="${shelf.containsBook(book)}">&#10006;</span>
+                                    <span th:text="${shelf.name}"/>&nbsp;
+                                    <span class="fa fa-xmark-circle" th:if="${shelf.containsBook(book)}"></span>
                                 </a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li th:if="${shelvesTruncated}">
-                                <a href="#" class="dropdown-item" th:text="#{label.show.more}"/>
+                                <a href="#" class="dropdown-item" th:text="#{label.show.more}" data-bs-toggle="modal" data-bs-target="#shelfModal"/>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
@@ -92,6 +92,8 @@
                 <button id="toggleDescription" class="btn btn-link text-bookshare mt-2" th:text="#{label.show.more}"></button>
             </div>
         </div>
+
+        <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfModalFragment :: shelfModal}"></div>
 
         <div class="row mt-5">
             <div class="col-12">
