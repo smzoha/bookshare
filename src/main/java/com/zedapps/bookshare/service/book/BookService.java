@@ -22,9 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static com.zedapps.bookshare.entity.login.Shelf.*;
 
 /**
  * @author smzoha
@@ -145,24 +145,41 @@ public class BookService {
     private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
         if (Objects.nonNull(loginDetails)) {
             Login login = loginService.getLogin(loginDetails.getEmail());
-            List<Shelf> shelves = login.getShelves().stream()
-                    .filter(s -> !s.isDefaultShelf())
-                    .toList();
 
-            Shelf wantToReadShelf = login.getShelves().stream()
-                    .filter(s -> Objects.equals(s.getName(), Shelf.SHELF_WANT_TO_READ))
-                    .findFirst()
-                    .orElseThrow();
+            Map<String, Shelf> defaultShelves = new HashMap<>();
+            List<Shelf> otherShelves = new ArrayList<>();
 
-            model.put("allShelves", shelves);
-            model.put("shelvesTruncated", shelves.size() > 5);
+            for (Shelf shelf : login.getShelves()) {
+                if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
+                else otherShelves.add(shelf);
+            }
 
-            model.put("wantToReadShelf", wantToReadShelf);
+            Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
 
-            model.put("shelves", shelves.stream()
+            model.put("defaultShelves", defaultShelves.values());
+            model.put("defaultShelf", defaultShelf);
+
+            model.put("allShelves", otherShelves);
+            model.put("shelvesTruncated", otherShelves.size() > 5);
+
+            model.put("shelves", otherShelves.stream()
                     .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
                     .limit(5)
                     .toList());
+        }
+    }
+
+    private Shelf getDefaultShelf(Book book, Map<String, Shelf> defaultShelves) {
+        if (defaultShelves.containsKey(SHELF_READ) && defaultShelves.get(SHELF_READ).containsBook(book)) {
+            return defaultShelves.get(SHELF_READ);
+
+        } else if (defaultShelves.containsKey(SHELF_CURRENTLY_READING)
+                && defaultShelves.get(SHELF_CURRENTLY_READING).containsBook(book)) {
+
+            return defaultShelves.get(SHELF_CURRENTLY_READING);
+
+        } else {
+            return defaultShelves.get(SHELF_WANT_TO_READ);
         }
     }
 
