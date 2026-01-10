@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="shelfModal">
+    <div class="modal fade" id="shelfModal" tabindex="-1" aria-labelledby="shelfModal" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-bookshare">
+                    <h5 class="modal-title text-bookshare fw-bold" th:text="#{label.shelves}"/>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-3" th:each="shelf : ${allShelves}">
+                            <a href="#" class="btn w-100" th:data-shelf-id="${shelf.id}"
+                               th:classappend="${shelf.containsBook(book) ? 'remove-from-shelf btn-success'
+                                        : 'add-to-shelf btn-bookshare'}">
+
+                                <span class="text-light" th:text="${shelf.name}"/>&nbsp;
+                                <span class="text-light fa fa-check-circle" th:if="${shelf.containsBook(book)}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-bookshare" data-bs-dismiss="modal" th:text="#{btn.close}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

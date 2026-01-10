@@ -26,6 +26,15 @@ import java.util.Objects;
 @Builder
 public class Shelf {
 
+    public static String SHELF_READ = "Read";
+    public static String SHELF_CURRENTLY_READING = "Currently Reading";
+    public static String SHELF_WANT_TO_READ = "Want to Read";
+
+    public static final List<String> DEFAULT_SHELF_NAMES = List.of(
+            SHELF_CURRENTLY_READING,
+            SHELF_WANT_TO_READ,
+            SHELF_READ);
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shelf_seq")
     @SequenceGenerator(name = "shelf_seq", sequenceName = "shelf_seq", allocationSize = 1)
@@ -42,6 +51,8 @@ public class Shelf {
 
     @OneToMany(mappedBy = "shelf")
     private List<ShelvedBook> books = new ArrayList<>();
+
+    private boolean defaultShelf;
 
     public boolean containsBook(Book book) {
         if (CollectionUtils.isEmpty(books)) {

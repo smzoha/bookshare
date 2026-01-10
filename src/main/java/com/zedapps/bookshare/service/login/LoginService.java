@@ -24,8 +24,6 @@ import java.util.Objects;
 @Service
 public class LoginService {
 
-    private static final List<String> DEFAULT_SHELF_NAMES = List.of("Currently Reading", "Want to Read", "Read");
-
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
@@ -109,10 +107,11 @@ public class LoginService {
     }
 
     private void setupShelvesForNewLogin(Login login) {
-        DEFAULT_SHELF_NAMES.forEach(shelfName -> {
+        Shelf.DEFAULT_SHELF_NAMES.forEach(shelfName -> {
             Shelf shelf = new Shelf();
             shelf.setName(shelfName);
             shelf.setUser(login);
+            shelf.setDefaultShelf(true);
 
             login.getShelves().add(shelf);
         });

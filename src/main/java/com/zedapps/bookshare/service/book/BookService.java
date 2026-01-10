@@ -22,8 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static com.zedapps.bookshare.entity.login.Shelf.*;
 
 /**
  * @author smzoha
@@ -77,11 +78,7 @@ public class BookService {
         Book book = getBook(bookId);
         model.put("book", book);
 
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
-            model.put("shelves", login.getShelves().subList(0, Math.min(login.getShelves().size(), 5)));
-            model.put("shelvesTruncated", login.getShelves().size() > 5);
-        }
+        setupShelfReferenceData(loginDetails, model, book);
 
         model.put("tmpShelf", new Shelf());
         model.put("reviewDto", new BookReviewDto());
@@ -125,6 +122,14 @@ public class BookService {
         Book book = getBook(bookId);
         Shelf shelf = login.getShelf(shelfId);
 
+        if (shelf.isDefaultShelf()) {
+            for (Shelf s : login.getShelves()) {
+                if (s.isDefaultShelf() && s.containsBook(book)) {
+                    removeFromShelf(loginDetails, bookId, s.getId());
+                }
+            }
+        }
+
         ShelvedBook shelvedBook = new ShelvedBook();
         shelvedBook.setLogin(login);
         shelvedBook.setShelf(shelf);
@@ -143,6 +148,47 @@ public class BookService {
                 .orElseThrow();
 
         shelvedBookRepository.delete(shelvedBook);
+    }
+
+    private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
+        if (Objects.nonNull(loginDetails)) {
+            Login login = loginService.getLogin(loginDetails.getEmail());
+
+            Map<String, Shelf> defaultShelves = new HashMap<>();
+            List<Shelf> otherShelves = new ArrayList<>();
+
+            for (Shelf shelf : login.getShelves()) {
+                if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
+                else otherShelves.add(shelf);
+            }
+
+            Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
+
+            model.put("defaultShelves", defaultShelves.values());
+            model.put("defaultShelf", defaultShelf);
+
+            model.put("allShelves", otherShelves);
+            model.put("shelvesTruncated", otherShelves.size() > 5);
+
+            model.put("shelves", otherShelves.stream()
+                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
+                    .limit(5)
+                    .toList());
+        }
+    }
+
+    private Shelf getDefaultShelf(Book book, Map<String, Shelf> defaultShelves) {
+        if (defaultShelves.containsKey(SHELF_READ) && defaultShelves.get(SHELF_READ).containsBook(book)) {
+            return defaultShelves.get(SHELF_READ);
+
+        } else if (defaultShelves.containsKey(SHELF_CURRENTLY_READING)
+                && defaultShelves.get(SHELF_CURRENTLY_READING).containsBook(book)) {
+
+            return defaultShelves.get(SHELF_CURRENTLY_READING);
+
+        } else {
+            return defaultShelves.get(SHELF_WANT_TO_READ);
+        }
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {
