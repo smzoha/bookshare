@@ -122,6 +122,14 @@ public class BookService {
         Book book = getBook(bookId);
         Shelf shelf = login.getShelf(shelfId);
 
+        if (shelf.isDefaultShelf()) {
+            for (Shelf s : login.getShelves()) {
+                if (s.isDefaultShelf() && s.containsBook(book)) {
+                    removeFromShelf(loginDetails, bookId, s.getId());
+                }
+            }
+        }
+
         ShelvedBook shelvedBook = new ShelvedBook();
         shelvedBook.setLogin(login);
         shelvedBook.setShelf(shelf);
