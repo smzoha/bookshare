@@ -48,6 +48,8 @@ public class ReadingProgress {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime endDate;
 
+    private boolean completed;
+
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
