@@ -2,29 +2,30 @@ package com.zedapps.bookshare.entity.login;
 
 import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 /**
  * @author smzoha
- * @since 7/9/25
+ * @since 13/1/26
  **/
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ShelvedBook {
+public class ReadingProgress {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "shelved_book_seq")
-    @SequenceGenerator(name = "shelved_book_seq", sequenceName = "shelved_book_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reading_prog_seq")
+    @SequenceGenerator(name = "reading_prog_seq", sequenceName = "reading_prog_seq", allocationSize = 1)
     private Long id;
 
     @NotNull(message = "{error.required}")
@@ -37,13 +38,17 @@ public class ShelvedBook {
     @JoinColumn(name = "book_id")
     private Book book;
 
-    @NotNull(message = "{error.required}")
-    @ManyToOne
-    @JoinColumn(name = "shelf_id")
-    private Shelf shelf;
+    @Min(value = 0, message = "{error.min.value}")
+    private Long pagesRead = 0L;
 
-    @CreationTimestamp
+    @NotNull(message = "{error.required}")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
-    private LocalDateTime shelvedAt;
+    private LocalDateTime startDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime endDate;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime updatedAt;
 }
