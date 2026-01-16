@@ -42,7 +42,7 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<Image> uploadImage(@RequestPart("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Long> uploadImage(@RequestPart("file") MultipartFile file) throws IOException {
         Image image = Image.builder()
                 .fileName(file.getOriginalFilename())
                 .contentType(file.getContentType())
@@ -51,6 +51,6 @@ public class ImageController {
 
         image = imageRepository.save(image);
 
-        return new ResponseEntity<>(image, HttpStatus.OK);
+        return ResponseEntity.ok().body(image.getId());
     }
 }
