@@ -4,6 +4,8 @@
 <head>
     <title>Book</title>
     <link rel="stylesheet" th:href="@{/css/select2.min.css}">
+    <link rel="stylesheet" th:href="@{/css/filepond.min.css}">
+    <link rel="stylesheet" th:href="@{/css/filepond-plugin-image-preview.min.css}">
 </head>
 
 <body>
@@ -114,27 +116,11 @@
                                      th:errors="*{tags}"></div>
                             </div>
 
-                            <th:block th:if="${book.image != null}">
-                                <div class="mb-3 cover-picture-section">
-                                    <label class="form-label" for="coverPicture" th:text="#{label.cover.picture}"></label>
-
-                                    <div class="image-display">
-                                        <img id="coverPicture" th:src="@{/image/{id}(id=${book.image.id})}"
-                                             class="book-display-cover"
-                                             style="display: inline"
-                                             aria-labelledby="Book Cover"/>
-
-                                        <button type="button" class="btn btn-danger remove-image ms-1">×</button>
-                                    </div>
-                                </div>
-                            </th:block>
-
-                            <input type="hidden" th:field="*{image.id}" th:if="${book.image != null}"/>
-
-                            <th:block th:if="${book.image == null}">
-                                <div th:replace="~{common/imageUploader :: imageUploader('image.id', 'label.cover.picture')}"></div>
-                            </th:block>
-
+                            <div class="mb-3">
+                                <label for="image" class="form-label" th:text="#{label.cover.picture}"></label>
+                                <input type="file" id="image" name="file" class="form-control mb-2" accept="image/*"/>
+                                <div class="image-input-container"></div>
+                            </div>
 
                             <div class="d-flex justify-content-between mt-4">
                                 <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
@@ -149,7 +135,20 @@
 
     <script th:src="@{/js/tinymce/tinymce.min.js}"></script>
     <script th:src="@{/js/select2.min.js}"></script>
-    <script type="text/javascript">
+    <script th:src="@{/js/filepond/filepond.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-file-validate-size.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-file-validate-type.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-image-preview.min.js}"></script>
+
+    <script type="text/javascript" th:inline="javascript">
+        let imageId = /*[[${book.image != null} ? ${book.image.id} : '']]*/ null;
+
+        FilePond.registerPlugin(
+            FilePondPluginImagePreview,
+            FilePondPluginFileValidateType,
+            FilePondPluginFileValidateSize
+        );
+
         tinymce.init({
             selector: 'textarea[name="description"]',
             license_key: 'gpl',
@@ -160,17 +159,68 @@
             branding: false
         });
 
+        const imageContainer = $('.image-input-container');
+
+        function appendImageHiddenInput(id) {
+            imageContainer.empty();
+
+            const imageIdInput = $('<input>', {
+                type: 'hidden',
+                name: 'image.id',
+                value: id,
+                id: 'imageId'
+            });
+
+            imageContainer.append(imageIdInput);
+        }
+
+        function clearImageInputContainer() {
+            imageContainer.empty();
+        }
+
+        const uploader = FilePond.create(
+            document.getElementById('image'),
+            {
+                allowMultiple: false,
+                instantUpload: true,
+                acceptedFileTypes: ['image/*'],
+                maxFileSize: '5MB',
+                server: {
+                    process: {
+                        url: '/image/upload',
+                        method: 'POST',
+                        onload: function (imageId) {
+                            appendImageHiddenInput(imageId);
+                            return imageId;
+                        }
+                    },
+                    revert: function (id, load) {
+                        clearImageInputContainer();
+                        load();
+                    },
+                    load: function (source, load) {
+                        fetch('/image/' + source)
+                            .then(res => {
+                                if (!res.ok) throw new Error('Failed to load image');
+                                return res.blob();
+                            })
+                            .then(load)
+                            .catch(err => console.error(err));
+                    }
+                },
+                files: imageId !== '' ?
+                    [{
+                        source: imageId,
+                        options: {type: 'local'}
+                    }]
+                    : []
+            }
+        );
+
         $(function () {
             $('#authors').select2();
             $('#genres').select2();
             $('#tags').select2();
-
-            $('.remove-image').on('click', function (e) {
-                $('input[name="image.id"]').val('');
-
-                const coverPictureSection = $(e.target).closest('.cover-picture-section');
-                coverPictureSection.remove();
-            });
         });
     </script>
 </div>

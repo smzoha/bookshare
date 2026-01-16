@@ -3,6 +3,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
 <head>
     <title>User Form</title>
+    <link rel="stylesheet" th:href="@{/css/filepond.min.css}">
+    <link rel="stylesheet" th:href="@{/css/filepond-plugin-image-preview.min.css}">
 </head>
 
 <body>
@@ -94,26 +96,11 @@
                                 <label class="form-check-label" for="active" th:text="#{label.active}"></label>
                             </div>
 
-                            <th:block th:if="${user.profilePictureId != null}">
-                                <div class="mb-3 profile-picture-section">
-                                    <label class="form-label" for="profilePicture" th:text="#{label.profile.picture}"></label>
-
-                                    <div class="image-display">
-                                        <div class="thumbnail-container">
-                                            <img id="profilePicture" th:src="@{/image/{id}(id=${user.profilePictureId})}"
-                                                 aria-labelledby="Profile Picture"/>
-                                        </div>
-
-                                        <button type="button" class="btn btn-danger remove-image ms-1">×</button>
-                                    </div>
-                                </div>
-                            </th:block>
-
-                            <input type="hidden" th:field="*{profilePictureId}" th:if="${user.profilePictureId != null}"/>
-
-                            <th:block th:if="${user.profilePictureId == null}">
-                                <div th:replace="~{common/imageUploader :: imageUploader('profilePictureId', 'label.profile.picture')}"></div>
-                            </th:block>
+                            <div class="mb-3">
+                                <label for="image" class="form-label" th:text="#{label.profile.picture}"></label>
+                                <input type="file" id="image" name="file" class="form-control mb-2" accept="image/*"/>
+                                <div class="image-input-container"></div>
+                            </div>
 
                             <div class="d-flex justify-content-between mt-4">
                                 <a th:href="@{/admin}" class="btn btn-outline-secondary" th:text="#{btn.cancel}"></a>
@@ -126,15 +113,77 @@
         </div>
     </div>
 
-    <script type="text/javascript">
-        $(function () {
-            $('.remove-image').on('click', function (e) {
-                $('input[name="profilePictureId"]').val('');
+    <script th:src="@{/js/filepond/filepond.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-file-validate-size.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-file-validate-type.min.js}"></script>
+    <script th:src="@{/js/filepond/filepond-plugin-image-preview.min.js}"></script>
 
-                const profilePictureSection = $(e.target).closest('.profile-picture-section');
-                profilePictureSection.remove();
+    <script type="text/javascript" th:inline="javascript">
+        let imageId = /*[[${user.profilePictureId != null} ? ${user.profilePictureId} : '']]*/ null;
+
+        FilePond.registerPlugin(
+            FilePondPluginImagePreview,
+            FilePondPluginFileValidateType,
+            FilePondPluginFileValidateSize
+        );
+
+        const imageContainer = $('.image-input-container');
+
+        function appendImageHiddenInput(id) {
+            imageContainer.empty();
+
+            const imageIdInput = $('<input>', {
+                type: 'hidden',
+                name: 'profilePictureId',
+                value: id,
+                id: 'profilePictureId'
             });
-        });
+
+            imageContainer.append(imageIdInput);
+        }
+
+        function clearImageInputContainer() {
+            imageContainer.empty();
+        }
+
+        const uploader = FilePond.create(
+            document.getElementById('image'),
+            {
+                allowMultiple: false,
+                instantUpload: true,
+                acceptedFileTypes: ['image/*'],
+                maxFileSize: '5MB',
+                server: {
+                    process: {
+                        url: '/image/upload',
+                        method: 'POST',
+                        onload: function (imageId) {
+                            appendImageHiddenInput(imageId);
+                            return imageId;
+                        }
+                    },
+                    revert: function (id, load) {
+                        clearImageInputContainer();
+                        load();
+                    },
+                    load: function (source, load) {
+                        fetch('/image/' + source)
+                            .then(res => {
+                                if (!res.ok) throw new Error('Failed to load image');
+                                return res.blob();
+                            })
+                            .then(load)
+                            .catch(err => console.error(err));
+                    }
+                },
+                files: imageId !== '' ?
+                    [{
+                        source: imageId,
+                        options: {type: 'local'}
+                    }]
+                    : []
+            }
+        );
     </script>
 </div>
 </body>
