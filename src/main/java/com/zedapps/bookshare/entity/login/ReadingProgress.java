@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ReadingProgress {
 
     @Id
@@ -53,4 +51,18 @@ public class ReadingProgress {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    @Override
+    public String toString() {
+        return "ReadingProgress{" +
+                "id=" + id +
+                ", user=" + user +
+                ", pagesRead=" + pagesRead +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", completed=" + completed +
+                ", updatedAt=" + updatedAt +
+                ", book=" + book.getId() +
+                '}';
+    }
 }

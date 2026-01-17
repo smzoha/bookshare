@@ -11,7 +11,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class PendingFollow extends BaseFollow {

@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,7 +26,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "logins")
 public class Login {
 
@@ -94,6 +92,21 @@ public class Login {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    @Override
+    public String toString() {
+        return "Login{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", handle='" + handle + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", active=" + active +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 
     public Shelf getShelf(Long shelfId) {
         return getShelves().stream()

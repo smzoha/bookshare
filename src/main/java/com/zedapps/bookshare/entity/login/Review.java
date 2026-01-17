@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,7 +23,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Review {
 
     @Id
@@ -58,4 +56,16 @@ public class Review {
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "login_id"))
     private List<Login> userLikes = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", rating=" + rating +
+                ", reviewDate=" + reviewDate +
+                ", user=" + user.getId() +
+                ", book=" + book.getId() +
+                '}';
+    }
 }

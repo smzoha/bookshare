@@ -2,7 +2,9 @@ package com.zedapps.bookshare.entity.book;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -17,8 +19,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString(exclude = {"books"})
 public class Genre {
 
     @Id
@@ -36,4 +36,13 @@ public class Genre {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @Override
+    public String toString() {
+        return "Genre{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

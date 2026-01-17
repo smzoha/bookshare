@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
@@ -23,7 +22,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Shelf {
 
     public static String SHELF_READ = "Read";
@@ -53,6 +51,16 @@ public class Shelf {
     private List<ShelvedBook> books = new ArrayList<>();
 
     private boolean defaultShelf;
+
+    @Override
+    public String toString() {
+        return "Shelf{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user +
+                ", defaultShelf=" + defaultShelf +
+                '}';
+    }
 
     public boolean containsBook(Book book) {
         if (CollectionUtils.isEmpty(books)) {

@@ -4,7 +4,6 @@ import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ShelvedBook {
 
     @Id
@@ -46,4 +44,15 @@ public class ShelvedBook {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
     private LocalDateTime shelvedAt;
+
+    @Override
+    public String toString() {
+        return "ShelvedBook{" +
+                "id=" + id +
+                ", login=" + login.getId() +
+                ", book=" + book.getId() +
+                ", shelf=" + shelf.getId() +
+                ", shelvedAt=" + shelvedAt +
+                '}';
+    }
 }
