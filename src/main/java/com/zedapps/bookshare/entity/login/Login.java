@@ -76,6 +76,10 @@ public class Login {
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Shelf> shelves = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("startDate, endDate")
+    private List<ReadingProgress> readingProgresses = new ArrayList<>();
+
     @OneToMany(mappedBy = "follower")
     private List<Follow> following = new ArrayList<>();
 

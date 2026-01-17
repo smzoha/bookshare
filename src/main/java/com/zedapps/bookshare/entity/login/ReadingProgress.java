@@ -31,7 +31,7 @@ public class ReadingProgress {
     @NotNull(message = "{error.required}")
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Login login;
+    private Login user;
 
     @NotNull(message = "{error.required}")
     @ManyToOne
