@@ -110,11 +110,63 @@
             </div>
         </div>
 
-        <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfModalFragment :: shelfModal}"></div>
-
-        <div class="row mt-5">
+        <div class="row mt-5" sec:authorize="isAuthenticated()">
             <div class="col-12">
-                <h4 class="text-bookshare mb-3" th:text="#{label.reviews}"/>
+                <h4 class="text-bookshare mb-3">
+                    <span class="fa fa-glasses"></span>
+                    <span th:text="#{label.reading.progress}"></span>
+                </h4>
+
+                <div class="mb-4 p-3 block-section rounded shadow-sm">
+                    <div class="list-group overflow-auto" style="max-height: 30vh;">
+                        <th:block th:each="progress, status : ${readingProgresses}">
+                            <div class="list-group-item reading-progress-item d-flex flex-column flex-md-row align-items-md-center gap-2 small">
+                                <span th:text="${status.index + 1}"></span>
+
+                                <span>
+                                    <i class="fa fa-clock me-1"></i>
+                                    <span class="text-muted" th:text="${#temporals.format(progress.startDate, 'dd-MM-yyyy')}"></span>
+                                    –
+                                    <span class="text-muted" th:text="${#temporals.format(progress.endDate, 'dd-MM-yyyy')}"></span>
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-book-open me-1 text-bookshare"></i>
+                                    <span class="text-muted" th:text="|${progress.pagesRead}/${book.pages}|"></span>
+                                    <span class="text-muted" th:text="|(${progress.percentile}%)|"></span>
+                                </span>
+
+                                <div class="flex-grow-1 mx-2 min-w-0">
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar"
+                                             th:style="|width: ${(progress.pagesRead * 100) / book.pages}%|"
+                                             th:classappend="${progress.completed} ? ' bg-success' : 'bg-warning'">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-secondary ms-md-auto align-self-start align-self-md-center"
+                                        th:data-progress-id="${progress.id}">
+                                    <i class="fa fa-angle-double-right"></i>
+                                </button>
+                            </div>
+                        </th:block>
+                    </div>
+
+                    <div class="col-12 text-end mt-3">
+                        <button class="btn btn-bookshare" th:text="#{label.add.new}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <h4 class="text-bookshare mb-3">
+                    <span class="fa fa-pencil"></span>
+                    <span th:text="#{label.reviews}"></span>
+                </h4>
 
                 <div class="mb-4 p-3 block-section rounded shadow-sm">
                     <th:block sec:authorize="isAuthenticated()">
@@ -181,6 +233,7 @@
     </div>
 
     <div id="addShelfFragment" th:insert="~{app/book/shelfAddFragment :: shelfAddModal}"></div>
+    <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfModalFragment :: shelfModal}"></div>
 
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';

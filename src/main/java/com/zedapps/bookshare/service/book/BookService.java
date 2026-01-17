@@ -78,7 +78,12 @@ public class BookService {
         Book book = getBook(bookId);
         model.put("book", book);
 
-        setupShelfReferenceData(loginDetails, model, book);
+        Login login = loginService.getLogin(loginDetails.getEmail());
+
+        if (Objects.nonNull(login)) {
+            setupShelfReferenceData(login, model, book);
+            model.put("readingProgresses", login.getReadingProgresses());
+        }
 
         model.put("tmpShelf", new Shelf());
         model.put("reviewDto", new BookReviewDto());
@@ -150,31 +155,27 @@ public class BookService {
         shelvedBookRepository.delete(shelvedBook);
     }
 
-    private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
+    private void setupShelfReferenceData(Login login, ModelMap model, Book book) {
+        Map<String, Shelf> defaultShelves = new HashMap<>();
+        List<Shelf> otherShelves = new ArrayList<>();
 
-            Map<String, Shelf> defaultShelves = new HashMap<>();
-            List<Shelf> otherShelves = new ArrayList<>();
-
-            for (Shelf shelf : login.getShelves()) {
-                if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
-                else otherShelves.add(shelf);
-            }
-
-            Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
-
-            model.put("defaultShelves", defaultShelves.values());
-            model.put("defaultShelf", defaultShelf);
-
-            model.put("allShelves", otherShelves);
-            model.put("shelvesTruncated", otherShelves.size() > 5);
-
-            model.put("shelves", otherShelves.stream()
-                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
-                    .limit(5)
-                    .toList());
+        for (Shelf shelf : login.getShelves()) {
+            if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
+            else otherShelves.add(shelf);
         }
+
+        Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
+
+        model.put("defaultShelves", defaultShelves.values());
+        model.put("defaultShelf", defaultShelf);
+
+        model.put("allShelves", otherShelves);
+        model.put("shelvesTruncated", otherShelves.size() > 5);
+
+        model.put("shelves", otherShelves.stream()
+                .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
+                .limit(5)
+                .toList());
     }
 
     private Shelf getDefaultShelf(Book book, Map<String, Shelf> defaultShelves) {

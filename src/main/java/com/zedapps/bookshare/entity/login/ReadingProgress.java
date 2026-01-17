@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 /**
@@ -64,5 +66,14 @@ public class ReadingProgress {
                 ", updatedAt=" + updatedAt +
                 ", book=" + book.getId() +
                 '}';
+    }
+
+    public Double getPercentile() {
+        double percentile = ((double) getPagesRead() / getBook().getPages()) * 100;
+
+        BigDecimal percentileDecimal = BigDecimal.valueOf(percentile);
+        percentileDecimal = percentileDecimal.setScale(2, RoundingMode.HALF_UP);
+
+        return percentileDecimal.doubleValue();
     }
 }
