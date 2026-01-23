@@ -99,8 +99,6 @@ public class BookController {
                             @AuthenticationPrincipal LoginDetails loginDetails,
                             ModelMap model) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
-
         if (errors.hasErrors()) {
             bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model);
             return "app/book/book";
@@ -117,7 +115,6 @@ public class BookController {
                                         @RequestParam Long bookId,
                                         @RequestParam Long shelfId) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
         bookService.addToShelf(loginDetails, bookId, shelfId);
 
         return ResponseEntity.ok().build();
@@ -129,7 +126,6 @@ public class BookController {
                                              @RequestParam Long bookId,
                                              @RequestParam Long shelfId) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
         bookService.removeFromShelf(loginDetails, bookId, shelfId);
 
         return ResponseEntity.ok().build();
@@ -140,8 +136,6 @@ public class BookController {
                                         Errors errors,
                                         @AuthenticationPrincipal LoginDetails loginDetails,
                                         ModelMap model) {
-
-        Assert.notNull(loginDetails, "User is not logged in!");
 
         if (errors.hasErrors()) {
             bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model);
@@ -157,8 +151,6 @@ public class BookController {
     @PostMapping("/like")
     public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
                                                             @AuthenticationPrincipal LoginDetails loginDetails) {
-
-        Assert.notNull(loginDetails, "User is not logged in!");
 
         ReviewLikeResponseDto responseDto = bookService.updateReviewLikes(reviewId, loginDetails);
 
