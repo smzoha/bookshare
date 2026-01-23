@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="readingProgressModal">
+    <div class="modal fade" id="readingModal" tabindex="-1" aria-labelledby="readingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/book/updateProgress}" th:object="${tmpProgress}" method="post">
+                    <div class="modal-header bg-bookshare">
+                        <h5 class="modal-title text-bookshare fw-bold">Reading Progress</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id"/>
+                        <input type="hidden" name="book.id" th:value="${book.id}"/>
+
+                        <div class="mb-3">
+                            <label for="pagesRead" class="form-label">Pages Read</label>
+                            <input type="number" th:field="*{pagesRead}" class="form-control" id="pagesRead" min="0"
+                                   max="99999" required/>
+                            <div class="text-danger" th:if="${#fields.hasErrors('pagesRead')}"
+                                 th:errors="*{pagesRead}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pagesRead" class="form-label">Total Pages</label>
+                            <span th:text="${book.pages}" class="form-control"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" th:field="*{startDate}" class="form-control" id="startDate" required/>
+                            <div class="text-danger" th:if="${#fields.hasErrors('startDate')}"
+                                 th:errors="*{startDate}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate" required/>
+                            <div class="text-danger" th:if="${#fields.hasErrors('endDate')}"
+                                 th:errors="*{endDate}"></div>
+                        </div>
+
+                        <div class="form-check form-switch">
+                            <input type="checkbox" th:field="*{completed}" class="form-check-input" id="completed">
+                            <label class="form-check-label" for="completed">Completed</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-bookshare" th:text="#{btn.save}"></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
