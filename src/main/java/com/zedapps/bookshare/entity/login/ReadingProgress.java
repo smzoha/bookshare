@@ -40,6 +40,7 @@ public class ReadingProgress {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @NotNull(message = "{error.required}")
     @Min(value = 0, message = "{error.min.value}")
     private Long pagesRead = 0L;
 

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.zedapps.bookshare.entity.login.Shelf.*;
@@ -168,6 +169,16 @@ public class BookService {
         }
 
         readingProgress.setUser(loginService.getLogin(loginDetails.getEmail()));
+
+        if (readingProgress.isCompleted()) {
+            Book book = getBook(readingProgress.getBook().getId());
+            readingProgress.setPagesRead(book.getPages());
+
+            if (Objects.isNull(readingProgress.getEndDate())) {
+                readingProgress.setEndDate(LocalDate.now());
+            }
+        }
+
         readingProgress = readingProgressRepository.save(readingProgress);
 
         return readingProgress;
