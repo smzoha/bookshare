@@ -4,13 +4,11 @@ import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
-import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.Review;
-import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.entity.login.ShelvedBook;
+import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
@@ -38,18 +36,21 @@ public class BookService {
     private final ReviewRepository reviewRepository;
     private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
+    private final ReadingProgressRepository readingProgressRepository;
 
     public BookService(BookRepository bookRepository,
                        BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
                        LoginService loginService,
-                       ShelvedBookRepository shelvedBookRepository) {
+                       ShelvedBookRepository shelvedBookRepository,
+                       ReadingProgressRepository readingProgressRepository) {
 
         this.bookRepository = bookRepository;
         this.bookListRepository = bookListRepository;
         this.reviewRepository = reviewRepository;
         this.loginService = loginService;
         this.shelvedBookRepository = shelvedBookRepository;
+        this.readingProgressRepository = readingProgressRepository;
     }
 
     public Book getBook(Long bookId) {
@@ -78,14 +79,16 @@ public class BookService {
         Book book = getBook(bookId);
         model.put("book", book);
 
-        Login login = loginService.getLogin(loginDetails.getEmail());
 
-        if (Objects.nonNull(login)) {
+        if (Objects.nonNull(loginDetails)) {
+            Login login = loginService.getLogin(loginDetails.getEmail());
+
             setupShelfReferenceData(login, model, book);
             model.put("readingProgresses", login.getReadingProgresses());
         }
 
         model.put("tmpShelf", new Shelf());
+        model.put("tmpProgress", new ReadingProgress());
         model.put("reviewDto", new BookReviewDto());
 
         model.put("reviews", getReviewsByBook(book, 0));
@@ -153,6 +156,21 @@ public class BookService {
                 .orElseThrow();
 
         shelvedBookRepository.delete(shelvedBook);
+    }
+
+    @Transactional
+    public ReadingProgress saveReadingProgress(ReadingProgress readingProgress, LoginDetails loginDetails) {
+        if (readingProgress.getId() > 0) {
+            ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())
+                    .orElseThrow(NoResultException::new);
+
+            assert Objects.equals(persistedReadingProgress.getUser().getEmail(), loginDetails.getEmail());
+        }
+
+        readingProgress.setUser(loginService.getLogin(loginDetails.getEmail()));
+        readingProgress = readingProgressRepository.save(readingProgress);
+
+        return readingProgress;
     }
 
     private void setupShelfReferenceData(Login login, ModelMap model, Book book) {

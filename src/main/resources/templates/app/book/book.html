@@ -146,8 +146,12 @@
                                 </div>
 
                                 <button type="button"
-                                        class="btn btn-sm btn-outline-secondary ms-md-auto align-self-start align-self-md-center"
-                                        th:data-progress-id="${progress.id}">
+                                        class="btn btn-sm btn-outline-secondary ms-md-auto align-self-start align-self-md-center progress-edit"
+                                        th:data-progress-id="${progress.id}"
+                                        th:data-pages-read="${progress.pagesRead}"
+                                        th:data-start-date="${#temporals.format(progress.startDate, 'yyyy-MM-dd')}"
+                                        th:data-end-date="${#temporals.format(progress.endDate, 'yyyy-MM-dd')}"
+                                        th:data-completed="${progress.completed}">
                                     <i class="fa fa-angle-double-right"></i>
                                 </button>
                             </div>
@@ -155,7 +159,7 @@
                     </div>
 
                     <div class="col-12 text-end mt-3">
-                        <button class="btn btn-bookshare" th:text="#{label.add.new}"></button>
+                        <button class="btn btn-bookshare" th:text="#{label.add.new}" data-bs-toggle="modal" data-bs-target="#readingModal"></button>
                     </div>
                 </div>
             </div>
@@ -234,6 +238,7 @@
 
     <div id="addShelfFragment" th:insert="~{app/book/shelfAddFragment :: shelfAddModal}"></div>
     <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfModalFragment :: shelfModal}"></div>
+    <div id="readingProgressFragment" th:insert="~{app/book/readingProgressFragment :: readingProgressModal}"></div>
 
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';
@@ -244,6 +249,9 @@
         const descriptionPanel = $('.book-description');
 
         const ratingValueInputSelector = $('#ratingValue');
+
+        const readingModal = $('#readingModal');
+        const readingModalObject = new bootstrap.Modal(readingModal);
 
         $(function () {
             toggleDescriptionButton.on('click', function () {
@@ -288,6 +296,28 @@
                     error: () => console.error('Unable to retrieve reviews!'),
                     complete: () => removeLoader()
                 })
+            });
+
+            $(document).on('click', '.progress-edit', function (e) {
+                e.preventDefault();
+                let progressEditButton = $(e.currentTarget);
+
+                readingModal.find('[name="id"]').val(progressEditButton.data('progress-id'))
+                readingModal.find('[name="pagesRead"]').val(progressEditButton.data('pages-read'));
+                readingModal.find('[name="startDate"]').val(progressEditButton.data('start-date'));
+                readingModal.find('[name="endDate"]').val(progressEditButton.data('end-date'));
+                readingModal.find('[name="completed"]').prop('checked', progressEditButton.data('completed'));
+
+                readingModalObject.show();
+            });
+
+            readingModal.on('hidden.bs.modal', function () {
+                const $form = $(this).find('form');
+
+                $form[0].reset();
+                $form.find('input[name="id"]').val('');
+
+                $form.removeClass('was-validated');
             });
 
             $('.add-to-shelf, .remove-from-shelf').on('click', function (e) {

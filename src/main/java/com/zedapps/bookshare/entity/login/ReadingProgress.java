@@ -8,9 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -42,11 +44,13 @@ public class ReadingProgress {
     private Long pagesRead = 0L;
 
     @NotNull(message = "{error.required}")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime startDate;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime endDate;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
 
     private boolean completed;
 

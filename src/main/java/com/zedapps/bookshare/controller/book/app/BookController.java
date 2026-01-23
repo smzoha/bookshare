@@ -6,6 +6,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
@@ -132,6 +133,24 @@ public class BookController {
         bookService.removeFromShelf(loginDetails, bookId, shelfId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/updateProgress")
+    public String updateReadingProgress(@ModelAttribute("tmpProgress") ReadingProgress readingProgress,
+                                        Errors errors,
+                                        @AuthenticationPrincipal LoginDetails loginDetails,
+                                        ModelMap model) {
+
+        Assert.notNull(loginDetails, "User is not logged in!");
+
+        if (errors.hasErrors()) {
+            bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model);
+            return "app/book/book";
+        }
+
+        readingProgress = bookService.saveReadingProgress(readingProgress, loginDetails);
+
+        return "redirect:/book/" + readingProgress.getBook().getId();
     }
 
     @ResponseBody
