@@ -3,12 +3,10 @@ package com.zedapps.bookshare.controller.book.app;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.repository.login.ShelfRepository;
-import jakarta.persistence.NoResultException;
+import com.zedapps.bookshare.service.login.LoginService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,32 +18,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ShelfController {
 
     private final ShelfRepository shelfRepository;
-    private final LoginRepository loginRepository;
+    private final LoginService loginService;
 
-    public ShelfController(ShelfRepository shelfRepository, LoginRepository loginRepository) {
+    public ShelfController(ShelfRepository shelfRepository, LoginService loginService) {
         this.shelfRepository = shelfRepository;
-        this.loginRepository = loginRepository;
+        this.loginService = loginService;
     }
 
     @PostMapping("/shelf/add")
     public String createShelf(@RequestParam String name,
                               @RequestParam Long bookId,
-                              @AuthenticationPrincipal LoginDetails loginDetails,
-                              ModelMap model) {
+                              @AuthenticationPrincipal LoginDetails loginDetails) {
 
-        Login login = loginRepository.findByEmail(loginDetails.getEmail()).orElseThrow(NoResultException::new);
+        Login login = loginService.getLogin(loginDetails.getEmail());
 
-        Shelf shelf = createShelf(name, login);
+        Shelf shelf = new Shelf(name, login);
         shelf = shelfRepository.save(shelf);
 
         return "redirect:/book/" + bookId;
-    }
-
-    private Shelf createShelf(String name, Login login) {
-        Shelf shelf = new Shelf();
-        shelf.setName(name);
-        shelf.setUser(login);
-
-        return shelf;
     }
 }

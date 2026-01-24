@@ -76,7 +76,9 @@ public class BookService {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
 
-    public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model) {
+    public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model,
+                                   boolean addNewReview, boolean addNewProgress) {
+
         Book book = getBook(bookId);
         model.put("book", book);
 
@@ -89,8 +91,8 @@ public class BookService {
         }
 
         model.put("tmpShelf", new Shelf());
-        model.put("tmpProgress", new ReadingProgress());
-        model.put("reviewDto", new BookReviewDto());
+        if (addNewProgress) model.put("tmpProgress", new ReadingProgress());
+        if (addNewReview) model.put("reviewDto", new BookReviewDto());
 
         model.put("reviews", getReviewsByBook(book, 0));
         model.put("relatedBooks", getRelatedBooks(book));

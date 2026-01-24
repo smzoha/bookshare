@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +74,7 @@ public class BookController {
                               @PathVariable Long id,
                               ModelMap model) {
 
-        bookService.setupReferenceData(loginDetails, id, model);
+        bookService.setupReferenceData(loginDetails, id, model, true, true);
 
         return "app/book/book";
     }
@@ -100,7 +99,7 @@ public class BookController {
                             ModelMap model) {
 
         if (errors.hasErrors()) {
-            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model);
+            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model, false, true);
             return "app/book/book";
         }
 
@@ -132,13 +131,15 @@ public class BookController {
     }
 
     @PostMapping("/updateProgress")
-    public String updateReadingProgress(@ModelAttribute("tmpProgress") ReadingProgress readingProgress,
+    public String updateReadingProgress(@Valid @ModelAttribute("tmpProgress") ReadingProgress readingProgress,
                                         Errors errors,
                                         @AuthenticationPrincipal LoginDetails loginDetails,
                                         ModelMap model) {
 
         if (errors.hasErrors()) {
-            bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model);
+            bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model, true, false);
+            model.put("showReadingProgressModal", true);
+
             return "app/book/book";
         }
 

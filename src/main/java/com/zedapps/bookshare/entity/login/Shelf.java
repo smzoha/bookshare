@@ -52,6 +52,11 @@ public class Shelf {
 
     private boolean defaultShelf;
 
+    public Shelf(String name, Login user) {
+        this.name = name;
+        this.user = user;
+    }
+
     @Override
     public String toString() {
         return "Shelf{" +

@@ -186,7 +186,7 @@
                                 <i class="fa-regular fa-star me-1" id="rating-input-5" data-rating="5"></i>
                                 <input type="hidden" id="ratingValue" th:field="*{rating}"/>
 
-                                <div th:if="${#fields.hasErrors('rating')}" class="text-bookshare">
+                                <div th:if="${#fields.hasErrors('rating')}" class="text-danger">
                                     <span th:errors="*{rating}"></span>
                                 </div>
                             </div>
@@ -195,7 +195,7 @@
                             <textarea id="content" th:field="*{content}" class="form-control mb-2" rows="3"
                                       th:placeholder="#{label.review.placeholder}"></textarea>
 
-                            <div th:if="${#fields.hasErrors('content')}" class="text-bookshare">
+                            <div th:if="${#fields.hasErrors('content')}" class="text-danger">
                                 <span th:errors="*{content}"></span>
                             </div>
 
@@ -244,6 +244,8 @@
         const showMoreText = /*[[#{label.show.more}]]*/ '';
         const showLessText = /*[[#{label.show.less}]]*/ '';
         const bookId = /*[[${book.id}]]*/ 0;
+
+        const showReadingProgressModal = /*[[${showReadingProgressModal}]]*/ false;
 
         const toggleDescriptionButton = $('#toggleDescription');
         const descriptionPanel = $('.book-description');
@@ -319,6 +321,10 @@
 
                 $form.removeClass('was-validated');
             });
+
+            if (showReadingProgressModal) {
+                readingModalObject.show();
+            }
 
             $('.add-to-shelf, .remove-from-shelf').on('click', function (e) {
                 let shelfOption = $(e.currentTarget);

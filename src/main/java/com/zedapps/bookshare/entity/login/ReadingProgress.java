@@ -30,8 +30,7 @@ public class ReadingProgress {
     @SequenceGenerator(name = "reading_prog_seq", sequenceName = "reading_prog_seq", allocationSize = 1)
     private Long id;
 
-    @NotNull(message = "{error.required}")
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     private Login user;
 
