@@ -235,6 +235,11 @@ body {
     font-size: 0.9rem;
 }
 
+.reading-progress-item {
+    background-color: #fff8f0 !important;
+    color: #4b3b2f !important;
+}
+
 .footer a {
     color: #fff8f0 !important;
     text-decoration: none;

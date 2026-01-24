@@ -4,13 +4,11 @@ import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
-import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.Review;
-import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.entity.login.ShelvedBook;
+import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
@@ -22,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static com.zedapps.bookshare.entity.login.Shelf.*;
@@ -38,18 +37,21 @@ public class BookService {
     private final ReviewRepository reviewRepository;
     private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
+    private final ReadingProgressRepository readingProgressRepository;
 
     public BookService(BookRepository bookRepository,
                        BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
                        LoginService loginService,
-                       ShelvedBookRepository shelvedBookRepository) {
+                       ShelvedBookRepository shelvedBookRepository,
+                       ReadingProgressRepository readingProgressRepository) {
 
         this.bookRepository = bookRepository;
         this.bookListRepository = bookListRepository;
         this.reviewRepository = reviewRepository;
         this.loginService = loginService;
         this.shelvedBookRepository = shelvedBookRepository;
+        this.readingProgressRepository = readingProgressRepository;
     }
 
     public Book getBook(Long bookId) {
@@ -74,14 +76,23 @@ public class BookService {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
 
-    public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model) {
+    public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model,
+                                   boolean addNewReview, boolean addNewProgress) {
+
         Book book = getBook(bookId);
         model.put("book", book);
 
-        setupShelfReferenceData(loginDetails, model, book);
+
+        if (Objects.nonNull(loginDetails)) {
+            Login login = loginService.getLogin(loginDetails.getEmail());
+
+            setupShelfReferenceData(login, model, book);
+            model.put("readingProgresses", login.getReadingProgresses());
+        }
 
         model.put("tmpShelf", new Shelf());
-        model.put("reviewDto", new BookReviewDto());
+        if (addNewProgress) model.put("tmpProgress", new ReadingProgress());
+        if (addNewReview) model.put("reviewDto", new BookReviewDto());
 
         model.put("reviews", getReviewsByBook(book, 0));
         model.put("relatedBooks", getRelatedBooks(book));
@@ -150,31 +161,52 @@ public class BookService {
         shelvedBookRepository.delete(shelvedBook);
     }
 
-    private void setupShelfReferenceData(LoginDetails loginDetails, ModelMap model, Book book) {
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
+    @Transactional
+    public ReadingProgress saveReadingProgress(ReadingProgress readingProgress, LoginDetails loginDetails) {
+        if (readingProgress.getId() > 0) {
+            ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())
+                    .orElseThrow(NoResultException::new);
 
-            Map<String, Shelf> defaultShelves = new HashMap<>();
-            List<Shelf> otherShelves = new ArrayList<>();
-
-            for (Shelf shelf : login.getShelves()) {
-                if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
-                else otherShelves.add(shelf);
-            }
-
-            Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
-
-            model.put("defaultShelves", defaultShelves.values());
-            model.put("defaultShelf", defaultShelf);
-
-            model.put("allShelves", otherShelves);
-            model.put("shelvesTruncated", otherShelves.size() > 5);
-
-            model.put("shelves", otherShelves.stream()
-                    .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
-                    .limit(5)
-                    .toList());
+            assert Objects.equals(persistedReadingProgress.getUser().getEmail(), loginDetails.getEmail());
         }
+
+        readingProgress.setUser(loginService.getLogin(loginDetails.getEmail()));
+
+        if (readingProgress.isCompleted()) {
+            Book book = getBook(readingProgress.getBook().getId());
+            readingProgress.setPagesRead(book.getPages());
+
+            if (Objects.isNull(readingProgress.getEndDate())) {
+                readingProgress.setEndDate(LocalDate.now());
+            }
+        }
+
+        readingProgress = readingProgressRepository.save(readingProgress);
+
+        return readingProgress;
+    }
+
+    private void setupShelfReferenceData(Login login, ModelMap model, Book book) {
+        Map<String, Shelf> defaultShelves = new HashMap<>();
+        List<Shelf> otherShelves = new ArrayList<>();
+
+        for (Shelf shelf : login.getShelves()) {
+            if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
+            else otherShelves.add(shelf);
+        }
+
+        Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
+
+        model.put("defaultShelves", defaultShelves.values());
+        model.put("defaultShelf", defaultShelf);
+
+        model.put("allShelves", otherShelves);
+        model.put("shelvesTruncated", otherShelves.size() > 5);
+
+        model.put("shelves", otherShelves.stream()
+                .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
+                .limit(5)
+                .toList());
     }
 
     private Shelf getDefaultShelf(Book book, Map<String, Shelf> defaultShelves) {

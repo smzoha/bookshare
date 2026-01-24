@@ -2,14 +2,11 @@ package com.zedapps.bookshare.entity.login;
 
 import com.zedapps.bookshare.entity.book.Book;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +18,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ShelvedBook {
 
     @Id
@@ -44,15 +40,19 @@ public class ShelvedBook {
     @JoinColumn(name = "shelf_id")
     private Shelf shelf;
 
-    @Min(value = 0, message = "{error.min.value}")
-    private Long pagesRead = 0L;
-
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
     private LocalDateTime shelvedAt;
 
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedAt;
+    @Override
+    public String toString() {
+        return "ShelvedBook{" +
+                "id=" + id +
+                ", login=" + login.getId() +
+                ", book=" + book.getId() +
+                ", shelf=" + shelf.getId() +
+                ", shelvedAt=" + shelvedAt +
+                '}';
+    }
 }

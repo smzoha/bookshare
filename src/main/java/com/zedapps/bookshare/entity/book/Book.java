@@ -6,7 +6,6 @@ import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Book {
 
     @Id
@@ -98,6 +96,21 @@ public class Book {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", pages=" + pages +
+                ", publicationDate=" + publicationDate +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", image=" + image.getId() +
+                '}';
+    }
 
     public String getAuthorNames() {
         if (CollectionUtils.isEmpty(authors)) {

@@ -6,6 +6,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -74,7 +74,7 @@ public class BookController {
                               @PathVariable Long id,
                               ModelMap model) {
 
-        bookService.setupReferenceData(loginDetails, id, model);
+        bookService.setupReferenceData(loginDetails, id, model, true, true);
 
         return "app/book/book";
     }
@@ -98,10 +98,8 @@ public class BookController {
                             @AuthenticationPrincipal LoginDetails loginDetails,
                             ModelMap model) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
-
         if (errors.hasErrors()) {
-            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model);
+            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model, false, true);
             return "app/book/book";
         }
 
@@ -116,7 +114,6 @@ public class BookController {
                                         @RequestParam Long bookId,
                                         @RequestParam Long shelfId) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
         bookService.addToShelf(loginDetails, bookId, shelfId);
 
         return ResponseEntity.ok().build();
@@ -128,18 +125,33 @@ public class BookController {
                                              @RequestParam Long bookId,
                                              @RequestParam Long shelfId) {
 
-        Assert.notNull(loginDetails, "User is not logged in!");
         bookService.removeFromShelf(loginDetails, bookId, shelfId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/updateProgress")
+    public String updateReadingProgress(@Valid @ModelAttribute("tmpProgress") ReadingProgress readingProgress,
+                                        Errors errors,
+                                        @AuthenticationPrincipal LoginDetails loginDetails,
+                                        ModelMap model) {
+
+        if (errors.hasErrors()) {
+            bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model, true, false);
+            model.put("showReadingProgressModal", true);
+
+            return "app/book/book";
+        }
+
+        readingProgress = bookService.saveReadingProgress(readingProgress, loginDetails);
+
+        return "redirect:/book/" + readingProgress.getBook().getId();
     }
 
     @ResponseBody
     @PostMapping("/like")
     public ResponseEntity<ReviewLikeResponseDto> toggleLike(@RequestParam Long reviewId,
                                                             @AuthenticationPrincipal LoginDetails loginDetails) {
-
-        Assert.notNull(loginDetails, "User is not logged in!");
 
         ReviewLikeResponseDto responseDto = bookService.updateReviewLikes(reviewId, loginDetails);
 

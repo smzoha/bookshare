@@ -43,4 +43,14 @@ public class Image {
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime uploadDate;
+
+    @Override
+    public String toString() {
+        return "Image{" +
+                "id=" + id +
+                ", fileName='" + fileName + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", uploadDate=" + uploadDate +
+                '}';
+    }
 }
