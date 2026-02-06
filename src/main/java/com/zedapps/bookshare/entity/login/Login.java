@@ -71,6 +71,7 @@ public class Login {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
+    @OrderBy("defaultShelf DESC, name")
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Shelf> shelves = new ArrayList<>();
 

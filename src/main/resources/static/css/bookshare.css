@@ -264,13 +264,14 @@ body {
 .shelf-item {
     cursor: pointer;
     background-color: #ffe8c6;
+    border: none;
     border-radius: .25rem;
     transition: background-color 0.15s ease;
 }
 
 .shelf-item:hover {
     background-color: #9a7260;
-    color: #ffe8c6;
+    color: #ffffff;
 }
 
 .shelf-item.active {

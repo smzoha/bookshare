@@ -6,86 +6,24 @@
 
 <body>
 <div layout:fragment="pageContent">
-
     <div class="container-fluid collections-layout">
         <aside class="shelves-panel d-none d-lg-block p-3 mt-3 rounded-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="text-uppercase text-muted mb-0" th:text="#{label.shelves}"></h6>
+                <h6 class="text-uppercase text-bookshare mb-0" th:text="#{label.shelves}"></h6>
             </div>
 
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush gap-1 rounded-2">
                 <li class="list-group-item shelf-item"
                     th:each="shelf : ${collections}"
                     th:data-shelf-id="${shelf.id}"
                     th:text="${shelf.name}"
-                    th:classappend="${shelf.id eq active.id ? 'active' : ''}">
+                    th:classappend="${shelf.id eq currentShelf.id ? 'active' : ''}">
                 </li>
             </ul>
         </aside>
 
-        <main class="p-4 flex-fill">
-            <div class="d-lg-none mb-3">
-                <button class="btn btn-outline-secondary w-100" data-bs-toggle="offcanvas"
-                        data-bs-target="#shelvesOffCanvas" th:text="#{label.shelves}">
-                </button>
-            </div>
-
-            <h2 class="mb-4 text-bookshare fw-bold" th:text="${active.name}"></h2>
-
-            <div class="list-group list-group-flush">
-                <div class="list-group-item bg-bookshare-50 mb-3 shadow-sm border-0 rounded"
-                     th:each="shelvedBook : ${active.books}"
-                     th:with="progress=${login.getReadingProgress(shelvedBook.book.id)}">
-
-                    <div class="shelved-book-row">
-                        <img th:src="@{/image/{id}(id=${shelvedBook.book.image.id})}"
-                             th:alt="${shelvedBook.book.title}"
-                             class="shelved-book-cover rounded shadow-sm"
-                             th:if="${shelvedBook.book.image ne null}">
-
-                        <img th:src="@{/img/book-placeholder.png}"
-                             th:alt="${shelvedBook.book.title}"
-                             class="shelved-book-cover rounded shadow-sm"
-                             th:if="${shelvedBook.book.image eq null}">
-
-                        <div class="shelved-book-info">
-                            <a th:href="@{/book/{id}(id=${shelvedBook.book.id})}"
-                               class="text-bookshare fw-bold text-decoration-none"
-                               th:text="${shelvedBook.book.title}">
-                            </a>
-
-                            <div class="text-muted" th:text="${shelvedBook.book.getAuthorNames()}">
-                            </div>
-                        </div>
-
-                        <div class="shelved-book-progress d-none d-md-block" th:if="${progress ne null}">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Progress</span>
-                                <span th:text="|${progress.pagesRead}/${shelvedBook.book.pages}|"></span>
-                            </div>
-
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar"
-                                     th:style="|width: ${(progress.pagesRead * 100) / shelvedBook.book.pages}%|"
-                                     th:classappend="${progress.completed} ? ' bg-success' : 'bg-warning'">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${progress ne null}">
-                            <div class="text-end"
-                                 th:text="|Added: ${#temporals.format(progress.startDate, 'dd-MM-yyyy')}|"></div>
-
-                            <div class="text-end" th:if="${progress.endDate ne null}"
-                                 th:text="|Finished: ${#temporals.format(progress.endDate, 'dd-MM-yyyy')}|"></div>
-
-                            <div class="text-end"
-                                 th:text="|Updated: ${#temporals.format(progress.updatedAt, 'dd-MM-yyyy')}|"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        <main id="collectionBooksWrapper" class="p-4 flex-fill"
+              th:insert="~{app/login/fragments/shelvedBookFragment :: shelvedBooks}"></main>
     </div>
 
     <div class="offcanvas offcanvas-start" id="shelvesOffCanvas">
@@ -99,11 +37,38 @@
                     th:each="shelf : ${collections}"
                     th:data-shelf-id="${shelf.id}"
                     th:text="${shelf.name}"
-                    th:classappend="${shelf.id eq active.id ? 'active' : ''}">
+                    th:classappend="${shelf.id eq currentShelf.id ? 'active' : ''}">
                 </li>
             </ul>
         </div>
     </div>
+
+    <script>
+        $(function () {
+            $('.shelf-item').on('click', (e) => {
+                let shelfItem = $(e.currentTarget), shelfId = shelfItem.data('shelf-id');
+
+                $.ajax({
+                    url: '/collection',
+                    data: {
+                        shelfId: shelfId
+                    },
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    success: function (data) {
+                        $("#collectionBooksWrapper").html(data);
+
+                        $('.shelf-item').removeClass('active');
+                        shelfItem.addClass('active');
+
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    },
+                    error: function () {
+                        alert('Error loading books for shelf!');
+                    }
+                });
+            });
+        });
+    </script>
 </div>
 </body>
 </html>
