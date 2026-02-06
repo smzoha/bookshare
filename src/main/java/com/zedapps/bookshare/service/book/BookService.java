@@ -87,7 +87,7 @@ public class BookService {
             Login login = loginService.getLogin(loginDetails.getEmail());
 
             setupShelfReferenceData(login, model, book);
-            model.put("readingProgresses", login.getReadingProgresses());
+            model.put("readingProgresses", login.getReadingProgress(book.getId()));
         }
 
         model.put("tmpShelf", new Shelf());
@@ -163,7 +163,7 @@ public class BookService {
 
     @Transactional
     public ReadingProgress saveReadingProgress(ReadingProgress readingProgress, LoginDetails loginDetails) {
-        if (readingProgress.getId() > 0) {
+        if (readingProgress.getId() != null) {
             ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())
                     .orElseThrow(NoResultException::new);
 
