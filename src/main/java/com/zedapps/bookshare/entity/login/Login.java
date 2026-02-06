@@ -114,4 +114,11 @@ public class Login {
                 .findFirst()
                 .orElseThrow();
     }
+
+    public ReadingProgress getReadingProgress(Long bookId) {
+        return getReadingProgresses().stream()
+                .filter(rp -> Objects.equals(rp.getBook().getId(), bookId))
+                .findFirst()
+                .orElse(null);
+    }
 }
