@@ -7,7 +7,7 @@
 <body>
 <div layout:fragment="pageContent">
     <div class="container-fluid collections-layout">
-        <aside class="shelves-panel d-none d-lg-block p-3 mt-3 rounded-3">
+        <aside class="shelves-panel bg-bookshare d-none d-lg-block p-3 mt-3 rounded-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="text-uppercase text-bookshare mb-0" th:text="#{label.shelves}"></h6>
             </div>
@@ -26,13 +26,13 @@
               th:insert="~{app/login/fragments/shelvedBookFragment :: shelvedBooks}"></main>
     </div>
 
-    <div class="offcanvas offcanvas-start" id="shelvesOffCanvas">
+    <div class="bg-bookshare offcanvas offcanvas-start rounded-3" id="shelvesOffCanvas">
         <div class="offcanvas-header">
             <h5 th:text="#{label.shelves}"></h5>
             <button class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <ul class="list-group list-group-flush">
+            <ul class="list-group list-group-flush gap-2 rounded-2">
                 <li class="list-group-item shelf-item"
                     th:each="shelf : ${collections}"
                     th:data-shelf-id="${shelf.id}"
@@ -45,6 +45,9 @@
 
     <script>
         $(function () {
+            const offCanvas = document.getElementById('shelvesOffCanvas');
+            const offCanvasObj = bootstrap.Offcanvas.getOrCreateInstance(offCanvas);
+
             $('.shelf-item').on('click', (e) => {
                 let shelfItem = $(e.currentTarget), shelfId = shelfItem.data('shelf-id');
 
@@ -59,6 +62,8 @@
 
                         $('.shelf-item').removeClass('active');
                         shelfItem.addClass('active');
+
+                        offCanvasObj.hide();
 
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     },

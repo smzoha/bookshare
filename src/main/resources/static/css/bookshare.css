@@ -258,7 +258,6 @@ body {
     width: 240px;
     flex-shrink: 0;
     overflow-y: auto;
-    background-color: #ffe8c6;
 }
 
 .shelf-item {
