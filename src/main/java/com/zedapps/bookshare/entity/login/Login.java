@@ -71,6 +71,7 @@ public class Login {
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
 
+    @OrderBy("defaultShelf DESC, name")
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Shelf> shelves = new ArrayList<>();
 
@@ -113,5 +114,12 @@ public class Login {
                 .filter(s -> Objects.equals(s.getId(), shelfId))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public ReadingProgress getReadingProgress(Long bookId) {
+        return getReadingProgresses().stream()
+                .filter(rp -> Objects.equals(rp.getBook().getId(), bookId))
+                .findFirst()
+                .orElse(null);
     }
 }

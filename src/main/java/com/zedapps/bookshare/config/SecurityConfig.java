@@ -37,7 +37,7 @@ public class SecurityConfig {
                             .requestMatchers("/manage/book").hasAuthority(Role.AUTHOR.name())
                             .requestMatchers("/profile/**").hasAnyAuthority(Role.getAllRoleNames())
                             .requestMatchers("/book/add*", "/book/remove*", "/book/update*", "/book/like",
-                                    "/shelf/add").authenticated()
+                                    "/shelf/add", "/collection/**").authenticated()
                             .anyRequest().permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login")

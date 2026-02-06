@@ -68,7 +68,7 @@ public class Author {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", login=" + login.getId() +
+                ", login=" + (login != null ? login.getId() : "") +
                 ", updatedAt=" + updatedAt +
                 ", createdAt=" + createdAt +
                 '}';

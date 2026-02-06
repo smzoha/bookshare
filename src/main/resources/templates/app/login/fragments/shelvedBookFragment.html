@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="shelvedBooks">
+    <div class="d-lg-none mb-3">
+        <button class="btn btn-outline-secondary w-100" data-bs-toggle="offcanvas"
+                data-bs-target="#shelvesOffCanvas" th:text="#{label.shelves}">
+        </button>
+    </div>
+
+    <h2 class="mb-4 text-bookshare fw-bold" th:text="${currentShelf.name}"></h2>
+
+    <div class="list-group list-group-flush">
+        <div class="list-group-item bg-bookshare-50 mb-3 p-3 shadow-sm border-0 rounded"
+             th:if="${currentShelf.books.isEmpty()}" th:text="#{label.empty.shelf.message}"></div>
+
+        <div class="list-group-item bg-bookshare-50 mb-3 shadow-sm border-0 rounded"
+             th:each="shelvedBook : ${currentShelf.books}"
+             th:with="progress=${login.getReadingProgress(shelvedBook.book.id)}">
+
+            <div class="shelved-book-row">
+                <img th:src="@{/image/{id}(id=${shelvedBook.book.image.id})}"
+                     th:alt="${shelvedBook.book.title}"
+                     class="shelved-book-cover rounded shadow-sm"
+                     th:if="${shelvedBook.book.image ne null}">
+
+                <img th:src="@{/img/book-placeholder.png}"
+                     th:alt="${shelvedBook.book.title}"
+                     class="shelved-book-cover rounded shadow-sm"
+                     th:if="${shelvedBook.book.image eq null}">
+
+                <div class="shelved-book-info">
+                    <a th:href="@{/book/{id}(id=${shelvedBook.book.id})}"
+                       class="text-bookshare fw-bold text-decoration-none"
+                       th:text="${shelvedBook.book.title}">
+                    </a>
+
+                    <div class="text-muted" th:text="${shelvedBook.book.getAuthorNames()}">
+                    </div>
+                </div>
+
+                <div class="shelved-book-progress d-none d-md-block" th:if="${progress ne null}">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Progress</span>
+                        <span th:text="|${progress.pagesRead}/${shelvedBook.book.pages}|"></span>
+                    </div>
+
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar"
+                             th:style="|width: ${(progress.pagesRead * 100) / shelvedBook.book.pages}%|"
+                             th:classappend="${progress.completed} ? ' bg-success' : 'bg-warning'">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${progress ne null}">
+                    <div class="text-end"
+                         th:text="|Added: ${#temporals.format(progress.startDate, 'dd-MM-yyyy')}|"></div>
+
+                    <div class="text-end" th:if="${progress.endDate ne null}"
+                         th:text="|Finished: ${#temporals.format(progress.endDate, 'dd-MM-yyyy')}|"></div>
+
+                    <div class="text-end"
+                         th:text="|Updated: ${#temporals.format(progress.updatedAt, 'dd-MM-yyyy')}|"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Collections</title>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container-fluid collections-layout">
+        <aside class="shelves-panel bg-bookshare d-none d-lg-block p-3 mt-3 rounded-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-uppercase text-bookshare mb-0" th:text="#{label.shelves}"></h6>
+            </div>
+
+            <ul class="list-group list-group-flush gap-1 rounded-2">
+                <li class="list-group-item shelf-item"
+                    th:each="shelf : ${collections}"
+                    th:data-shelf-id="${shelf.id}"
+                    th:text="${shelf.name}"
+                    th:classappend="${shelf.id eq currentShelf.id ? 'active' : ''}">
+                </li>
+            </ul>
+        </aside>
+
+        <main id="collectionBooksWrapper" class="p-4 flex-fill"
+              th:insert="~{app/login/fragments/shelvedBookFragment :: shelvedBooks}"></main>
+    </div>
+
+    <div class="bg-bookshare offcanvas offcanvas-start rounded-3" id="shelvesOffCanvas">
+        <div class="offcanvas-header">
+            <h5 th:text="#{label.shelves}"></h5>
+            <button class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-group list-group-flush gap-2 rounded-2">
+                <li class="list-group-item shelf-item"
+                    th:each="shelf : ${collections}"
+                    th:data-shelf-id="${shelf.id}"
+                    th:text="${shelf.name}"
+                    th:classappend="${shelf.id eq currentShelf.id ? 'active' : ''}">
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            const offCanvas = document.getElementById('shelvesOffCanvas');
+            const offCanvasObj = bootstrap.Offcanvas.getOrCreateInstance(offCanvas);
+
+            $('.shelf-item').on('click', (e) => {
+                let shelfItem = $(e.currentTarget), shelfId = shelfItem.data('shelf-id');
+
+                $.ajax({
+                    url: '/collection',
+                    data: {
+                        shelfId: shelfId
+                    },
+                    headers: {"X-Requested-With": "XMLHttpRequest"},
+                    success: function (data) {
+                        $("#collectionBooksWrapper").html(data);
+
+                        $('.shelf-item').removeClass('active');
+                        shelfItem.addClass('active');
+
+                        offCanvasObj.hide();
+
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    },
+                    error: function () {
+                        alert('Error loading books for shelf!');
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

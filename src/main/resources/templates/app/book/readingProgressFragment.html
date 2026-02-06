@@ -36,7 +36,7 @@
 
                         <div class="mb-3">
                             <label for="endDate" class="form-label">End Date</label>
-                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate" required/>
+                            <input type="date" th:field="*{endDate}" class="form-control" id="endDate"/>
                             <div class="text-danger" th:if="${#fields.hasErrors('endDate')}"
                                  th:errors="*{endDate}"></div>
                         </div>

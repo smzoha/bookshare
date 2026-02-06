@@ -249,6 +249,63 @@ body {
     color: #fff8f0 !important;
 }
 
+.collections-layout {
+    display: flex;
+    min-height: 100%;
+}
+
+.shelves-panel {
+    width: 240px;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.shelf-item {
+    cursor: pointer;
+    background-color: #ffe8c6;
+    border: none;
+    border-radius: .25rem;
+    transition: background-color 0.15s ease;
+}
+
+.shelf-item:hover {
+    background-color: #9a7260;
+    color: #ffffff;
+}
+
+.shelf-item.active {
+    background-color: #4b3b2f;
+    border: none;
+    font-weight: 600;
+}
+
+.shelved-book-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.shelved-book-cover {
+    width: 56px;
+    height: 84px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.shelved-book-info {
+    flex: 1;
+    min-width: 180px;
+}
+
+.shelved-book-progress {
+    width: 220px;
+}
+
+.shelved-book-audit {
+    width: 200px;
+}
+
 @media (max-width: 768px) {
     .book-cover {
         width: 120px;

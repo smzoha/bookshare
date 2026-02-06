@@ -2,7 +2,10 @@ package com.zedapps.bookshare.repository.login;
 
 import com.zedapps.bookshare.entity.login.Shelf;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author smzoha
@@ -10,4 +13,7 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface ShelfRepository extends JpaRepository<Shelf, Long> {
+
+    @Query("FROM Shelf WHERE user.email = :email ORDER BY defaultShelf DESC, name")
+    List<Shelf> getShelvesForCollection(String email);
 }
