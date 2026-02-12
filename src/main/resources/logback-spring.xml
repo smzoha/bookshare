@@ -1,41 +1,40 @@
 <configuration scan="true">
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n%ex</pattern>
         </encoder>
     </appender>
 
     <appender name="REQUEST-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/request.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/request.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
+            <fileNamePattern>logs/request.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>15</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n%ex</pattern>
         </encoder>
     </appender>
 
     <appender name="SERVER-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/server.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/server.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/server.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n%ex</pattern>
         </encoder>
     </appender>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SERVER-LOG"/>
     </root>
 
     <logger name="REQUEST-LOG" level="INFO" additivity="false">
         <appender-ref ref="REQUEST-LOG"/>
-    </logger>
-
-    <logger name="com.zedapps" level="DEBUG" additivity="false">
-        <appender-ref ref="SERVER-LOG"/>
     </logger>
 </configuration>
