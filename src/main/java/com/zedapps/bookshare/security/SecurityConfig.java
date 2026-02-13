@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.config;
+package com.zedapps.bookshare.security;
 
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.service.LoginDetailService;
