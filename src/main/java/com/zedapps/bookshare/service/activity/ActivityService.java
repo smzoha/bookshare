@@ -7,7 +7,6 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
 import com.zedapps.bookshare.repository.activity.ActivityRepository;
-import com.zedapps.bookshare.service.login.LoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,15 +23,12 @@ public class ActivityService {
 
     private final ActivityOutboxRepository activityOutboxRepository;
     private final ActivityRepository activityRepository;
-    private final LoginService loginService;
 
     public ActivityService(ActivityOutboxRepository activityOutboxRepository,
-                           ActivityRepository activityRepository,
-                           LoginService loginService) {
+                           ActivityRepository activityRepository) {
 
         this.activityOutboxRepository = activityOutboxRepository;
         this.activityRepository = activityRepository;
-        this.loginService = loginService;
     }
 
     @Transactional
@@ -59,11 +55,9 @@ public class ActivityService {
 
     @Transactional
     public void saveActivity(ActivityType type,
-                             String loginEmail,
+                             Login login,
                              Long referenceId,
                              Map<String, Object> metadata) {
-
-        Login login = loginService.getLogin(metadata.getOrDefault("actionBy", loginEmail).toString());
 
         Activity activity = Activity.builder()
                 .login(login)
