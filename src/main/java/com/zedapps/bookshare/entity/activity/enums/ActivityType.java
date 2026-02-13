@@ -12,31 +12,42 @@ import java.util.Set;
 public enum ActivityType {
 
     // User Activities
-    BOOK_LIST_VIEW,
-    BOOK_VIEW,
-    BOOK_ADD_REVIEW,
-    BOOK_LIKE_REVIEW,
-    BOOK_ADD_TO_SHELF,
-    BOOK_REMOVE_FROM_SHELF,
-    BOOK_UPDATE_READING_PROGRESS,
+    BOOK_LIST_VIEW("BOOK"),
+    BOOK_VIEW("BOOK"),
+    BOOK_ADD_REVIEW("REVIEW"),
+    BOOK_LIKE_REVIEW("REVIEW"),
+    BOOK_ADD_TO_SHELF("SHELF"),
+    BOOK_REMOVE_FROM_SHELF("SHELF"),
+    BOOK_UPDATE_READING_PROGRESS("READING_PROGRESS"),
 
-    SHELF_ADD,
+    SHELF_ADD("SHELF"),
 
-    LOGIN,
-    LOGOUT,
-    REGISTER,
+    LOGIN("LOGIN"),
+    LOGOUT("LOGIN"),
+    REGISTER("LOGIN"),
 
     // Admin Activities
-    USER_ADD,
-    USER_UPDATE,
-    BOOK_ADD,
-    BOOK_UPDATE,
-    GENRE_ADD,
-    GENRE_UPDATE,
-    TAG_ADD,
-    TAG_UPDATE,
-    AUTHOR_ADD,
-    AUTHOR_UPDATE;
+    USER_LIST_VIEW("LOGIN"),
+    USER_ADD("LOGIN"),
+    USER_UPDATE("LOGIN"),
+    BOOK_LIST_VIEW_ADMIN("BOOK"),
+    BOOK_ADD("BOOK"),
+    BOOK_UPDATE("BOOK"),
+    GENRE_LIST_VIEW("GENRE"),
+    GENRE_ADD("GENRE"),
+    GENRE_UPDATE("GENRE"),
+    TAG_LIST_VIEW("TAG"),
+    TAG_ADD("TAG"),
+    TAG_UPDATE("TAG"),
+    AUTHOR_LIST_VIEW("AUTHOR"),
+    AUTHOR_ADD("AUTHOR"),
+    AUTHOR_UPDATE("AUTHOR");
 
     static final Set<ActivityType> FEED_ACTIVITIES = Set.of(BOOK_ADD_REVIEW, BOOK_LIKE_REVIEW, BOOK_UPDATE_READING_PROGRESS);
+
+    private final String referenceEntity;
+
+    ActivityType(String referenceEntity) {
+        this.referenceEntity = referenceEntity;
+    }
 }
