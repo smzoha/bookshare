@@ -74,6 +74,11 @@ public class ActivityService {
                 .internal(!ActivityType.FEED_ACTIVITIES.contains(type))
                 .build();
 
+        saveActivity(activity);
+    }
+
+    @Transactional
+    public void saveActivity(Activity activity) {
         try {
             activityRepository.save(activity);
 
