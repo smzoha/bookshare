@@ -89,11 +89,9 @@ public class LoginService {
 
         login = loginRepository.save(login);
 
-        LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        activityService.saveActivityOutbox(ActivityType.USER_ADD,
+        activityService.saveActivityOutbox(ActivityType.REGISTER,
                 login.getId(),
                 Map.of(
-                        "actionBy", loginDetails.getEmail(),
                         "affectedUserEmail", login.getEmail()
                 ));
 

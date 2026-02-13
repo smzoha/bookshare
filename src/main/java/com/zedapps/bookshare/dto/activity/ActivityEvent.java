@@ -14,7 +14,6 @@ import java.util.Map;
 public record ActivityEvent(
         Login login,
         ActivityType eventType,
-        String referenceEntity,
         Long referenceId,
         Map<String, Object> metadata,
         boolean internal) {

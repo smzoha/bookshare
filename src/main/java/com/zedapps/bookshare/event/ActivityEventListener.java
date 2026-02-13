@@ -26,7 +26,7 @@ public class ActivityEventListener {
         Activity activity = Activity.builder()
                 .login(activityEvent.login())
                 .eventType(activityEvent.eventType())
-                .referenceEntity(activityEvent.referenceEntity())
+                .referenceEntity(activityEvent.eventType().getReferenceEntity())
                 .referenceId(activityEvent.referenceId())
                 .metadata(activityEvent.metadata())
                 .build();
