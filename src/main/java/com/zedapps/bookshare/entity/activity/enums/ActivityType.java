@@ -44,7 +44,7 @@ public enum ActivityType {
     AUTHOR_ADD("AUTHOR"),
     AUTHOR_UPDATE("AUTHOR");
 
-    static final Set<ActivityType> FEED_ACTIVITIES = Set.of(BOOK_ADD_REVIEW, BOOK_LIKE_REVIEW, BOOK_UPDATE_READING_PROGRESS);
+    public static final Set<ActivityType> FEED_ACTIVITIES = Set.of(BOOK_ADD_REVIEW, BOOK_LIKE_REVIEW, BOOK_UPDATE_READING_PROGRESS);
 
     private final String referenceEntity;
 

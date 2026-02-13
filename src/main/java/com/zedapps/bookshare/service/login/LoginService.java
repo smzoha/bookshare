@@ -9,7 +9,7 @@ import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
-import com.zedapps.bookshare.service.ActivityService;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;

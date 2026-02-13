@@ -6,9 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -17,8 +15,10 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
+@Builder
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Activity {
 
     @Id

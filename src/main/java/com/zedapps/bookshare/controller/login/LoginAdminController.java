@@ -5,7 +5,7 @@ import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.enums.Role;
-import com.zedapps.bookshare.service.ActivityService;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.validator.LoginDtoValidator;
 import jakarta.validation.Valid;
