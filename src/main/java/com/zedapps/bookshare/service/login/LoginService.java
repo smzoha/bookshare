@@ -127,6 +127,7 @@ public class LoginService {
         login.setHandle(loginManageDto.getHandle());
         login.setRole(loginManageDto.getRole());
         login.setActive(loginManageDto.isActive());
+        login.setBio(loginManageDto.getBio());
         login.setProfilePicture(Objects.isNull(loginManageDto.getProfilePictureId()) ? null
                 : imageRepository.findById(loginManageDto.getProfilePictureId()).orElse(null));
     }
