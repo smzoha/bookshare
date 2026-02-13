@@ -36,6 +36,10 @@ public class ActivityService {
         return activityOutboxRepository.findTop100ByStatusOrderByCreatedAt(ActivityStatus.PENDING);
     }
 
+    public List<ActivityOutbox> getProcessedActivityOutboxItems() {
+        return activityOutboxRepository.findByStatusIn(List.of(ActivityStatus.COMPLETED, ActivityStatus.FAILED));
+    }
+
     @Transactional
     public void saveActivityOutbox(ActivityType type,
                                    Long referenceId,
@@ -89,15 +93,12 @@ public class ActivityService {
 
     @Transactional
     public void processOutboxActivity(List<ActivityOutbox> activityOutboxList, List<Activity> activityList) {
-        updateActivityOutboxList(activityOutboxList);
-        saveActivityList(activityList);
-    }
-
-    private void updateActivityOutboxList(List<ActivityOutbox> activityOutboxList) {
         activityOutboxRepository.saveAll(activityOutboxList);
+        activityRepository.saveAll(activityList);
     }
 
-    private void saveActivityList(List<Activity> activityList) {
-        activityRepository.saveAll(activityList);
+    @Transactional
+    public void deleteOutboxActivityList(List<ActivityOutbox> activityOutboxList) {
+        activityOutboxRepository.deleteAll(activityOutboxList);
     }
 }

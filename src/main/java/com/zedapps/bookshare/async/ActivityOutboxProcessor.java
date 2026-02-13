@@ -76,4 +76,17 @@ public class ActivityOutboxProcessor {
 
         activityService.processOutboxActivity(unprocessedActivityOutboxItems, processedActivityList);
     }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void cleanupStaleOutboxActivity() {
+        List<ActivityOutbox> staleActivityOutboxList = activityService.getProcessedActivityOutboxItems();
+
+        try {
+            activityService.deleteOutboxActivityList(staleActivityOutboxList);
+            log.debug("Successfully cleaned up stale ActivityOutbox data");
+
+        } catch (Exception e) {
+            log.error("Error cleaning up stale ActivityOutbox data");
+        }
+    }
 }
