@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +30,10 @@ public class ActivityService {
 
         this.activityOutboxRepository = activityOutboxRepository;
         this.activityRepository = activityRepository;
+    }
+
+    public List<ActivityOutbox> getUnprocessedActivityOutboxItems() {
+        return activityOutboxRepository.findTop100ByStatusOrderByCreatedAt(ActivityStatus.PENDING);
     }
 
     @Transactional
@@ -80,5 +85,19 @@ public class ActivityService {
             log.error("Error publishing activity: {}, {}", activity.getEventType().name(),
                     activity.getMetadata().getOrDefault("actionBy", ""));
         }
+    }
+
+    @Transactional
+    public void processOutboxActivity(List<ActivityOutbox> activityOutboxList, List<Activity> activityList) {
+        updateActivityOutboxList(activityOutboxList);
+        saveActivityList(activityList);
+    }
+
+    private void updateActivityOutboxList(List<ActivityOutbox> activityOutboxList) {
+        activityOutboxRepository.saveAll(activityOutboxList);
+    }
+
+    private void saveActivityList(List<Activity> activityList) {
+        activityRepository.saveAll(activityList);
     }
 }

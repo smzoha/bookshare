@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.event;
+package com.zedapps.bookshare.async;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.entity.activity.Activity;
@@ -29,6 +29,7 @@ public class ActivityEventListener {
                 .referenceEntity(activityEvent.eventType().getReferenceEntity())
                 .referenceId(activityEvent.referenceId())
                 .metadata(activityEvent.metadata())
+                .internal(activityEvent.internal())
                 .build();
 
         activityService.saveActivity(activity);
