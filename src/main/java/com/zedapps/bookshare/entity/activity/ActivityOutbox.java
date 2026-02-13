@@ -43,7 +43,6 @@ public class ActivityOutbox {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> payload;
 
-    @Size(max = 255)
     @NotNull(message = "{error.required}")
     @Enumerated(EnumType.STRING)
     private ActivityStatus status;
@@ -52,10 +51,8 @@ public class ActivityOutbox {
 
     @PastOrPresent
     @CreationTimestamp
-    @NotNull(message = "{error.required}")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @NotNull(message = "{error.required}")
     private LocalDateTime processedAt;
 }
