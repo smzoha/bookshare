@@ -1,0 +1,54 @@
+package com.zedapps.bookshare.entity.activity.enums;
+
+import lombok.Getter;
+
+import java.util.Set;
+
+/**
+ * @author smzoha
+ * @since 24/1/26
+ **/
+@Getter
+public enum ActivityType {
+
+    // User Activities
+    BOOK_LIST_VIEW("BOOK"),
+    BOOK_VIEW("BOOK"),
+    BOOK_ADD_REVIEW("REVIEW"),
+    BOOK_LIKE_REVIEW("REVIEW"),
+    BOOK_ADD_TO_SHELF("SHELF"),
+    BOOK_REMOVE_FROM_SHELF("SHELF"),
+    BOOK_UPDATE_READING_PROGRESS("READING_PROGRESS"),
+
+    SHELF_ADD("SHELF"),
+
+    LOGIN("LOGIN"),
+    LOGOUT("LOGIN"),
+    REGISTER("LOGIN"),
+
+    // Admin Activities
+    USER_LIST_VIEW("LOGIN"),
+    USER_VIEW("LOGIN"),
+    USER_ADD("LOGIN"),
+    USER_UPDATE("LOGIN"),
+    BOOK_LIST_VIEW_ADMIN("BOOK"),
+    BOOK_ADD("BOOK"),
+    BOOK_UPDATE("BOOK"),
+    GENRE_LIST_VIEW("GENRE"),
+    GENRE_ADD("GENRE"),
+    GENRE_UPDATE("GENRE"),
+    TAG_LIST_VIEW("TAG"),
+    TAG_ADD("TAG"),
+    TAG_UPDATE("TAG"),
+    AUTHOR_LIST_VIEW("AUTHOR"),
+    AUTHOR_ADD("AUTHOR"),
+    AUTHOR_UPDATE("AUTHOR");
+
+    public static final Set<ActivityType> FEED_ACTIVITIES = Set.of(BOOK_ADD_REVIEW, BOOK_LIKE_REVIEW, BOOK_UPDATE_READING_PROGRESS);
+
+    private final String referenceEntity;
+
+    ActivityType(String referenceEntity) {
+        this.referenceEntity = referenceEntity;
+    }
+}

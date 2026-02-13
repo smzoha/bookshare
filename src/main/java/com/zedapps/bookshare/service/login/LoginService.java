@@ -1,20 +1,25 @@
 package com.zedapps.bookshare.service.login;
 
+import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -27,11 +32,17 @@ public class LoginService {
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
+    private final ActivityService activityService;
 
-    public LoginService(LoginRepository loginRepository, PasswordEncoder passwordEncoder, ImageRepository imageRepository) {
+    public LoginService(LoginRepository loginRepository,
+                        PasswordEncoder passwordEncoder,
+                        ImageRepository imageRepository,
+                        ActivityService activityService) {
+
         this.loginRepository = loginRepository;
         this.passwordEncoder = passwordEncoder;
         this.imageRepository = imageRepository;
+        this.activityService = activityService;
     }
 
     public List<Login> getLoginList() {
@@ -60,6 +71,14 @@ public class LoginService {
 
         login = loginRepository.save(login);
 
+        LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        activityService.saveActivityOutbox(loginDto.getId() != null ? ActivityType.USER_UPDATE : ActivityType.USER_ADD,
+                login.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "affectedUserEmail", login.getEmail()
+                ));
+
         return login;
     }
 
@@ -69,6 +88,12 @@ public class LoginService {
         setupShelvesForNewLogin(login);
 
         login = loginRepository.save(login);
+
+        activityService.saveActivityOutbox(ActivityType.REGISTER,
+                login.getId(),
+                Map.of(
+                        "affectedUserEmail", login.getEmail()
+                ));
 
         return login;
     }
@@ -102,6 +127,7 @@ public class LoginService {
         login.setHandle(loginManageDto.getHandle());
         login.setRole(loginManageDto.getRole());
         login.setActive(loginManageDto.isActive());
+        login.setBio(loginManageDto.getBio());
         login.setProfilePicture(Objects.isNull(loginManageDto.getProfilePictureId()) ? null
                 : imageRepository.findById(loginManageDto.getProfilePictureId()).orElse(null));
     }
