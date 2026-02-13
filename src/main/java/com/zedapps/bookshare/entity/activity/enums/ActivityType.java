@@ -28,6 +28,7 @@ public enum ActivityType {
 
     // Admin Activities
     USER_LIST_VIEW("LOGIN"),
+    USER_VIEW("LOGIN"),
     USER_ADD("LOGIN"),
     USER_UPDATE("LOGIN"),
     BOOK_LIST_VIEW_ADMIN("BOOK"),
