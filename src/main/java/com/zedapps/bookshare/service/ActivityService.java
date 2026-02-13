@@ -4,6 +4,7 @@ import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.activity.enums.ActivityStatus;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.util.Map;
  * @author smzoha
  * @since 13/2/26
  **/
+@Slf4j
 @Service
 public class ActivityService {
 
@@ -35,6 +37,12 @@ public class ActivityService {
                 .status(ActivityStatus.PENDING)
                 .build();
 
-        activityOutboxRepository.save(activityOutbox);
+        try {
+            activityOutboxRepository.save(activityOutbox);
+
+        } catch (Exception e) {
+            log.error("Error publishing activity to outbox: {}, {}", activityOutbox.getEventType().name(),
+                    activityOutbox.getPayload().getOrDefault("actionBy", ""));
+        }
     }
 }
