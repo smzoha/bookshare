@@ -98,6 +98,10 @@ public class AuthorAdminController {
     }
 
     private void validateAuthorLoginLink(Author author, Errors errors) {
+        if (author.getLogin() == null) {
+            return;
+        }
+
         Optional<Author> authorOptional = bookAdminService.getAuthorByLogin(author.getLogin());
 
         if (authorOptional.isPresent() && !Objects.equals(authorOptional.get().getId(), author.getId())) {
