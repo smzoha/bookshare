@@ -38,10 +38,12 @@ public enum ActivityType {
     BOOK_UPDATE("BOOK"),
 
     GENRE_LIST_VIEW("GENRE"),
+    GENRE_VIEW("GENRE"),
     GENRE_ADD("GENRE"),
     GENRE_UPDATE("GENRE"),
 
     TAG_LIST_VIEW("TAG"),
+    TAG_VIEW("TAG"),
     TAG_ADD("TAG"),
     TAG_UPDATE("TAG"),
 

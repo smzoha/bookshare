@@ -1,15 +1,22 @@
 package com.zedapps.bookshare.controller.book.admin;
 
+import com.zedapps.bookshare.dto.activity.ActivityEvent;
+import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Tag;
-import com.zedapps.bookshare.repository.book.TagRepository;
-import jakarta.persistence.NoResultException;
+import com.zedapps.bookshare.service.book.BookAdminService;
+import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,15 +28,29 @@ import java.util.Optional;
 @RequestMapping("/admin/tag")
 public class TagAdminController {
 
-    private final TagRepository tagRepository;
+    private final BookAdminService bookAdminService;
+    private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
-    public TagAdminController(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
+    public TagAdminController(BookAdminService bookAdminService,
+                              LoginService loginService,
+                              ApplicationEventPublisher publisher) {
+
+        this.bookAdminService = bookAdminService;
+        this.loginService = loginService;
+        this.publisher = publisher;
     }
 
     @GetMapping
-    public String getTagList(ModelMap model) {
-        model.put("tags", tagRepository.findAll());
+    public String getTagList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
+        model.put("tags", bookAdminService.getTagList());
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.TAG_LIST_VIEW)
+                .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
+                .internal(true)
+                .build());
 
         return "admin/tag/tagList";
     }
@@ -42,9 +63,19 @@ public class TagAdminController {
     }
 
     @GetMapping("{id}")
-    public String getTag(@PathVariable Long id, ModelMap model) {
-        Tag tag = tagRepository.findById(id).orElseThrow(NoResultException::new);
+    public String getTag(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable Long id, ModelMap model) {
+        Tag tag = bookAdminService.getTag(id);
         model.put("tag", tag);
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.TAG_VIEW)
+                .metadata(Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "affectedTagId", tag.getId()
+                ))
+                .internal(true)
+                .build());
 
         return "admin/tag/tagForm";
     }
@@ -59,7 +90,7 @@ public class TagAdminController {
             return "admin/tag/tagForm";
         }
 
-        tagRepository.save(tag);
+        tag = bookAdminService.saveTag(tag);
 
         return "redirect:/admin";
     }
@@ -69,7 +100,7 @@ public class TagAdminController {
             return;
         }
 
-        Optional<Tag> tagOptional = tagRepository.findTagByName(tag.getName());
+        Optional<Tag> tagOptional = bookAdminService.getTagByName(tag.getName());
 
         if (tagOptional.isPresent() && !Objects.equals(tagOptional.get().getId(), tag.getId())) {
             errors.rejectValue("name", "error.input.exists");
