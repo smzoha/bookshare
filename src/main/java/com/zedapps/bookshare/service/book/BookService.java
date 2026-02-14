@@ -3,6 +3,7 @@ package com.zedapps.bookshare.service.book;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.book.BookListRepository;
@@ -10,12 +11,14 @@ import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -38,13 +41,15 @@ public class BookService {
     private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
+    private final ActivityService activityService;
 
     public BookService(BookRepository bookRepository,
                        BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
                        LoginService loginService,
                        ShelvedBookRepository shelvedBookRepository,
-                       ReadingProgressRepository readingProgressRepository) {
+                       ReadingProgressRepository readingProgressRepository,
+                       ActivityService activityService) {
 
         this.bookRepository = bookRepository;
         this.bookListRepository = bookListRepository;
@@ -52,10 +57,15 @@ public class BookService {
         this.loginService = loginService;
         this.shelvedBookRepository = shelvedBookRepository;
         this.readingProgressRepository = readingProgressRepository;
+        this.activityService = activityService;
     }
 
     public Book getBook(Long bookId) {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
+    }
+
+    public List<Book> getBookList() {
+        return bookRepository.findAll();
     }
 
     public Page<Book> getPaginatedBooks(int page, String sort, String rating, String genre, String tag) {
@@ -96,6 +106,23 @@ public class BookService {
 
         model.put("reviews", getReviewsByBook(book, 0));
         model.put("relatedBooks", getRelatedBooks(book));
+    }
+
+    @Transactional
+    public Book saveBook(Book book) {
+        boolean isNew = book.getId() == null;
+
+        book = bookRepository.save(book);
+
+        LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        activityService.saveActivityOutbox(isNew ? ActivityType.BOOK_ADD : ActivityType.BOOK_UPDATE,
+                book.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "affectedBookId", book.getId()
+                ));
+
+        return book;
     }
 
     @Transactional
