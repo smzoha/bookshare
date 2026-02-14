@@ -41,6 +41,7 @@ public enum ActivityType {
     TAG_ADD("TAG"),
     TAG_UPDATE("TAG"),
     AUTHOR_LIST_VIEW("AUTHOR"),
+    AUTHOR_VIEW("AUTHOR"),
     AUTHOR_ADD("AUTHOR"),
     AUTHOR_UPDATE("AUTHOR");
 

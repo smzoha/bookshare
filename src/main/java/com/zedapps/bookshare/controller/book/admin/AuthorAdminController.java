@@ -1,19 +1,21 @@
 package com.zedapps.bookshare.controller.book.admin;
 
+import com.zedapps.bookshare.dto.activity.ActivityEvent;
+import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.repository.login.AuthorRepository;
-import com.zedapps.bookshare.repository.login.LoginRepository;
-import jakarta.persistence.NoResultException;
+import com.zedapps.bookshare.service.book.AuthorService;
+import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author smzoha
@@ -23,22 +25,33 @@ import java.util.Optional;
 @RequestMapping("/admin/author")
 public class AuthorAdminController {
 
-    private final AuthorRepository authorRepository;
-    private final LoginRepository loginRepository;
+    private final AuthorService authorService;
+    private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
-    public AuthorAdminController(AuthorRepository authorRepository, LoginRepository loginRepository) {
-        this.authorRepository = authorRepository;
-        this.loginRepository = loginRepository;
+    public AuthorAdminController(AuthorService authorService, LoginService loginService,
+                                 ApplicationEventPublisher publisher) {
+
+        this.authorService = authorService;
+        this.loginService = loginService;
+        this.publisher = publisher;
     }
 
     @ModelAttribute("loginList")
     public List<Login> loginList() {
-        return loginRepository.findAllByActive(true);
+        return loginService.getActiveLoginList();
     }
 
     @GetMapping("/list")
-    public String getAuthorList(ModelMap model) {
-        model.put("authors", authorRepository.findAll());
+    public String getAuthorList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
+        model.put("authors", authorService.getAuthorList());
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.AUTHOR_LIST_VIEW)
+                .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
+                .internal(true)
+                .build());
 
         return "admin/book/authorList";
     }
@@ -51,8 +64,20 @@ public class AuthorAdminController {
     }
 
     @GetMapping("{id}")
-    public String getAuthor(@PathVariable Long id, ModelMap model) {
-        model.put("author", authorRepository.findById(id).orElseThrow(NoResultException::new));
+    public String getAuthor(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable Long id, ModelMap model) {
+        Author author = authorService.getAuthor(id);
+        model.put("author", author);
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.AUTHOR_VIEW)
+                .metadata(Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "affectedAuthorId", author.getId(),
+                        "affectedAuthorLogin", author.getLogin() != null ? author.getLogin().getId() : ""
+                ))
+                .internal(true)
+                .build());
 
         return "admin/book/authorForm";
     }
@@ -67,13 +92,13 @@ public class AuthorAdminController {
             return "admin/book/authorForm";
         }
 
-        authorRepository.save(author);
+        authorService.saveAuthor(author);
 
         return "redirect:/admin";
     }
 
     private void validateAuthorLoginLink(Author author, Errors errors) {
-        Optional<Author> authorOptional = authorRepository.findAuthorByLogin(author.getLogin());
+        Optional<Author> authorOptional = authorService.getAuthorByLogin(author.getLogin());
 
         if (authorOptional.isPresent() && !Objects.equals(authorOptional.get().getId(), author.getId())) {
             errors.rejectValue("login", "error.input.exists");
