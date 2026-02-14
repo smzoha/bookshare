@@ -26,6 +26,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -106,7 +107,7 @@ public class BookController {
 
         bookService.setupReferenceData(loginDetails, id, model, true, true);
 
-        if (loginDetails != null) {
+        if (loginDetails != null && (Boolean) model.getOrDefault("publishEvent", true)) {
             publisher.publishEvent(ActivityEvent.builder()
                     .login(loginService.getLogin(loginDetails.getEmail()))
                     .eventType(ActivityType.BOOK_VIEW)
@@ -139,7 +140,8 @@ public class BookController {
     public String addReview(@Valid @ModelAttribute("reviewDto") BookReviewDto reviewDto,
                             Errors errors,
                             @AuthenticationPrincipal LoginDetails loginDetails,
-                            ModelMap model) {
+                            ModelMap model,
+                            RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors()) {
             bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model, false, true);
@@ -147,6 +149,8 @@ public class BookController {
         }
 
         Review review = bookService.saveReview(reviewDto, loginDetails);
+
+        redirectAttributes.addFlashAttribute("publishEvent", false);
 
         return "redirect:/book/" + review.getBook().getId();
     }
@@ -177,7 +181,8 @@ public class BookController {
     public String updateReadingProgress(@Valid @ModelAttribute("tmpProgress") ReadingProgress readingProgress,
                                         Errors errors,
                                         @AuthenticationPrincipal LoginDetails loginDetails,
-                                        ModelMap model) {
+                                        ModelMap model,
+                                        RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors()) {
             bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model, true, false);
@@ -187,6 +192,8 @@ public class BookController {
         }
 
         readingProgress = bookService.saveReadingProgress(readingProgress, loginDetails);
+
+        redirectAttributes.addFlashAttribute("publishEvent", false);
 
         return "redirect:/book/" + readingProgress.getBook().getId();
     }
