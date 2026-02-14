@@ -116,10 +116,9 @@ public class Login {
                 .orElseThrow();
     }
 
-    public ReadingProgress getReadingProgress(Long bookId) {
+    public List<ReadingProgress> getReadingProgresses(Long bookId) {
         return getReadingProgresses().stream()
                 .filter(rp -> Objects.equals(rp.getBook().getId(), bookId))
-                .findFirst()
-                .orElse(null);
+                .toList();
     }
 }

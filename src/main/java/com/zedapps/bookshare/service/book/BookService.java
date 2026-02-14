@@ -92,7 +92,7 @@ public class BookService {
             Login login = loginService.getLogin(loginDetails.getEmail());
 
             setupShelfReferenceData(login, model, book);
-            model.put("readingProgresses", login.getReadingProgress(book.getId()));
+            model.put("readingProgresses", login.getReadingProgresses(book.getId()));
         }
 
         model.put("tmpShelf", new Shelf());
