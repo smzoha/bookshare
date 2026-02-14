@@ -5,7 +5,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.service.book.AuthorService;
+import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,14 +25,14 @@ import java.util.*;
 @RequestMapping("/admin/author")
 public class AuthorAdminController {
 
-    private final AuthorService authorService;
+    private final BookAdminService bookAdminService;
     private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
 
-    public AuthorAdminController(AuthorService authorService, LoginService loginService,
+    public AuthorAdminController(BookAdminService bookAdminService, LoginService loginService,
                                  ApplicationEventPublisher publisher) {
 
-        this.authorService = authorService;
+        this.bookAdminService = bookAdminService;
         this.loginService = loginService;
         this.publisher = publisher;
     }
@@ -44,7 +44,7 @@ public class AuthorAdminController {
 
     @GetMapping("/list")
     public String getAuthorList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
-        model.put("authors", authorService.getAuthorList());
+        model.put("authors", bookAdminService.getAuthorList());
 
         publisher.publishEvent(ActivityEvent.builder()
                 .login(loginService.getLogin(loginDetails.getEmail()))
@@ -65,7 +65,7 @@ public class AuthorAdminController {
 
     @GetMapping("{id}")
     public String getAuthor(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable Long id, ModelMap model) {
-        Author author = authorService.getAuthor(id);
+        Author author = bookAdminService.getAuthor(id);
         model.put("author", author);
 
         publisher.publishEvent(ActivityEvent.builder()
@@ -92,13 +92,13 @@ public class AuthorAdminController {
             return "admin/book/authorForm";
         }
 
-        authorService.saveAuthor(author);
+        bookAdminService.saveAuthor(author);
 
         return "redirect:/admin";
     }
 
     private void validateAuthorLoginLink(Author author, Errors errors) {
-        Optional<Author> authorOptional = authorService.getAuthorByLogin(author.getLogin());
+        Optional<Author> authorOptional = bookAdminService.getAuthorByLogin(author.getLogin());
 
         if (authorOptional.isPresent() && !Objects.equals(authorOptional.get().getId(), author.getId())) {
             errors.rejectValue("login", "error.input.exists");

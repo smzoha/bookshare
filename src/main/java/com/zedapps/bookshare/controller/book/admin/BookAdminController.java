@@ -17,7 +17,7 @@ import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.AuthorRepository;
-import com.zedapps.bookshare.service.book.BookService;
+import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,7 +40,7 @@ import java.util.Map;
 @RequestMapping("/admin/book")
 public class BookAdminController {
 
-    private final BookService bookService;
+    private final BookAdminService bookAdminService;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
@@ -48,12 +48,12 @@ public class BookAdminController {
     private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
 
-    public BookAdminController(BookService bookService, AuthorRepository authorRepository,
+    public BookAdminController(BookAdminService bookAdminService, AuthorRepository authorRepository,
                                GenreRepository genreRepository, TagRepository tagRepository,
                                ImageRepository imageRepository, LoginService loginService,
                                ApplicationEventPublisher publisher) {
 
-        this.bookService = bookService;
+        this.bookAdminService = bookAdminService;
         this.authorRepository = authorRepository;
         this.genreRepository = genreRepository;
         this.tagRepository = tagRepository;
@@ -94,7 +94,7 @@ public class BookAdminController {
 
     @GetMapping
     public String getBookList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
-        model.put("books", bookService.getBookList());
+        model.put("books", bookAdminService.getBookList());
 
         publisher.publishEvent(ActivityEvent.builder()
                 .login(loginService.getLogin(loginDetails.getEmail()))
@@ -115,7 +115,7 @@ public class BookAdminController {
 
     @GetMapping("/{id}")
     public String updateBook(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable long id, ModelMap model) {
-        model.put("book", bookService.getBook(id));
+        model.put("book", bookAdminService.getBook(id));
 
         publisher.publishEvent(ActivityEvent.builder()
                 .login(loginService.getLogin(loginDetails.getEmail()))
@@ -142,7 +142,7 @@ public class BookAdminController {
             book.setImage(null);
         }
 
-        book = bookService.saveBook(book);
+        book = bookAdminService.saveBook(book);
 
         return "redirect:/admin";
     }
