@@ -49,6 +49,10 @@ public class LoginService {
         return loginRepository.findAll();
     }
 
+    public List<Login> getActiveLoginList() {
+        return loginRepository.findAllByActive(true);
+    }
+
     public Login getLogin(String email) {
         return loginRepository.findActiveLoginByEmail(email).orElseThrow(NoResultException::new);
     }

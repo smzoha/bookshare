@@ -3,7 +3,7 @@ package com.zedapps.bookshare.controller.book.app;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.repository.login.ShelfRepository;
+import com.zedapps.bookshare.service.book.ShelfService;
 import com.zedapps.bookshare.service.login.LoginService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ShelfController {
 
-    private final ShelfRepository shelfRepository;
+    private final ShelfService shelfService;
     private final LoginService loginService;
 
-    public ShelfController(ShelfRepository shelfRepository, LoginService loginService) {
-        this.shelfRepository = shelfRepository;
+    public ShelfController(ShelfService shelfService, LoginService loginService) {
+        this.shelfService = shelfService;
         this.loginService = loginService;
     }
 
@@ -33,7 +33,7 @@ public class ShelfController {
         Login login = loginService.getLogin(loginDetails.getEmail());
 
         Shelf shelf = new Shelf(name, login);
-        shelf = shelfRepository.save(shelf);
+        shelf = shelfService.saveShelf(shelf, loginDetails);
 
         return "redirect:/book/" + bookId;
     }

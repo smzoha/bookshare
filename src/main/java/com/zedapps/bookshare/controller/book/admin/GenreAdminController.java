@@ -1,15 +1,22 @@
 package com.zedapps.bookshare.controller.book.admin;
 
+import com.zedapps.bookshare.dto.activity.ActivityEvent;
+import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Genre;
-import com.zedapps.bookshare.repository.book.GenreRepository;
-import jakarta.persistence.NoResultException;
+import com.zedapps.bookshare.service.book.BookAdminService;
+import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,15 +28,28 @@ import java.util.Optional;
 @RequestMapping("/admin/genre")
 public class GenreAdminController {
 
-    private final GenreRepository genreRepository;
+    private final BookAdminService bookAdminService;
+    private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
-    public GenreAdminController(GenreRepository genreRepository) {
-        this.genreRepository = genreRepository;
+    public GenreAdminController(BookAdminService bookAdminService, LoginService loginService,
+                                ApplicationEventPublisher publisher) {
+
+        this.bookAdminService = bookAdminService;
+        this.loginService = loginService;
+        this.publisher = publisher;
     }
 
     @GetMapping
-    public String getGenreList(ModelMap model) {
-        model.put("genres", genreRepository.findAll());
+    public String getGenreList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
+        model.put("genres", bookAdminService.getGenreList());
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.GENRE_LIST_VIEW)
+                .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
+                .internal(true)
+                .build());
 
         return "admin/genre/genreList";
     }
@@ -42,9 +62,19 @@ public class GenreAdminController {
     }
 
     @GetMapping("{id}")
-    public String getGenre(@PathVariable Long id, ModelMap model) {
-        Genre genre = genreRepository.findById(id).orElseThrow(NoResultException::new);
+    public String getGenre(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable Long id, ModelMap model) {
+        Genre genre = bookAdminService.getGenre(id);
         model.put("genre", genre);
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .login(loginService.getLogin(loginDetails.getEmail()))
+                .eventType(ActivityType.GENRE_VIEW)
+                .metadata(Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "affectedGenreId", genre.getId()
+                ))
+                .internal(true)
+                .build());
 
         return "admin/genre/genreForm";
     }
@@ -59,7 +89,7 @@ public class GenreAdminController {
             return "admin/genre/genreForm";
         }
 
-        genreRepository.save(genre);
+        genre = bookAdminService.saveGenre(genre);
 
         return "redirect:/admin";
     }
@@ -69,7 +99,7 @@ public class GenreAdminController {
             return;
         }
 
-        Optional<Genre> genreOptional = genreRepository.findGenreByName(genre.getName());
+        Optional<Genre> genreOptional = bookAdminService.getGenreByName(genre.getName());
 
         if (genreOptional.isPresent() && !Objects.equals(genreOptional.get().getId(), genre.getId())) {
             errors.rejectValue("name", "error.input.exists");
