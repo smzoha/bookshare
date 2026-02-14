@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.controller.image;
 
 import com.zedapps.bookshare.entity.image.Image;
-import com.zedapps.bookshare.repository.image.ImageRepository;
+import com.zedapps.bookshare.service.image.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +20,15 @@ import java.util.Optional;
 @RequestMapping("/image")
 public class ImageController {
 
-    private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
-    public ImageController(ImageRepository imageRepository) {
-        this.imageRepository = imageRepository;
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
-        Optional<Image> imageOptional = imageRepository.findById(id);
+        Optional<Image> imageOptional = imageService.getImage(id);
 
         if (imageOptional.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -49,7 +49,7 @@ public class ImageController {
                 .content(file.getBytes())
                 .build();
 
-        image = imageRepository.save(image);
+        image = imageService.saveImage(image);
 
         return ResponseEntity.ok().body(image.getId());
     }
