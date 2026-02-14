@@ -3,6 +3,7 @@ package com.zedapps.bookshare.service.book;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.book.BookListRepository;
@@ -10,6 +11,7 @@ import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
@@ -38,13 +40,15 @@ public class BookService {
     private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
+    private final ActivityService activityService;
 
     public BookService(BookRepository bookRepository,
                        BookListRepository bookListRepository,
                        ReviewRepository reviewRepository,
                        LoginService loginService,
                        ShelvedBookRepository shelvedBookRepository,
-                       ReadingProgressRepository readingProgressRepository) {
+                       ReadingProgressRepository readingProgressRepository,
+                       ActivityService activityService) {
 
         this.bookRepository = bookRepository;
         this.bookListRepository = bookListRepository;
@@ -52,6 +56,7 @@ public class BookService {
         this.loginService = loginService;
         this.shelvedBookRepository = shelvedBookRepository;
         this.readingProgressRepository = readingProgressRepository;
+        this.activityService = activityService;
     }
 
     public Book getBook(Long bookId) {
@@ -106,6 +111,14 @@ public class BookService {
         Review review = createReviewFromDto(reviewDto, book, login);
         review = reviewRepository.save(review);
 
+        activityService.saveActivityOutbox(ActivityType.BOOK_ADD_REVIEW,
+                review.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "bookId", book.getId(),
+                        "reviewId", review.getId()
+                ));
+
         return review;
     }
 
@@ -123,6 +136,15 @@ public class BookService {
         }
 
         review = reviewRepository.save(review);
+
+        activityService.saveActivityOutbox(liked ? ActivityType.BOOK_LIKE_REVIEW : ActivityType.BOOK_REMOVE_LIKE_REVIEW,
+                review.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "reviewedBy", review.getUser().getEmail(),
+                        "bookId", review.getBook().getId(),
+                        "reviewId", review.getId()
+                ));
 
         return new ReviewLikeResponseDto(reviewId, false, review.getUserLikes().size());
     }
@@ -147,6 +169,15 @@ public class BookService {
         shelvedBook.setBook(book);
 
         shelvedBookRepository.save(shelvedBook);
+
+        activityService.saveActivityOutbox(ActivityType.BOOK_ADD_TO_SHELF,
+                shelf.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "bookId", book.getId(),
+                        "shelfId", shelf.getId(),
+                        "shelvedBookId", shelvedBook.getId()
+                ));
     }
 
     @Transactional
@@ -159,6 +190,15 @@ public class BookService {
                 .orElseThrow();
 
         shelvedBookRepository.delete(shelvedBook);
+
+        activityService.saveActivityOutbox(ActivityType.BOOK_REMOVE_FROM_SHELF,
+                shelf.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "bookId", book.getId(),
+                        "shelfId", shelf.getId(),
+                        "shelvedBookId", shelvedBook.getId()
+                ));
     }
 
     @Transactional
@@ -182,6 +222,18 @@ public class BookService {
         }
 
         readingProgress = readingProgressRepository.save(readingProgress);
+
+        activityService.saveActivityOutbox(ActivityType.BOOK_UPDATE_READING_PROGRESS,
+                readingProgress.getId(),
+                Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "bookId", readingProgress.getBook().getId(),
+                        "progressId", readingProgress.getId(),
+                        "pagesRead", Objects.toString(readingProgress.getPagesRead(), ""),
+                        "completed", Objects.toString(readingProgress.isCompleted(), ""),
+                        "startDate", Objects.toString(readingProgress.getStartDate(), ""),
+                        "endDate", Objects.toString(readingProgress.getEndDate(), "")
+                ));
 
         return readingProgress;
     }

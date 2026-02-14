@@ -1,8 +1,10 @@
 package com.zedapps.bookshare.controller.book.app;
 
+import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
@@ -11,9 +13,11 @@ import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.service.book.BookService;
+import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +28,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -36,11 +42,18 @@ public class BookController {
     private final BookService bookService;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
+    private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
-    public BookController(BookService bookService, GenreRepository genreRepository, TagRepository tagRepository) {
+    public BookController(BookService bookService, GenreRepository genreRepository,
+                          TagRepository tagRepository, LoginService loginService,
+                          ApplicationEventPublisher publisher) {
+
         this.bookService = bookService;
         this.genreRepository = genreRepository;
         this.tagRepository = tagRepository;
+        this.loginService = loginService;
+        this.publisher = publisher;
     }
 
     @InitBinder
@@ -54,10 +67,27 @@ public class BookController {
                               @RequestParam(required = false) String rating,
                               @RequestParam(required = false) String genre,
                               @RequestParam(required = false) String tag,
+                              @AuthenticationPrincipal LoginDetails loginDetails,
                               ModelMap model,
                               HttpServletRequest request) {
 
         model.put("bookPage", bookService.getPaginatedBooks(page, sort, rating, genre, tag));
+
+        if (loginDetails != null) {
+            publisher.publishEvent(ActivityEvent.builder()
+                    .login(loginService.getLogin(loginDetails.getEmail()))
+                    .eventType(ActivityType.BOOK_LIST_VIEW)
+                    .metadata(Map.of(
+                            "actionBy", loginDetails.getEmail(),
+                            "page", Objects.toString(page, ""),
+                            "sort", Objects.toString(sort, ""),
+                            "rating", Objects.toString(rating, ""),
+                            "genre", Objects.toString(genre, ""),
+                            "tag", Objects.toString(tag, "")
+                    ))
+                    .internal(true)
+                    .build());
+        }
 
         if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
             return "app/book/bookGridFragment :: bookGrid";
@@ -75,6 +105,19 @@ public class BookController {
                               ModelMap model) {
 
         bookService.setupReferenceData(loginDetails, id, model, true, true);
+
+        if (loginDetails != null) {
+            publisher.publishEvent(ActivityEvent.builder()
+                    .login(loginService.getLogin(loginDetails.getEmail()))
+                    .eventType(ActivityType.BOOK_VIEW)
+                    .referenceId(id)
+                    .metadata(Map.of(
+                            "actionBy", loginDetails.getEmail(),
+                            "bookId", id
+                    ))
+                    .internal(true)
+                    .build());
+        }
 
         return "app/book/book";
     }
