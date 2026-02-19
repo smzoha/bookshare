@@ -53,6 +53,12 @@ jobs:
       - name: Run SpotBugs
         run: ./gradlew spotbugsMain
 
+      - name: Upload SpotBugs Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-report
+          path: build/reports/**/*.html
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
