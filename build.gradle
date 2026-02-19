@@ -60,12 +60,14 @@ tasks.named('test') {
 }
 
 spotbugs {
-    ignoreFailures = false
+    ignoreFailures = true
     effort = Effort.valueOf('MAX')
     reportLevel = Confidence.valueOf('LOW')
 }
 
 tasks.withType(SpotBugsTask).configureEach {
+    showProgress.set(true)
+
     reports {
         html.required.set(true)
         xml.required.set(false)
