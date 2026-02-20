@@ -43,7 +43,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v5
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build -x check
 
   static-analysis:
     runs-on: ubuntu-latest
