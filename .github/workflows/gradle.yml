@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle (Build & SpotBugs)
+name: Java CI with Gradle
 
 on:
   push:
@@ -50,14 +50,17 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v5
-      - name: Run SpotBugs
-        run: ./gradlew spotbugsMain
+      - name: Run SpotBugs & Checkstyle
+        run: ./gradlew check
 
-      - name: Upload SpotBugs Reports
+      - name: Upload Reports
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: spotbugs-report
-          path: build/reports/**/*.html
+          name: static-analyis-report
+          path: |
+            build/reports/spotbugs/
+            build/reports/checkstyle/
 
   dependency-submission:
     runs-on: ubuntu-latest
