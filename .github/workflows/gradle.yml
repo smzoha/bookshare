@@ -70,7 +70,7 @@ jobs:
             gradle-${{ runner.os }}-gradle-
 
       - uses: gradle/actions/setup-gradle@v5
-      - name: Run SpotBugs & Checkstyle
+      - name: Run SpotBugs
         run: ./gradlew check
 
       - name: Upload Reports
@@ -80,7 +80,6 @@ jobs:
           name: static-analysis-report.zip
           path: |
             build/reports/spotbugs/
-            build/reports/checkstyle/
 
   dependency-submission:
     runs-on: ubuntu-latest
