@@ -5,6 +5,7 @@ import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.book.ShelfService;
 import com.zedapps.bookshare.service.login.LoginService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,15 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @since 12/12/25
  **/
 @Controller
+@RequiredArgsConstructor
 public class ShelfController {
 
     private final ShelfService shelfService;
     private final LoginService loginService;
-
-    public ShelfController(ShelfService shelfService, LoginService loginService) {
-        this.shelfService = shelfService;
-        this.loginService = loginService;
-    }
 
     @PostMapping("/shelf/add")
     public String createShelf(@RequestParam String name,
@@ -33,7 +30,7 @@ public class ShelfController {
         Login login = loginService.getLogin(loginDetails.getEmail());
 
         Shelf shelf = new Shelf(name, login);
-        shelf = shelfService.saveShelf(shelf, loginDetails);
+        shelfService.saveShelf(shelf, loginDetails);
 
         return "redirect:/book/" + bookId;
     }

@@ -7,6 +7,7 @@ import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,15 +24,11 @@ import java.util.Objects;
  **/
 @Controller
 @RequestMapping("/collection")
+@RequiredArgsConstructor
 public class CollectionController {
 
     private final LoginService loginService;
     private final ShelfRepository shelfRepository;
-
-    public CollectionController(LoginService loginService, ShelfRepository shelfRepository) {
-        this.loginService = loginService;
-        this.shelfRepository = shelfRepository;
-    }
 
     @GetMapping
     public String getCollection(@AuthenticationPrincipal LoginDetails loginDetails,

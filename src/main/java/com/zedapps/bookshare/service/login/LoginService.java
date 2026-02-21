@@ -12,6 +12,7 @@ import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,23 +28,13 @@ import java.util.Objects;
  * @since 12/9/25
  **/
 @Service
+@RequiredArgsConstructor
 public class LoginService {
 
     private final LoginRepository loginRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
     private final ActivityService activityService;
-
-    public LoginService(LoginRepository loginRepository,
-                        PasswordEncoder passwordEncoder,
-                        ImageRepository imageRepository,
-                        ActivityService activityService) {
-
-        this.loginRepository = loginRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.imageRepository = imageRepository;
-        this.activityService = activityService;
-    }
 
     public List<Login> getLoginList() {
         return loginRepository.findAll();
@@ -62,7 +53,7 @@ public class LoginService {
     }
 
     @Transactional
-    public Login saveLogin(@Valid LoginManageDto loginDto) {
+    public void saveLogin(@Valid LoginManageDto loginDto) {
         Login login = (loginDto.getId() != null
                 ? loginRepository.findById(loginDto.getId())
                 : loginRepository.findByEmail(loginDto.getEmail())).orElse(new Login());
@@ -82,12 +73,10 @@ public class LoginService {
                         "actionBy", loginDetails.getEmail(),
                         "affectedUserEmail", login.getEmail()
                 ));
-
-        return login;
     }
 
     @Transactional
-    public Login createLogin(RegistrationRequestDto registrationDto) {
+    public void createLogin(RegistrationRequestDto registrationDto) {
         Login login = createLoginFromRegistrationDto(registrationDto);
         setupShelvesForNewLogin(login);
 
@@ -98,8 +87,6 @@ public class LoginService {
                 Map.of(
                         "affectedUserEmail", login.getEmail()
                 ));
-
-        return login;
     }
 
     private Login createLoginFromRegistrationDto(RegistrationRequestDto registrationDto) {

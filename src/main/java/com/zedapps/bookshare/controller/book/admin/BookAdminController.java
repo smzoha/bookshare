@@ -18,8 +18,8 @@ import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.AuthorRepository;
 import com.zedapps.bookshare.service.book.BookAdminService;
-import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -38,6 +38,7 @@ import java.util.Map;
  **/
 @Controller
 @RequestMapping("/admin/book")
+@RequiredArgsConstructor
 public class BookAdminController {
 
     private final BookAdminService bookAdminService;
@@ -45,22 +46,7 @@ public class BookAdminController {
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
     private final ImageRepository imageRepository;
-    private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
-
-    public BookAdminController(BookAdminService bookAdminService, AuthorRepository authorRepository,
-                               GenreRepository genreRepository, TagRepository tagRepository,
-                               ImageRepository imageRepository, LoginService loginService,
-                               ApplicationEventPublisher publisher) {
-
-        this.bookAdminService = bookAdminService;
-        this.authorRepository = authorRepository;
-        this.genreRepository = genreRepository;
-        this.tagRepository = tagRepository;
-        this.imageRepository = imageRepository;
-        this.loginService = loginService;
-        this.publisher = publisher;
-    }
 
     @ModelAttribute("statusList")
     public Status[] getStatusList() {
@@ -97,7 +83,7 @@ public class BookAdminController {
         model.put("books", bookAdminService.getBookList());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.BOOK_LIST_VIEW_ADMIN)
                 .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
                 .internal(true)
@@ -118,7 +104,7 @@ public class BookAdminController {
         model.put("book", bookAdminService.getBook(id));
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.BOOK_VIEW_ADMIN)
                 .metadata(Map.of(
                         "actionBy", loginDetails.getEmail(),
@@ -142,7 +128,7 @@ public class BookAdminController {
             book.setImage(null);
         }
 
-        book = bookAdminService.saveBook(book);
+        bookAdminService.saveBook(book);
 
         return "redirect:/admin";
     }

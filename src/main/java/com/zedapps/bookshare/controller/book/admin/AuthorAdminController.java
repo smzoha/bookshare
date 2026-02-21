@@ -8,6 +8,7 @@ import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,19 +24,12 @@ import java.util.*;
  **/
 @Controller
 @RequestMapping("/admin/author")
+@RequiredArgsConstructor
 public class AuthorAdminController {
 
     private final BookAdminService bookAdminService;
     private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
-
-    public AuthorAdminController(BookAdminService bookAdminService, LoginService loginService,
-                                 ApplicationEventPublisher publisher) {
-
-        this.bookAdminService = bookAdminService;
-        this.loginService = loginService;
-        this.publisher = publisher;
-    }
 
     @ModelAttribute("loginList")
     public List<Login> loginList() {
@@ -47,7 +41,7 @@ public class AuthorAdminController {
         model.put("authors", bookAdminService.getAuthorList());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.AUTHOR_LIST_VIEW)
                 .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
                 .internal(true)
@@ -69,7 +63,7 @@ public class AuthorAdminController {
         model.put("author", author);
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.AUTHOR_VIEW)
                 .metadata(Map.of(
                         "actionBy", loginDetails.getEmail(),

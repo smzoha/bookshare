@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -14,6 +15,9 @@ import java.util.Collection;
 @Getter
 @Setter
 public class LoginDetails implements UserDetails {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private String email;
     private String password;

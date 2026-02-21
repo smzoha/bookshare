@@ -5,6 +5,7 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +16,14 @@ import java.util.Map;
  * @since 15/2/26
  **/
 @Service
+@RequiredArgsConstructor
 public class ShelfService {
 
     private final ShelfRepository shelfRepository;
     private final ActivityService activityService;
 
-    public ShelfService(ShelfRepository shelfRepository, ActivityService activityService) {
-        this.shelfRepository = shelfRepository;
-        this.activityService = activityService;
-    }
-
     @Transactional
-    public Shelf saveShelf(Shelf shelf, LoginDetails loginDetails) {
+    public void saveShelf(Shelf shelf, LoginDetails loginDetails) {
         shelf = shelfRepository.save(shelf);
 
         activityService.saveActivityOutbox(ActivityType.SHELF_ADD,
@@ -36,7 +33,5 @@ public class ShelfService {
                         "shelfId", shelf.getId(),
                         "shelfName", shelf.getName()
                 ));
-
-        return shelf;
     }
 }

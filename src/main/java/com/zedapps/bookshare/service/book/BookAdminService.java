@@ -13,6 +13,7 @@ import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.login.AuthorRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import java.util.Optional;
  * @since 14/2/26
  **/
 @Service
+@RequiredArgsConstructor
 public class BookAdminService {
 
     private final BookRepository bookRepository;
@@ -33,19 +35,6 @@ public class BookAdminService {
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
     private final ActivityService activityService;
-
-    public BookAdminService(AuthorRepository authorRepository,
-                            BookRepository bookRepository,
-                            GenreRepository genreRepository,
-                            TagRepository tagRepository,
-                            ActivityService activityService) {
-
-        this.authorRepository = authorRepository;
-        this.bookRepository = bookRepository;
-        this.genreRepository = genreRepository;
-        this.tagRepository = tagRepository;
-        this.activityService = activityService;
-    }
 
     public List<Book> getBookList() {
         return bookRepository.findAll();
@@ -92,7 +81,7 @@ public class BookAdminService {
     }
 
     @Transactional
-    public Book saveBook(Book book) {
+    public void saveBook(Book book) {
         boolean isNew = book.getId() == null;
 
         book = bookRepository.save(book);
@@ -104,12 +93,10 @@ public class BookAdminService {
                         "actionBy", loginDetails.getEmail(),
                         "affectedBookId", book.getId()
                 ));
-
-        return book;
     }
 
     @Transactional
-    public Genre saveGenre(Genre genre) {
+    public void saveGenre(Genre genre) {
         boolean isNew = genre.getId() == null;
 
         genre = genreRepository.save(genre);
@@ -121,12 +108,10 @@ public class BookAdminService {
                         "actionBy", loginDetails.getEmail(),
                         "affectedGenreId", genre.getId()
                 ));
-
-        return genre;
     }
 
     @Transactional
-    public Tag saveTag(Tag tag) {
+    public void saveTag(Tag tag) {
         boolean isNew = tag.getId() == null;
 
         tag = tagRepository.save(tag);
@@ -138,8 +123,6 @@ public class BookAdminService {
                         "actionBy", loginDetails.getEmail(),
                         "affectedTagId", tag.getId()
                 ));
-
-        return tag;
     }
 
     @Transactional

@@ -7,6 +7,7 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
 import com.zedapps.bookshare.repository.activity.ActivityRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +21,11 @@ import java.util.Map;
  **/
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ActivityService {
 
     private final ActivityOutboxRepository activityOutboxRepository;
     private final ActivityRepository activityRepository;
-
-    public ActivityService(ActivityOutboxRepository activityOutboxRepository,
-                           ActivityRepository activityRepository) {
-
-        this.activityOutboxRepository = activityOutboxRepository;
-        this.activityRepository = activityRepository;
-    }
 
     public List<ActivityOutbox> getUnprocessedActivityOutboxItems() {
         return activityOutboxRepository.findTop100ByStatusOrderByCreatedAt(ActivityStatus.PENDING);

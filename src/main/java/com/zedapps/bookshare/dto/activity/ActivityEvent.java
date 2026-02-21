@@ -1,7 +1,6 @@
 package com.zedapps.bookshare.dto.activity;
 
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
-import com.zedapps.bookshare.entity.login.Login;
 import lombok.Builder;
 
 import java.util.Map;
@@ -12,9 +11,14 @@ import java.util.Map;
  **/
 @Builder
 public record ActivityEvent(
-        Login login,
+        String loginEmail,
         ActivityType eventType,
         Long referenceId,
         Map<String, Object> metadata,
         boolean internal) {
+
+    // This is done to obtain deep immutability; record can only offer shallow - i.e. Map itself is not immutable.
+    public ActivityEvent {
+        metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    }
 }

@@ -14,6 +14,7 @@ import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +33,7 @@ import static com.zedapps.bookshare.entity.login.Shelf.*;
  * @since 15/9/25
  **/
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -41,23 +43,6 @@ public class BookService {
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
     private final ActivityService activityService;
-
-    public BookService(BookRepository bookRepository,
-                       BookListRepository bookListRepository,
-                       ReviewRepository reviewRepository,
-                       LoginService loginService,
-                       ShelvedBookRepository shelvedBookRepository,
-                       ReadingProgressRepository readingProgressRepository,
-                       ActivityService activityService) {
-
-        this.bookRepository = bookRepository;
-        this.bookListRepository = bookListRepository;
-        this.reviewRepository = reviewRepository;
-        this.loginService = loginService;
-        this.shelvedBookRepository = shelvedBookRepository;
-        this.readingProgressRepository = readingProgressRepository;
-        this.activityService = activityService;
-    }
 
     public Book getBook(Long bookId) {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);

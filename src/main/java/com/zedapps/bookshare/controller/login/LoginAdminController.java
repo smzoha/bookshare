@@ -9,6 +9,7 @@ import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.validator.LoginDtoValidator;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,20 +26,12 @@ import java.util.Map;
  **/
 @Controller
 @RequestMapping("/admin/user")
+@RequiredArgsConstructor
 public class LoginAdminController {
 
     private final LoginService loginService;
     private final LoginDtoValidator loginDtoValidator;
     private final ApplicationEventPublisher publisher;
-
-    public LoginAdminController(LoginService loginService,
-                                LoginDtoValidator loginDtoValidator,
-                                ApplicationEventPublisher publisher) {
-
-        this.loginService = loginService;
-        this.loginDtoValidator = loginDtoValidator;
-        this.publisher = publisher;
-    }
 
     @GetMapping
     public String getLoginList(@AuthenticationPrincipal LoginDetails loginDetails,
@@ -47,7 +40,7 @@ public class LoginAdminController {
         model.put("logins", loginService.getLoginList());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.USER_LIST_VIEW)
                 .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
                 .internal(true)
@@ -77,7 +70,7 @@ public class LoginAdminController {
         model.put("roles", Role.values());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.USER_VIEW)
                 .internal(true)
                 .metadata(Map.of(
