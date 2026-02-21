@@ -6,6 +6,7 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityStatus;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,15 +23,11 @@ import java.util.List;
  **/
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ActivityOutboxProcessor {
 
     private final ActivityService activityService;
     private final LoginService loginService;
-
-    public ActivityOutboxProcessor(ActivityService activityService, LoginService loginService) {
-        this.activityService = activityService;
-        this.loginService = loginService;
-    }
 
     @Transactional
     @Scheduled(fixedDelay = 15 * 1000)
@@ -58,7 +55,7 @@ public class ActivityOutboxProcessor {
                 activityOutbox.setStatus(ActivityStatus.COMPLETED);
 
             } catch (Exception e) {
-                log.error("Error processing outbox activity: id={}", activityOutbox.getId());
+                log.error("Error processing outbox activity: id={}", activityOutbox.getId(), e);
 
                 if (activityOutbox.getRetryCount() >= 3) {
                     log.error("Retry count exceeded. Marking Outbox Activity as Failed: id={}", activityOutbox.getId());

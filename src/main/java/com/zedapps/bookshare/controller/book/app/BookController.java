@@ -13,9 +13,9 @@ import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.service.book.BookService;
-import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -38,24 +38,13 @@ import java.util.Objects;
  **/
 @Controller
 @RequestMapping("/book")
+@RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
-    private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
-
-    public BookController(BookService bookService, GenreRepository genreRepository,
-                          TagRepository tagRepository, LoginService loginService,
-                          ApplicationEventPublisher publisher) {
-
-        this.bookService = bookService;
-        this.genreRepository = genreRepository;
-        this.tagRepository = tagRepository;
-        this.loginService = loginService;
-        this.publisher = publisher;
-    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -76,7 +65,7 @@ public class BookController {
 
         if (loginDetails != null) {
             publisher.publishEvent(ActivityEvent.builder()
-                    .login(loginService.getLogin(loginDetails.getEmail()))
+                    .loginEmail(loginDetails.getEmail())
                     .eventType(ActivityType.BOOK_LIST_VIEW)
                     .metadata(Map.of(
                             "actionBy", loginDetails.getEmail(),
@@ -109,7 +98,7 @@ public class BookController {
 
         if (loginDetails != null && (Boolean) model.getOrDefault("publishEvent", true)) {
             publisher.publishEvent(ActivityEvent.builder()
-                    .login(loginService.getLogin(loginDetails.getEmail()))
+                    .loginEmail(loginDetails.getEmail())
                     .eventType(ActivityType.BOOK_VIEW)
                     .referenceId(id)
                     .metadata(Map.of(

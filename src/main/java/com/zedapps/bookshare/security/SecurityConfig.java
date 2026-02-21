@@ -2,6 +2,7 @@ package com.zedapps.bookshare.security;
 
 import com.zedapps.bookshare.entity.login.enums.Role;
 import com.zedapps.bookshare.service.LoginDetailService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -18,15 +19,11 @@ import org.springframework.security.web.SecurityFilterChain;
  **/
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final LoginDetailService loginDetailService;
     private final PasswordEncoder passwordEncoder;
-
-    public SecurityConfig(LoginDetailService loginDetailService, PasswordEncoder passwordEncoder) {
-        this.loginDetailService = loginDetailService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Bean
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {

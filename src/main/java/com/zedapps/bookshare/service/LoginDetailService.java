@@ -3,6 +3,7 @@ package com.zedapps.bookshare.service;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,13 +17,10 @@ import java.util.Optional;
  * @since 11/9/25
  **/
 @Service
+@RequiredArgsConstructor
 public class LoginDetailService implements UserDetailsService {
 
     private final LoginRepository loginRepository;
-
-    public LoginDetailService(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

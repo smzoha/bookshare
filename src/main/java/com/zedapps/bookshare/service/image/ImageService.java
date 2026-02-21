@@ -5,6 +5,7 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,11 @@ import java.util.Optional;
  * @since 15/2/26
  **/
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
     private final ImageRepository imageRepository;
     private final ActivityService activityService;
-
-    public ImageService(ImageRepository imageRepository, ActivityService activityService) {
-        this.imageRepository = imageRepository;
-        this.activityService = activityService;
-    }
 
     public Optional<Image> getImage(Long id) {
         return imageRepository.findById(id);

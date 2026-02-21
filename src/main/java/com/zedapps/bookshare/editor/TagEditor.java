@@ -2,6 +2,7 @@ package com.zedapps.bookshare.editor;
 
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.repository.book.TagRepository;
+import lombok.RequiredArgsConstructor;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Objects;
@@ -10,13 +11,10 @@ import java.util.Objects;
  * @author smzoha
  * @since 22/10/25
  **/
+@RequiredArgsConstructor
 public class TagEditor extends PropertyEditorSupport {
 
     private final TagRepository tagRepository;
-
-    public TagEditor(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
-    }
 
     @Override
     public String getAsText() {

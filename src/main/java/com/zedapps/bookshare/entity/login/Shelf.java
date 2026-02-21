@@ -24,9 +24,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Shelf {
 
-    public static String SHELF_READ = "Read";
-    public static String SHELF_CURRENTLY_READING = "Currently Reading";
-    public static String SHELF_WANT_TO_READ = "Want to Read";
+    public final static String SHELF_READ = "Read";
+    public final static String SHELF_CURRENTLY_READING = "Currently Reading";
+    public final static String SHELF_WANT_TO_READ = "Want to Read";
 
     public static final List<String> DEFAULT_SHELF_NAMES = List.of(
             SHELF_CURRENTLY_READING,

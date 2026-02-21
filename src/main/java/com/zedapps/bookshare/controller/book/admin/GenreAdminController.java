@@ -5,8 +5,8 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.service.book.BookAdminService;
-import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,26 +26,18 @@ import java.util.Optional;
  **/
 @Controller
 @RequestMapping("/admin/genre")
+@RequiredArgsConstructor
 public class GenreAdminController {
 
     private final BookAdminService bookAdminService;
-    private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
-
-    public GenreAdminController(BookAdminService bookAdminService, LoginService loginService,
-                                ApplicationEventPublisher publisher) {
-
-        this.bookAdminService = bookAdminService;
-        this.loginService = loginService;
-        this.publisher = publisher;
-    }
 
     @GetMapping
     public String getGenreList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
         model.put("genres", bookAdminService.getGenreList());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.GENRE_LIST_VIEW)
                 .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
                 .internal(true)
@@ -67,7 +59,7 @@ public class GenreAdminController {
         model.put("genre", genre);
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.GENRE_VIEW)
                 .metadata(Map.of(
                         "actionBy", loginDetails.getEmail(),
@@ -89,7 +81,7 @@ public class GenreAdminController {
             return "admin/genre/genreForm";
         }
 
-        genre = bookAdminService.saveGenre(genre);
+        bookAdminService.saveGenre(genre);
 
         return "redirect:/admin";
     }

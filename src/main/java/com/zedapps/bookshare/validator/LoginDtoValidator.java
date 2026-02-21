@@ -5,6 +5,7 @@ import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -18,13 +19,10 @@ import java.util.Optional;
  * @since 12/9/25
  **/
 @Component
+@RequiredArgsConstructor
 public class LoginDtoValidator implements Validator {
 
     private final LoginRepository loginRepository;
-
-    public LoginDtoValidator(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
-    }
 
     @Override
     public boolean supports(Class<?> clazz) {

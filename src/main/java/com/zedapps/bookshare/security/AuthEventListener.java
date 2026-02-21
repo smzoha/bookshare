@@ -5,6 +5,7 @@ import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.LogoutSuccessEvent;
@@ -17,15 +18,11 @@ import java.util.Collections;
  * @since 13/2/26
  **/
 @Component
+@RequiredArgsConstructor
 public class AuthEventListener {
 
     private final ActivityService activityService;
     private final LoginService loginService;
-
-    public AuthEventListener(ActivityService activityService, LoginService loginService) {
-        this.activityService = activityService;
-        this.loginService = loginService;
-    }
 
     @EventListener
     public void onSuccessfulLogin(AuthenticationSuccessEvent event) {

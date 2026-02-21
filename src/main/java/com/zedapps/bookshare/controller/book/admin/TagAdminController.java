@@ -5,8 +5,8 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.activity.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.service.book.BookAdminService;
-import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,27 +26,18 @@ import java.util.Optional;
  **/
 @Controller
 @RequestMapping("/admin/tag")
+@RequiredArgsConstructor
 public class TagAdminController {
 
     private final BookAdminService bookAdminService;
-    private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
-
-    public TagAdminController(BookAdminService bookAdminService,
-                              LoginService loginService,
-                              ApplicationEventPublisher publisher) {
-
-        this.bookAdminService = bookAdminService;
-        this.loginService = loginService;
-        this.publisher = publisher;
-    }
 
     @GetMapping
     public String getTagList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
         model.put("tags", bookAdminService.getTagList());
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.TAG_LIST_VIEW)
                 .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
                 .internal(true)
@@ -68,7 +59,7 @@ public class TagAdminController {
         model.put("tag", tag);
 
         publisher.publishEvent(ActivityEvent.builder()
-                .login(loginService.getLogin(loginDetails.getEmail()))
+                .loginEmail(loginDetails.getEmail())
                 .eventType(ActivityType.TAG_VIEW)
                 .metadata(Map.of(
                         "actionBy", loginDetails.getEmail(),
@@ -90,7 +81,7 @@ public class TagAdminController {
             return "admin/tag/tagForm";
         }
 
-        tag = bookAdminService.saveTag(tag);
+        bookAdminService.saveTag(tag);
 
         return "redirect:/admin";
     }

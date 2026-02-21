@@ -2,6 +2,7 @@ package com.zedapps.bookshare.controller.image;
 
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.service.image.ImageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,10 @@ import java.util.Optional;
  **/
 @Controller
 @RequestMapping("/image")
+@RequiredArgsConstructor
 public class ImageController {
 
     private final ImageService imageService;
-
-    public ImageController(ImageService imageService) {
-        this.imageService = imageService;
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
