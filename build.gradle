@@ -63,7 +63,7 @@ tasks.named('test') {
 }
 
 spotbugs {
-    ignoreFailures = true
+    ignoreFailures = false
     effort = Effort.valueOf('MAX')
     reportLevel = Confidence.valueOf('LOW')
     excludeFilter = file("$rootDir/config/spotbugs/spotbugs-filter.xml")
