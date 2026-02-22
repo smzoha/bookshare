@@ -221,6 +221,10 @@
             $('#authors').select2();
             $('#genres').select2();
             $('#tags').select2();
+
+            if (imageId !== '') {
+                appendImageHiddenInput(imageId);
+            }
         });
     </script>
 </div>
