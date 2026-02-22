@@ -71,7 +71,9 @@ public class LoginService {
                 login.getId(),
                 Map.of(
                         "actionBy", loginDetails.getEmail(),
-                        "affectedUserEmail", login.getEmail()
+                        "affectedUserEmail", login.getEmail(),
+                        "loginFirstName", login.getFirstName(),
+                        "loginLastName", login.getLastName()
                 ));
     }
 
@@ -85,7 +87,9 @@ public class LoginService {
         activityService.saveActivityOutbox(ActivityType.REGISTER,
                 login.getId(),
                 Map.of(
-                        "affectedUserEmail", login.getEmail()
+                        "affectedUserEmail", login.getEmail(),
+                        "loginFirstName", login.getFirstName(),
+                        "loginLastName", login.getLastName()
                 ));
     }
 
