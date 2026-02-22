@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Profile</title>
+    <style>
+        .card {
+            border-radius: 12px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <img th:src="@{/image/{id}(id=${login.profilePicture.id})}"
+                             class="profile-avatar" alt="Profile Picture">
+                    </div>
+
+                    <div class="col">
+                        <h3 id="username" th:text="|${login.firstName} ${login.lastName}|"></h3>
+                        <p class="text-muted mb-3" th:text="${login.bio}"></p>
+
+                        <div class="row text-center">
+                            <div class="col">
+                                <h5 id="stat-books" th:text="${totalBooks}"></h5>
+                                <small class="text-muted" th:text="#{label.books}"></small>
+                            </div>
+
+                            <div class="col">
+                                <h5 id="stat-followers" th:text="${login.followers.size()}"></h5>
+                                <small class="text-muted">Followers</small>
+                            </div>
+
+                            <div class="col">
+                                <h5 id="stat-following" th:text="${login.following.size()}"></h5>
+                                <small class="text-muted">Following</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3" th:text="#{label.shelves}"></h5>
+
+                        <div id="default-shelves-list" class="d-flex flex-row flex-wrap gap-2 mb-3">
+                            <button type="button"
+                                    class="btn btn-bookshare-outline rounded-pill shelf-btn"
+                                    th:classappend="${activeShelf.id.equals(shelfEntry.key) ? ' active' : ''}"
+                                    th:data-shelf-id="${shelfEntry.key}"
+                                    th:each="shelfEntry : ${defaultShelves}">
+
+                                <span th:text="${shelfEntry.value}"></span>
+                            </button>
+                        </div>
+
+                        <div id="shelves-list" class="d-flex flex-row flex-wrap gap-2 mb-3">
+                            <button type="button"
+                                    class="btn btn-bookshare-outline rounded-pill shelf-btn"
+                                    th:classappend="${activeShelf.id.equals(shelfEntry.key) ? ' active' : ''}"
+                                    th:data-shelf-id="${shelfEntry.key}"
+                                    th:each="shelfEntry : ${shelves}">
+
+                                <span th:text="${shelfEntry.value}"></span>
+                            </button>
+                        </div>
+
+                        <hr>
+
+                        <div class="active-shelf-container">
+                            <div th:replace="~{app/login/fragments/profileActiveShelfFragment :: activeShelfFragment}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- READING PROGRESS -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3" th:text="#{label.reading.progress}"></h5>
+                        <div id="reading-progress">
+                            <div class="py-2" th:each="progress : ${readingProgress}">
+                                <div th:replace="~{app/login/fragments/shelvedBookRowFragment :: shelfBookRow(${progress.book}, ${progress})}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3">Activity</h5>
+                        <div id="activity-feed"></div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3">Friends</h5>
+
+                        <div id="friends-list" class="row text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+            $('.shelf-btn').on('click', function (e) {
+                e.preventDefault();
+
+                let activeShelf = $('.shelf-btn.active');
+                let currentShelf = $(e.currentTarget);
+
+                $.ajax({
+                    url: '/profile/shelf?shelfId=' + currentShelf.data('shelfId'),
+                    method: 'GET',
+                    success: function (data) {
+                        $('.active-shelf-container').html(data);
+
+                        activeShelf.removeClass('active');
+                        currentShelf.addClass('active');
+                    },
+                    error: function () {
+                        console.error('Error retrieving shelf information ', currentShelf.data('shelfId'));
+                    }
+                })
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

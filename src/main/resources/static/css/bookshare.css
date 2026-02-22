@@ -27,6 +27,26 @@ body {
     color: #fffdfb !important;
 }
 
+.btn-bookshare-outline {
+    background-color: transparent;
+    color: #4b3b2f;
+    border: 1px solid #4b3b2f;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-bookshare-outline:hover {
+    background-color: #4b3b2f;
+    color: #fffdfb;
+    border-color: #4b3b2f;
+}
+
+.btn-bookshare-outline.active,
+.btn-bookshare-outline:active {
+    background-color: #4b3b2f;
+    color: #fffdfb;
+    border-color: #4b3b2f;
+}
+
 .book-cover {
     aspect-ratio: 2/3;
     object-fit: cover;
@@ -124,6 +144,14 @@ body {
 .avatar {
     width: 48px;
     height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #d9cbb6;
+}
+
+.profile-avatar {
+    width: 110px;
+    height: 110px;
     object-fit: cover;
     border-radius: 50%;
     border: 2px solid #d9cbb6;
@@ -315,4 +343,52 @@ body {
     .recent-books-slider .text-center {
         width: 120px;
     }
+}
+
+#profile-books-container {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#profile-books-container::-webkit-scrollbar {
+    display: none;
+}
+
+.profile-books-container-wrapper {
+    position: relative;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 35%;
+    transform: translateY(-35%);
+    z-index: 5;
+
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+}
+
+.scroll-btn-left {
+    left: 5px;
+}
+
+.scroll-btn-right {
+    right: 5px;
+}
+
+.profile-books-container-wrapper:hover .scroll-btn {
+    opacity: 0.8;
+    visibility: visible;
 }
