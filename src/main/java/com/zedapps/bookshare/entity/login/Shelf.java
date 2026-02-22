@@ -50,6 +50,7 @@ public class Shelf {
     @OneToMany(mappedBy = "shelf")
     private List<ShelvedBook> books = new ArrayList<>();
 
+    @Column(updatable = false)
     private boolean defaultShelf;
 
     public Shelf(String name, Login user) {
