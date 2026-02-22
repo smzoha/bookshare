@@ -91,7 +91,9 @@ public class BookAdminService {
                 book.getId(),
                 Map.of(
                         "actionBy", loginDetails.getEmail(),
-                        "affectedBookId", book.getId()
+                        "affectedBookId", book.getId(),
+                        "bookName", book.getTitle(),
+                        "bookIsbn", book.getIsbn()
                 ));
     }
 
@@ -106,7 +108,8 @@ public class BookAdminService {
                 genre.getId(),
                 Map.of(
                         "actionBy", loginDetails.getEmail(),
-                        "affectedGenreId", genre.getId()
+                        "affectedGenreId", genre.getId(),
+                        "genreName", genre.getName()
                 ));
     }
 
@@ -121,7 +124,8 @@ public class BookAdminService {
                 tag.getId(),
                 Map.of(
                         "actionBy", loginDetails.getEmail(),
-                        "affectedTagId", tag.getId()
+                        "affectedTagId", tag.getId(),
+                        "tagName", tag.getName()
                 ));
     }
 
@@ -137,7 +141,9 @@ public class BookAdminService {
                 Map.of(
                         "actionBy", loginDetails.getEmail(),
                         "affectedAuthorId", author.getId(),
-                        "affectedAuthorLogin", author.getLogin() != null ? author.getLogin().getId() : ""
+                        "affectedAuthorLogin", author.getLogin() != null ? author.getLogin().getId() : "",
+                        "authorFirstName", author.getFirstName(),
+                        "authorLastName", author.getLastName()
                 ));
 
         return author;
