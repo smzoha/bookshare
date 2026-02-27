@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="activeShelfFragment" th:fragment="activeShelfFragment">
+    <h5 id="current-shelf-title" th:text="${activeShelf.name}"></h5>
+
+    <div class="profile-books-container-wrapper position-relative">
+        <button type="button" class="scroll-btn scroll-btn-left btn btn-light">
+            <i class="fa fa-caret-left fa-xl"></i>
+        </button>
+
+        <div id="profile-books-container" class="d-flex overflow-auto gap-3">
+            <th:block th:each="shelvedBook : ${activeShelf.books}">
+                <div th:replace="~{app/book/bookCardFragment :: bookCard(${shelvedBook.book})}"></div>
+            </th:block>
+        </div>
+
+        <button type="button" class="scroll-btn scroll-btn-right btn btn-light">
+            <i class="fa fa-caret-right fa-xl"></i>
+        </button>
+    </div>
+
+    <script type="text/javascript">
+        $(function() {
+            $('.scroll-btn-left').on('click', () => scrollBooks(-1));
+            $('.scroll-btn-right').on('click', () => scrollBooks(1));
+        });
+
+        function scrollBooks(direction) {
+            const container = document.getElementById('profile-books-container');
+
+            const scrollAmount = container.clientWidth * 0.8;
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            const currentScroll = container.scrollLeft;
+
+            const tolerance = 5;
+
+            if (direction === 1 && currentScroll >= maxScroll - tolerance) {
+                container.scrollTo({
+                    left: 0,
+                    behavior: 'smooth'
+                });
+
+                return;
+            }
+
+            if (direction === -1 && currentScroll <= tolerance) {
+                container.scrollTo({
+                    left: maxScroll,
+                    behavior: 'smooth'
+                });
+
+                return;
+            }
+
+            container.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</div>
+</body>
+</html>

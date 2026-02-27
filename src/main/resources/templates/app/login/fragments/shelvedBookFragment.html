@@ -18,52 +18,7 @@
              th:each="shelvedBook : ${currentShelf.books}"
              th:with="progress=${login.getReadingProgress(shelvedBook.book.id)}">
 
-            <div class="shelved-book-row">
-                <img th:src="@{/image/{id}(id=${shelvedBook.book.image.id})}"
-                     th:alt="${shelvedBook.book.title}"
-                     class="shelved-book-cover rounded shadow-sm"
-                     th:if="${shelvedBook.book.image ne null}">
-
-                <img th:src="@{/img/book-placeholder.png}"
-                     th:alt="${shelvedBook.book.title}"
-                     class="shelved-book-cover rounded shadow-sm"
-                     th:if="${shelvedBook.book.image eq null}">
-
-                <div class="shelved-book-info">
-                    <a th:href="@{/book/{id}(id=${shelvedBook.book.id})}"
-                       class="text-bookshare fw-bold text-decoration-none"
-                       th:text="${shelvedBook.book.title}">
-                    </a>
-
-                    <div class="text-muted" th:text="${shelvedBook.book.getAuthorNames()}">
-                    </div>
-                </div>
-
-                <div class="shelved-book-progress d-none d-md-block" th:if="${progress ne null}">
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span>Progress</span>
-                        <span th:text="|${progress.pagesRead}/${shelvedBook.book.pages}|"></span>
-                    </div>
-
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar"
-                             th:style="|width: ${(progress.pagesRead * 100) / shelvedBook.book.pages}%|"
-                             th:classappend="${progress.completed} ? ' bg-success' : 'bg-warning'">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${progress ne null}">
-                    <div class="text-end"
-                         th:text="|Added: ${#temporals.format(progress.startDate, 'dd-MM-yyyy')}|"></div>
-
-                    <div class="text-end" th:if="${progress.endDate ne null}"
-                         th:text="|Finished: ${#temporals.format(progress.endDate, 'dd-MM-yyyy')}|"></div>
-
-                    <div class="text-end"
-                         th:text="|Updated: ${#temporals.format(progress.updatedAt, 'dd-MM-yyyy')}|"></div>
-                </div>
-            </div>
+            <div th:replace="~{app/login/fragments/shelvedBookRowFragment :: shelfBookRow(${shelvedBook.book}, ${progress})}"></div>
         </div>
     </div>
 </th:block>

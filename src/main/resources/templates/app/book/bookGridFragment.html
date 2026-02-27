@@ -4,34 +4,7 @@
 <div th:fragment="bookGrid">
     <div id="booksContainer" class="row g-4">
         <div class="col-6 col-sm-4 col-md-3 col-lg-2 book-item" th:each="book : ${bookPage.content}">
-            <div class="card bg-bookshare-50 border-0 shadow-sm h-100 p-2">
-                <a th:href="@{/book/{id}(id=${book.id})}">
-                    <img th:src="@{/img/book-placeholder.png}" th:if="${book.image == null}" class="book-cover mx-auto" alt="Book Cover">
-                    <img th:src="@{/image/{id}(id=${book.image.id})}" th:if="${book.image != null}" class="book-cover mx-auto" alt="Book Cover">
-                </a>
-
-                <div class="mt-2 text-center">
-                    <h6 class="fw-bold line-clamp-2 mb-1" th:text="${book.title}"></h6>
-                    <div class="small text-muted line-clamp-2" th:text="${book.authorNames}"></div>
-
-                    <div class="rating mt-1">
-                        <ul class="list-inline">
-                            <th:block th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(book.averageRating))}" th:if="${book.averageRating >= 1}">
-                                <li class="fa-solid fa-star"></li>
-                            </th:block>
-
-                            <li class="fa-solid fa-star-half-stroke"
-                                th:if="${(book.averageRating % 1) >= 0.25 and (book.averageRating % 1) < 0.75}">
-                            </li>
-
-                            <th:block th:each="i : ${#numbers.sequence(1, (5 - T(java.lang.Math).ceil(book.averageRating)))}"
-                                      th:if="${(5 - T(java.lang.Math).ceil(book.averageRating))} > 0">
-                                <li class="fa-regular fa-star"></li>
-                            </th:block>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <div th:replace="app/book/bookCardFragment :: bookCard(${book})"></div>
         </div>
     </div>
 

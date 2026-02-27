@@ -121,4 +121,11 @@ public class Login {
                 .filter(rp -> Objects.equals(rp.getBook().getId(), bookId))
                 .toList();
     }
+
+    public ReadingProgress getReadingProgress(Long bookId) {
+        return getReadingProgresses().stream()
+                .filter(rp -> Objects.equals(rp.getBook().getId(), bookId))
+                .findFirst()
+                .orElse(null);
+    }
 }
