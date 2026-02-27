@@ -282,18 +282,19 @@ body {
     min-height: 100%;
 }
 
-.shelves-panel {
-    width: 240px;
-    flex-shrink: 0;
-    overflow-y: auto;
-}
-
 .shelf-item {
     cursor: pointer;
     background-color: #ffe8c6;
     border: none;
     border-radius: .25rem;
     transition: background-color 0.15s ease;
+}
+
+.shelves-panel {
+    width: 240px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border: 1px solid rgba(75, 59, 47, 0.5);
 }
 
 .shelf-item:hover {
