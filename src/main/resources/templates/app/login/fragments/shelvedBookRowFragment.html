@@ -1,0 +1,46 @@
+<div class="shelved-book-row" th:fragment="shelfBookRow(book, progress)">
+    <img th:src="@{/image/{id}(id=${book.image.id})}"
+         th:alt="${book.title}"
+         class="shelved-book-cover rounded shadow-sm"
+         th:if="${book.image ne null}">
+
+    <img th:src="@{/img/book-placeholder.png}"
+         th:alt="${book.title}"
+         class="shelved-book-cover rounded shadow-sm"
+         th:if="${book.image eq null}">
+
+    <div class="shelved-book-info">
+        <a th:href="@{/book/{id}(id=${book.id})}"
+           class="text-bookshare fw-bold text-decoration-none"
+           th:text="${book.title}">
+        </a>
+
+        <div class="text-muted" th:text="${book.getAuthorNames()}">
+        </div>
+    </div>
+
+    <div class="shelved-book-progress d-none d-md-block" th:if="${progress ne null}">
+        <div class="d-flex justify-content-between small mb-1">
+            <span>Progress</span>
+            <span th:text="|${progress.pagesRead}/${book.pages}|"></span>
+        </div>
+
+        <div class="progress" style="height: 8px;">
+            <div class="progress-bar"
+                 th:style="|width: ${(progress.pagesRead * 100) / book.pages}%|"
+                 th:classappend="${progress.completed} ? ' bg-success' : 'bg-warning'">
+            </div>
+        </div>
+    </div>
+
+    <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${progress ne null}">
+        <div class="text-end"
+             th:text="|Added: ${#temporals.format(progress.startDate, 'dd-MM-yyyy')}|"></div>
+
+        <div class="text-end" th:if="${progress.endDate ne null and progress.completed}"
+             th:text="|Finished: ${#temporals.format(progress.endDate, 'dd-MM-yyyy')}|"></div>
+
+        <div class="text-end"
+             th:text="|Updated: ${#temporals.format(progress.updatedAt, 'dd-MM-yyyy')}|"></div>
+    </div>
+</div>
