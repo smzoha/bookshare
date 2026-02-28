@@ -18,7 +18,10 @@
                 <div class="row align-items-center">
                     <div class="col-auto">
                         <img th:src="@{/image/{id}(id=${login.profilePicture.id})}"
-                             class="profile-avatar" alt="Profile Picture">
+                             class="profile-avatar" alt="Profile Picture" th:if="${login.profilePicture != null}">
+
+                        <img th:src="@{/img/user-avatar.png}"
+                             class="profile-avatar" alt="Profile Picture" th:if="${login.profilePicture == null}">
                     </div>
 
                     <div class="col">
@@ -111,14 +114,18 @@
 
     <script type="text/javascript" th:inline="javascript">
         $(function () {
+            const href = $(location).attr('href');
+            const handle = href.split('/').pop();
+
             $('.shelf-btn').on('click', function (e) {
                 e.preventDefault();
 
                 let activeShelf = $('.shelf-btn.active');
                 let currentShelf = $(e.currentTarget);
+                let currentShelfId = currentShelf.data('shelfId');
 
                 $.ajax({
-                    url: '/profile/shelf?shelfId=' + currentShelf.data('shelfId'),
+                    url: (handle ? `${handle}` : '') + `/shelf?shelfId=${currentShelfId}`,
                     method: 'GET',
                     success: function (data) {
                         $('.active-shelf-container').html(data);

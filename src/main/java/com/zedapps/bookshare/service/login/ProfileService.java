@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Shelf;
@@ -25,8 +24,8 @@ public class ProfileService {
     private final LoginService loginService;
     private final ConnectionRepository connectionRepository;
 
-    public void setupReferenceData(LoginDetails loginDetails, ModelMap model) {
-        Login login = loginService.getLogin(loginDetails.getEmail());
+    public void setupReferenceData(String email, ModelMap model) {
+        Login login = loginService.getLogin(email);
 
         model.put("login", login);
         model.put("totalBooks", login.getShelves()
