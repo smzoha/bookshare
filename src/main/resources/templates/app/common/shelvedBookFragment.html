@@ -18,7 +18,7 @@
              th:each="shelvedBook : ${currentShelf.books}"
              th:with="progress=${login.getReadingProgress(shelvedBook.book.id)}">
 
-            <div th:replace="~{app/login/fragments/shelvedBookRowFragment :: shelfBookRow(${shelvedBook.book}, ${progress})}"></div>
+            <div th:replace="~{app/common/bookProgressFragment :: shelfBookRow(${shelvedBook.book}, ${progress})}"></div>
         </div>
     </div>
 </th:block>

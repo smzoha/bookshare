@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.entity.activity;
 
-import com.zedapps.bookshare.entity.activity.enums.ActivityStatus;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityStatus;
+import com.zedapps.bookshare.enums.ActivityType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;

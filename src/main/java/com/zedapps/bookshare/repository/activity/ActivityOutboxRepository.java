@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.repository.activity;
 
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
-import com.zedapps.bookshare.entity.activity.enums.ActivityStatus;
+import com.zedapps.bookshare.enums.ActivityStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

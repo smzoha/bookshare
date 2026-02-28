@@ -1,11 +1,11 @@
-package com.zedapps.bookshare.controller.login;
+package com.zedapps.bookshare.controller.login.admin;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.dto.login.LoginManageDto;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.enums.Role;
+import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.validator.LoginDtoValidator;
 import jakarta.validation.Valid;

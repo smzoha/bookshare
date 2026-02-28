@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.entity.book;
 
-import com.zedapps.bookshare.entity.book.enums.Status;
+import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.Review;
 import jakarta.persistence.*;

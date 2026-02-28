@@ -2,8 +2,8 @@ package com.zedapps.bookshare.service.activity;
 
 import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
-import com.zedapps.bookshare.entity.activity.enums.ActivityStatus;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityStatus;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
 import com.zedapps.bookshare.repository.activity.ActivityRepository;
