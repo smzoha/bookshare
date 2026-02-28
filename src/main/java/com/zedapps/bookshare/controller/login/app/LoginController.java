@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.controller.login;
+package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.login.LoginRequestDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;

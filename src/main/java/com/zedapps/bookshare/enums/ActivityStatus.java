@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.entity.activity.enums;
+package com.zedapps.bookshare.enums;
 
 /**
  * @author smzoha

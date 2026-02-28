@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.dto.activity;
 
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import lombok.Builder;
 
 import java.util.Map;

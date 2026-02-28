@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.controller.login;
+package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
@@ -30,7 +30,7 @@ public class ProfileController {
 
         profileService.setupReferenceData(loginDetails, model);
 
-        return "app/login/profile";
+        return "app/profile/profile";
     }
 
     @GetMapping("/shelf")
@@ -41,8 +41,6 @@ public class ProfileController {
         Login login = loginService.getLogin(loginDetails.getEmail());
         model.put("activeShelf", login.getShelf(shelfId));
 
-        return "app/login/fragments/profileActiveShelfFragment :: activeShelfFragment";
+        return "app/profile/profileActiveShelfFragment :: activeShelfFragment";
     }
-
-
 }

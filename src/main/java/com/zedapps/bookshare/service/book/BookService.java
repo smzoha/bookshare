@@ -3,7 +3,7 @@ package com.zedapps.bookshare.service.book;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.book.BookListRepository;

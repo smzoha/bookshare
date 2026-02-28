@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.entity.login;
 
 import com.zedapps.bookshare.entity.image.Image;
-import com.zedapps.bookshare.entity.login.enums.Role;
+import com.zedapps.bookshare.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -68,7 +68,7 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="#" th:text="#{label.create.new.shelf}"
-                                   data-bs-toggle="modal" data-bs-target="#addShelfModal"/></li>
+                                   data-bs-toggle="modal" data-bs-target="#createShelfModal"/></li>
                         </ul>
                     </div>
                 </div>
@@ -236,9 +236,9 @@
         </div>
     </div>
 
-    <div id="addShelfFragment" th:insert="~{app/book/shelfAddFragment :: shelfAddModal}"></div>
-    <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfModalFragment :: shelfModal}"></div>
-    <div id="readingProgressFragment" th:insert="~{app/book/readingProgressFragment :: readingProgressModal}"></div>
+    <div id="addShelfFragment" th:insert="~{app/login/fragments/createShelfFragment :: createShelfModal}"></div>
+    <div id="allShelfFragment" th:if="${shelvesTruncated}" th:insert="~{app/book/shelfSelectionFragment :: shelfModal}"></div>
+    <div id="readingProgressFragment" th:insert="~{app/book/readingProgressForm :: readingProgressModal}"></div>
 
     <script type="application/javascript" th:inline="javascript">
         const showMoreText = /*[[#{label.show.more}]]*/ '';

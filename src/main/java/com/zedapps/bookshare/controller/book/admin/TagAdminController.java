@@ -2,7 +2,7 @@ package com.zedapps.bookshare.controller.book.admin;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import jakarta.validation.Valid;

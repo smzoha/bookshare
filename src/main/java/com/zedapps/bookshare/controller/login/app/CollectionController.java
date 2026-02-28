@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.controller.login;
+package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
@@ -54,7 +54,7 @@ public class CollectionController {
         model.put("currentShelf", currentShelf);
 
         return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"))
-                ? "app/login/fragments/shelvedBookFragment :: shelvedBooks"
+                ? "app/common/shelvedBookFragment :: shelvedBooks"
                 : "app/login/collection";
     }
 }

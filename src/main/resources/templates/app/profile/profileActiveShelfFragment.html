@@ -11,7 +11,7 @@
 
         <div id="profile-books-container" class="d-flex overflow-auto gap-3">
             <th:block th:each="shelvedBook : ${activeShelf.books}">
-                <div th:replace="~{app/book/bookCardFragment :: bookCard(${shelvedBook.book})}"></div>
+                <div th:replace="~{app/common/bookCardFragment :: bookCard(${shelvedBook.book})}"></div>
             </th:block>
         </div>
 

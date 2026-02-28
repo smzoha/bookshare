@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.dto.login;
 
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.enums.Role;
+import com.zedapps.bookshare.enums.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;

@@ -1,9 +1,9 @@
-package com.zedapps.bookshare.controller.book.app;
+package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.service.book.ShelfService;
+import com.zedapps.bookshare.service.login.ShelfService;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

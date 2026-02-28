@@ -2,7 +2,7 @@ package com.zedapps.bookshare.controller.book.admin;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.service.book.BookAdminService;
@@ -47,14 +47,14 @@ public class AuthorAdminController {
                 .internal(true)
                 .build());
 
-        return "admin/book/authorList";
+        return "admin/author/authorList";
     }
 
     @GetMapping("/new")
     public String createNewAuthor(ModelMap model) {
         model.put("author", new Author());
 
-        return "admin/book/authorForm";
+        return "admin/author/authorForm";
     }
 
     @GetMapping("{id}")
@@ -73,7 +73,7 @@ public class AuthorAdminController {
                 .internal(true)
                 .build());
 
-        return "admin/book/authorForm";
+        return "admin/author/authorForm";
     }
 
     @PostMapping("/save")
@@ -83,7 +83,7 @@ public class AuthorAdminController {
         validateAuthorLoginLink(author, errors);
 
         if (errors.hasErrors()) {
-            return "admin/book/authorForm";
+            return "admin/author/authorForm";
         }
 
         bookAdminService.saveAuthor(author);

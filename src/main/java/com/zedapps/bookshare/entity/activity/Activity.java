@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.entity.activity;
 
-import com.zedapps.bookshare.entity.activity.enums.ActivityType;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

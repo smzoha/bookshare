@@ -4,7 +4,7 @@
 <div th:fragment="bookGrid">
     <div id="booksContainer" class="row g-4">
         <div class="col-6 col-sm-4 col-md-3 col-lg-2 book-item" th:each="book : ${bookPage.content}">
-            <div th:replace="app/book/bookCardFragment :: bookCard(${book})"></div>
+            <div th:replace="app/common/bookCardFragment :: bookCard(${book})"></div>
         </div>
     </div>
 
