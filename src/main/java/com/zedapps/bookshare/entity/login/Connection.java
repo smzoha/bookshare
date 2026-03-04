@@ -14,7 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Follow extends BaseFollow {
+public class Connection extends BaseConnection {
 
     @Id
     private Long id;
