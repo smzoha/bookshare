@@ -79,12 +79,6 @@ public class Login {
     @OrderBy("startDate, endDate")
     private List<ReadingProgress> readingProgresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "follower")
-    private List<Follow> following = new ArrayList<>();
-
-    @OneToMany(mappedBy = "following")
-    private List<Follow> followers = new ArrayList<>();
-
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
