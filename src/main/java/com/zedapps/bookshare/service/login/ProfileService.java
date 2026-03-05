@@ -4,6 +4,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final LoginService loginService;
+    private final ConnectionRepository connectionRepository;
 
     public void setupReferenceData(LoginDetails loginDetails, ModelMap model) {
         Login login = loginService.getLogin(loginDetails.getEmail());
@@ -35,6 +37,7 @@ public class ProfileService {
         setupShelves(model, login);
 
         model.put("readingProgressList", getDistinctReadingProgressList(login));
+        model.put("connectionsCount", connectionRepository.findConnectionsByPerson1(login).size());
     }
 
     private void setupShelves(ModelMap model, Login login) {

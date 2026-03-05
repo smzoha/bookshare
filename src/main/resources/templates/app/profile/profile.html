@@ -32,13 +32,8 @@
                             </div>
 
                             <div class="col">
-                                <h5 id="stat-followers" th:text="${login.followers.size()}"></h5>
-                                <small class="text-muted">Followers</small>
-                            </div>
-
-                            <div class="col">
-                                <h5 id="stat-following" th:text="${login.following.size()}"></h5>
-                                <small class="text-muted">Following</small>
+                                <h5 id="stat-connections" th:text="${connectionsCount}"></h5>
+                                <small class="text-muted">Connections</small>
                             </div>
                         </div>
                     </div>
