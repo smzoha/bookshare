@@ -4,6 +4,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The idea is to create an instance of FriendRequest first, and then copy it over to the Connection table.
@@ -14,6 +16,8 @@ import jakarta.validation.constraints.NotNull;
  * @since 12/9/25
  **/
 @MappedSuperclass
+@Getter
+@Setter
 public class BaseConnection {
 
     @NotNull(message = "{error.required}")
