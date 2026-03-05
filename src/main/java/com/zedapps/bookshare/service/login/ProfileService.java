@@ -1,10 +1,7 @@
 package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.login.Connection;
-import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.ReadingProgress;
-import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +45,9 @@ public class ProfileService {
         setupFriendFlags(model, profileLogin, authLogin);
     }
 
-    private void setupFriendFlags(ModelMap model, Login profileLogin, Login authLogin) {
-        boolean friendReqReceived = friendRequestRepository.findFriendRequest(profileLogin, authLogin).isPresent();
-        boolean friendReqSent = friendRequestRepository.findFriendRequest(authLogin, profileLogin).isPresent();
+    public void setupFriendFlags(ModelMap model, Login profileLogin, Login authLogin) {
+        boolean friendReqSent = friendRequestRepository.findFriendRequest(profileLogin, authLogin).isPresent();
+        boolean friendReqReceived = friendRequestRepository.findFriendRequest(authLogin, profileLogin).isPresent();
 
         List<Connection> connections = connectionRepository.findConnectionsByPerson1(authLogin);
         boolean isFriends = connections.stream().anyMatch(conn -> conn.getPerson2().equals(profileLogin));
@@ -59,7 +56,15 @@ public class ProfileService {
         model.put("friendReqSent", friendReqSent);
 
         model.put("isFriends", isFriends);
-        model.put("showFriendReqBtn", !friendReqReceived && !friendReqSent && !isFriends);
+        model.put("showFriendReqBtn", !friendReqSent && !friendReqReceived && !isFriends);
+    }
+
+    public void saveFriendRequest(Login sourceLogin, Login targetLogin) {
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setPerson1(sourceLogin);
+        friendRequest.setPerson2(targetLogin);
+
+        friendRequestRepository.save(friendRequest);
     }
 
     private void setupShelves(ModelMap model, Login login) {

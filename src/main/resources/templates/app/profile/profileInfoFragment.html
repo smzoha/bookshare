@@ -22,7 +22,7 @@
         </button>
     </div>
 
-    <div class="d-flex align-items-center gap-2 flex-wrap" th:if="${friendReqSent or friendReqReceived}">
+    <div class="d-flex align-items-center gap-2 flex-wrap pb-2" th:if="${friendReqSent or friendReqReceived}">
         <span class="small text-uppercase text-secondary"
               th:text="|${login.firstName} ${login.lastName} #{label.friend.request.message} |"></span>
 

@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author smzoha
@@ -65,5 +62,21 @@ public class ProfileController {
         model.put("activeShelf", login.getShelf(shelfId));
 
         return "app/profile/profileActiveShelfFragment :: activeShelfFragment";
+    }
+
+    @PostMapping("/sendFriendReq")
+    public String sendFriendRequest(@AuthenticationPrincipal LoginDetails loginDetails,
+                                    @RequestParam String handle,
+                                    ModelMap model) {
+
+        Login authLogin = loginService.getLogin(loginDetails.getEmail());
+        Login profileLogin = loginService.getLoginByHandle(handle);
+
+        profileService.saveFriendRequest(authLogin, profileLogin);
+
+        model.put("login", profileLogin);
+        profileService.setupFriendFlags(model, profileLogin, authLogin);
+
+        return "app/profile/profileInfoFragment :: profileInfoFragment";
     }
 }

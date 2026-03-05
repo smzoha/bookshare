@@ -141,6 +141,24 @@
                     }
                 })
             });
+
+            $(document).on('click', '.send-friend-req-btn', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/profile/sendFriendReq',
+                    method: 'POST',
+                    data: { handle: handle },
+                    beforeSend: () => showLoader(),
+                    success: function (data) {
+                        $('#profileInfoContainer').html(data);
+                    },
+                    error: function () {
+                        console.error(`Error sending friend request to ${handle}`);
+                    },
+                    complete: () => removeLoader()
+                })
+            });
         });
     </script>
 </div>
