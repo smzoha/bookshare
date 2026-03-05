@@ -25,7 +25,10 @@
                     </div>
 
                     <div class="col">
-                        <h3 id="username" th:text="|${login.firstName} ${login.lastName}|"></h3>
+                        <div id="profileInfoContainer">
+                            <div th:replace="~{app/profile/profileInfoFragment :: profileInfoFragment}"></div>
+                        </div>
+
                         <p class="text-muted mb-3" th:text="${login.bio}"></p>
 
                         <div class="row text-center">
