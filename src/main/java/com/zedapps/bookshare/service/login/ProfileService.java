@@ -1,9 +1,12 @@
 package com.zedapps.bookshare.service.login;
 
+import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.login.Connection;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
+import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -11,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -22,21 +26,40 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final LoginService loginService;
+    private final FriendRequestRepository friendRequestRepository;
     private final ConnectionRepository connectionRepository;
 
-    public void setupReferenceData(String email, ModelMap model) {
-        Login login = loginService.getLogin(email);
+    public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
+        Login profileLogin = loginService.getLogin(profileEmail);
+        Login authLogin = loginService.getLogin(loginDetails.getEmail());
 
-        model.put("login", login);
-        model.put("totalBooks", login.getShelves()
+        model.put("login", profileLogin);
+        model.put("totalBooks", profileLogin.getShelves()
                 .stream()
                 .mapToInt(shelf -> shelf.getBooks().size())
                 .sum());
 
-        setupShelves(model, login);
+        setupShelves(model, profileLogin);
 
-        model.put("readingProgressList", getDistinctReadingProgressList(login));
-        model.put("connectionsCount", connectionRepository.findConnectionsByPerson1(login).size());
+        model.put("connectionsCount", connectionRepository.findConnectionsByPerson1(profileLogin).size());
+        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
+        model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
+
+        setupFriendFlags(model, profileLogin, authLogin);
+    }
+
+    private void setupFriendFlags(ModelMap model, Login profileLogin, Login authLogin) {
+        boolean friendReqReceived = friendRequestRepository.findFriendRequest(profileLogin, authLogin).isPresent();
+        boolean friendReqSent = friendRequestRepository.findFriendRequest(authLogin, profileLogin).isPresent();
+
+        List<Connection> connections = connectionRepository.findConnectionsByPerson1(authLogin);
+        boolean isFriends = connections.stream().anyMatch(conn -> conn.getPerson2().equals(profileLogin));
+
+        model.put("friendReqReceived", friendReqReceived);
+        model.put("friendReqSent", friendReqSent);
+
+        model.put("isFriends", isFriends);
+        model.put("showFriendReqBtn", !friendReqReceived && !friendReqSent && !isFriends);
     }
 
     private void setupShelves(ModelMap model, Login login) {

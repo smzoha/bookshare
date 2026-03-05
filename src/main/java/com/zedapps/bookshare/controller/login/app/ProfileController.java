@@ -29,18 +29,19 @@ public class ProfileController {
     public String getProfile(@AuthenticationPrincipal LoginDetails loginDetails,
                              ModelMap model) {
 
-        profileService.setupReferenceData(loginDetails.getEmail(), model);
+        profileService.setupReferenceData(loginDetails.getEmail(), loginDetails, model);
 
         return "app/profile/profile";
     }
 
     @GetMapping("/{handle}")
-    public String getProfileByHandle(@PathVariable String handle,
+    public String getProfileByHandle(@AuthenticationPrincipal LoginDetails loginDetails,
+                                     @PathVariable String handle,
                                      ModelMap model) {
 
         Login login = loginService.getLoginByHandle(handle);
 
-        profileService.setupReferenceData(login.getEmail(), model);
+        profileService.setupReferenceData(login.getEmail(), loginDetails, model);
 
         return "app/profile/profile";
     }
