@@ -142,7 +142,7 @@
                 })
             });
 
-            $(document).on('click', '.send-friend-req-btn, .revoke-req-btn', function (e) {
+            $(document).on('click', '.send-friend-req-btn, .revoke-friend-req-btn', function (e) {
                 e.preventDefault();
                 let send = $(e.currentTarget).hasClass('send-friend-req-btn');
 
@@ -161,7 +161,29 @@
                         console.error(`Error sending friend request to ${handle}`);
                     },
                     complete: () => removeLoader()
-                })
+                });
+            });
+
+            $(document).on('click', '.accept-friend-req-btn, .decline-friend-req-btn', function (e) {
+                e.preventDefault();
+                let decline = $(e.currentTarget).hasClass('decline-friend-req-btn');
+
+                $.ajax({
+                    url: '/profile/confirmFriendReq',
+                    method: 'POST',
+                    data: {
+                        handle: handle,
+                        decline: decline
+                    },
+                    beforeSend: () => showLoader(),
+                    success: function (data) {
+                        $('#profileInfoContainer').html(data);
+                    },
+                    error: function () {
+                        console.error(`Error sending friend request to ${handle}`);
+                    },
+                    complete: () => removeLoader()
+                });
             });
         });
     </script>

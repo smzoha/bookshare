@@ -7,6 +7,7 @@ import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.util.*;
@@ -67,13 +68,28 @@ public class ProfileService {
         friendRequestRepository.save(friendRequest);
     }
 
+    @Transactional
+    public void addFriend(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
+
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+
+        friendRequestRepository.delete(request.get());
+        connectionRepository.saveConnection(authLogin.getId(), profileLogin.getId());
+    }
+
+    public void declineFriendRequest(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
+
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+
+        friendRequestRepository.delete(request.get());
+    }
+
     public void revokeFriendRequest(Login authLogin, Login profileLogin) {
         Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(authLogin, profileLogin);
 
-        if (request.isEmpty()) {
-            log.error("Friend request does not exist. personA: {}, personB: {}", authLogin.getEmail(), profileLogin.getEmail());
-            return;
-        }
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
 
         friendRequestRepository.delete(request.get());
     }
@@ -111,5 +127,14 @@ public class ProfileService {
                 .stream()
                 .limit(5)
                 .toList();
+    }
+
+    private boolean logInvalidRequest(Login authLogin, Login profileLogin, Optional<FriendRequest> request) {
+        if (request.isEmpty()) {
+            log.error("Friend request does not exist. personA: {}, personB: {}", authLogin.getEmail(), profileLogin.getEmail());
+            return true;
+        }
+
+        return false;
     }
 }
