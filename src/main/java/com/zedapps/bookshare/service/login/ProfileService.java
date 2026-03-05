@@ -5,19 +5,18 @@ import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author smzoha
  * @since 28/2/26
  **/
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -39,7 +38,6 @@ public class ProfileService {
         setupShelves(model, profileLogin);
 
         model.put("connectionsCount", connectionRepository.findConnectionsByPerson1(profileLogin).size());
-        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
         model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
 
         setupFriendFlags(model, profileLogin, authLogin);
@@ -52,6 +50,8 @@ public class ProfileService {
         List<Connection> connections = connectionRepository.findConnectionsByPerson1(authLogin);
         boolean isFriends = connections.stream().anyMatch(conn -> conn.getPerson2().equals(profileLogin));
 
+        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
+
         model.put("friendReqReceived", friendReqReceived);
         model.put("friendReqSent", friendReqSent);
 
@@ -59,12 +59,23 @@ public class ProfileService {
         model.put("showFriendReqBtn", !friendReqSent && !friendReqReceived && !isFriends);
     }
 
-    public void saveFriendRequest(Login sourceLogin, Login targetLogin) {
+    public void saveFriendRequest(Login authLogin, Login profileLogin) {
         FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setPerson1(sourceLogin);
-        friendRequest.setPerson2(targetLogin);
+        friendRequest.setPerson1(authLogin);
+        friendRequest.setPerson2(profileLogin);
 
         friendRequestRepository.save(friendRequest);
+    }
+
+    public void revokeFriendRequest(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(authLogin, profileLogin);
+
+        if (request.isEmpty()) {
+            log.error("Friend request does not exist. personA: {}, personB: {}", authLogin.getEmail(), profileLogin.getEmail());
+            return;
+        }
+
+        friendRequestRepository.delete(request.get());
     }
 
     private void setupShelves(ModelMap model, Login login) {

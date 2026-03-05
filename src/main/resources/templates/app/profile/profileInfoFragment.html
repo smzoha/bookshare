@@ -16,13 +16,18 @@
             <span th:text="#{label.add.friend}"></span>
         </button>
 
+        <button type="button" class="btn btn-sm btn-warning revoke-req-btn" th:if="${friendReqReceived}">
+            <span class="fas fa-times"></span>&nbsp;
+            <span th:text="#{label.remove.friend.req}"></span>
+        </button>
+
         <button type="button" class="btn btn-sm btn-danger remove-follow-btn" th:if="${not ownProfile and isFriends}">
             <span class="fas fa-user-slash"></span>&nbsp;
             <span th:text="#{label.remove.friend}"></span>
         </button>
     </div>
 
-    <div class="d-flex align-items-center gap-2 flex-wrap pb-2" th:if="${friendReqSent or friendReqReceived}">
+    <div class="d-flex align-items-center gap-2 flex-wrap pb-2" th:if="${friendReqSent}">
         <span class="small text-uppercase text-secondary"
               th:text="|${login.firstName} ${login.lastName} #{label.friend.request.message} |"></span>
 
@@ -34,11 +39,6 @@
         <button type="button" class="btn btn-sm btn-bookshare decline-follow-btn" th:if="${friendReqSent}">
             <span class="fas fa-multiply"></span>&nbsp;
             <span th:text="#{label.decline}"></span>
-        </button>
-
-        <button type="button" class="btn btn-sm btn-warning revoke-follow-btn" th:if="${friendReqReceived}">
-            <span class="fas fa-times"></span>&nbsp;
-            <span th:text="#{label.remove.friend.req}"></span>
         </button>
     </div>
 </div>

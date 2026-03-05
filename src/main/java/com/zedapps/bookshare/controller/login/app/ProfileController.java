@@ -64,15 +64,20 @@ public class ProfileController {
         return "app/profile/profileActiveShelfFragment :: activeShelfFragment";
     }
 
-    @PostMapping("/sendFriendReq")
-    public String sendFriendRequest(@AuthenticationPrincipal LoginDetails loginDetails,
-                                    @RequestParam String handle,
-                                    ModelMap model) {
+    @PostMapping("/sendRevokeFriendReq")
+    public String sendOrRevokeFriendRequest(@AuthenticationPrincipal LoginDetails loginDetails,
+                                            @RequestParam String handle,
+                                            @RequestParam boolean send,
+                                            ModelMap model) {
 
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
         Login profileLogin = loginService.getLoginByHandle(handle);
 
-        profileService.saveFriendRequest(authLogin, profileLogin);
+        if (send) {
+            profileService.saveFriendRequest(authLogin, profileLogin);
+        } else {
+            profileService.revokeFriendRequest(authLogin, profileLogin);
+        }
 
         model.put("login", profileLogin);
         profileService.setupFriendFlags(model, profileLogin, authLogin);

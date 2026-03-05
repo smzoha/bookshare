@@ -16,5 +16,5 @@ import java.util.Optional;
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
 
     @Query("FROM FriendRequest WHERE person1 = :personA AND person2 = :personB")
-    public Optional<FriendRequest> findFriendRequest(Login personA, Login personB);
+    Optional<FriendRequest> findFriendRequest(Login personA, Login personB);
 }
