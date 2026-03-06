@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,6 +22,9 @@ import java.util.Objects;
 @RequestMapping("/profile")
 @RequiredArgsConstructor
 public class ProfileController {
+
+    private final List<ConnectionAction> FRIEND_ACCEPT_OR_REMOVE_ACTIONS = List.of(ConnectionAction.ACCEPT_FRIEND_REQ,
+            ConnectionAction.REMOVE_FRIEND);
 
     private final ProfileService profileService;
     private final LoginService loginService;
@@ -82,9 +86,16 @@ public class ProfileController {
 
         profileService.performConnectionAction(authLogin, profileLogin, action);
 
-        model.put("login", profileLogin);
-        profileService.setupFriendFlags(model, profileLogin, authLogin);
+        if (FRIEND_ACCEPT_OR_REMOVE_ACTIONS.contains(action)) {
+            profileService.setupReferenceData(profileLogin.getEmail(), loginDetails, model);
 
-        return "app/profile/profileInfoFragment :: profileInfoFragment";
+            return "app/profile/profile";
+
+        } else {
+            model.put("login", profileLogin);
+            profileService.setupConnectionRefData(model, profileLogin, authLogin);
+
+            return "app/profile/profileInfoFragment :: profileInfoFragment";
+        }
     }
 }

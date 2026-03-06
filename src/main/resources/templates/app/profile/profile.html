@@ -157,7 +157,7 @@
                     },
                     beforeSend: () => showLoader(),
                     success: function (data) {
-                        $('#profileInfoContainer').html(data);
+                        data.indexOf('::') !== -1 ? $('body').html(data) : $('#profileInfoContainer').html(data);
                     },
                     error: function () {
                         console.error(`Error performing action ${action} for ${handle}`);

@@ -39,13 +39,16 @@ public class ProfileService {
 
         setupShelves(model, profileLogin);
 
-        model.put("connectionsCount", connectionRepository.findConnectionsByPerson1(profileLogin).size());
         model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
 
-        setupFriendFlags(model, profileLogin, authLogin);
+        List<Connection> connections = connectionRepository.findConnectionsByPerson1(profileLogin);
+        model.put("connectionsCount", connections.size());
+        model.put("connections", connections);
+
+        setupConnectionRefData(model, profileLogin, authLogin);
     }
 
-    public void setupFriendFlags(ModelMap model, Login profileLogin, Login authLogin) {
+    public void setupConnectionRefData(ModelMap model, Login profileLogin, Login authLogin) {
         boolean friendReqSent = friendRequestRepository.findFriendRequest(profileLogin, authLogin).isPresent();
         boolean friendReqReceived = friendRequestRepository.findFriendRequest(authLogin, profileLogin).isPresent();
 
