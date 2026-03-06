@@ -19,7 +19,6 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     List<Connection> findConnectionsByPerson1(Login person1);
 
-    @Transactional
     @Modifying
     @Query(value = """
             INSERT INTO connection (id, person1_id, person2_id) VALUES
@@ -27,4 +26,11 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
             (nextval('connection_seq'), :person2Id, :person1Id)
             """, nativeQuery = true)
     void saveConnection(Long person1Id, Long person2Id);
+
+    @Modifying
+    @Query(value = """
+            DELETE FROM connection
+            WHERE person1_id = :person1Id AND person2_id = :person2Id
+            """, nativeQuery = true)
+    void deleteConnection(Long person1Id, Long person2Id);
 }

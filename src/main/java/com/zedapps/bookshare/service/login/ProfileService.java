@@ -60,6 +60,7 @@ public class ProfileService {
         model.put("showFriendReqBtn", !friendReqSent && !friendReqReceived && !isFriends);
     }
 
+    @Transactional
     public void saveFriendRequest(Login authLogin, Login profileLogin) {
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setPerson1(authLogin);
@@ -78,6 +79,7 @@ public class ProfileService {
         connectionRepository.saveConnection(authLogin.getId(), profileLogin.getId());
     }
 
+    @Transactional
     public void declineFriendRequest(Login authLogin, Login profileLogin) {
         Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
 
@@ -86,12 +88,19 @@ public class ProfileService {
         friendRequestRepository.delete(request.get());
     }
 
+    @Transactional
     public void revokeFriendRequest(Login authLogin, Login profileLogin) {
         Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(authLogin, profileLogin);
 
         if (logInvalidRequest(authLogin, profileLogin, request)) return;
 
         friendRequestRepository.delete(request.get());
+    }
+
+    @Transactional
+    public void removeFriend(Login authLogin, Login profileLogin) {
+        connectionRepository.deleteConnection(authLogin.getId(), profileLogin.getId());
+        connectionRepository.deleteConnection(profileLogin.getId(), authLogin.getId());
     }
 
     private void setupShelves(ModelMap model, Login login) {

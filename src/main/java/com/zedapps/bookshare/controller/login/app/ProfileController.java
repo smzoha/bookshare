@@ -105,4 +105,20 @@ public class ProfileController {
 
         return "app/profile/profileInfoFragment :: profileInfoFragment";
     }
+
+    @PostMapping("/removeFriend")
+    public String removeFriend(@AuthenticationPrincipal LoginDetails loginDetails,
+                               @RequestParam String handle,
+                               ModelMap model) {
+
+        Login authLogin = loginService.getLogin(loginDetails.getEmail());
+        Login profileLogin = loginService.getLoginByHandle(handle);
+
+        profileService.removeFriend(authLogin, profileLogin);
+
+        model.put("login", profileLogin);
+        profileService.setupFriendFlags(model, profileLogin, authLogin);
+
+        return "app/profile/profileInfoFragment :: profileInfoFragment";
+    }
 }

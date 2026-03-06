@@ -185,6 +185,26 @@
                     complete: () => removeLoader()
                 });
             });
+
+            $(document).on('click', '.remove-friend-btn', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    url: '/profile/removeFriend',
+                    method: 'POST',
+                    data: {
+                        handle: handle,
+                    },
+                    beforeSend: () => showLoader(),
+                    success: function (data) {
+                        $('#profileInfoContainer').html(data);
+                    },
+                    error: function () {
+                        console.error(`Error removing friend request to ${handle}`);
+                    },
+                    complete: () => removeLoader()
+                });
+            });
         });
     </script>
 </div>
