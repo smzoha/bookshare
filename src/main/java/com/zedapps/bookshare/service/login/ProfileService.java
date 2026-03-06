@@ -2,9 +2,11 @@ package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.*;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class ProfileService {
     private final LoginService loginService;
     private final FriendRequestRepository friendRequestRepository;
     private final ConnectionRepository connectionRepository;
+    private final ActivityService activityService;
 
     public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
         Login profileLogin = loginService.getLogin(profileEmail);
@@ -129,7 +132,17 @@ public class ProfileService {
         friendRequest.setPerson1(authLogin);
         friendRequest.setPerson2(profileLogin);
 
-        friendRequestRepository.save(friendRequest);
+        friendRequest = friendRequestRepository.save(friendRequest);
+
+        activityService.saveActivityOutbox(ActivityType.FRIEND_REQ_SENT,
+                friendRequest.getId(),
+                Map.of(
+                        "actionBy", authLogin.getEmail(),
+                        "requestedBy", authLogin.getId(),
+                        "requestedTo", profileLogin.getId(),
+                        "requestedByEmail", authLogin.getEmail(),
+                        "requestedToEmail", profileLogin.getEmail()
+                ));
     }
 
     private void revokeFriendRequest(Login authLogin, Login profileLogin) {
@@ -138,6 +151,16 @@ public class ProfileService {
         if (logInvalidRequest(authLogin, profileLogin, request)) return;
 
         friendRequestRepository.delete(request.get());
+
+        activityService.saveActivityOutbox(ActivityType.REVOKE_FRIEND_REQ,
+                request.get().getId(),
+                Map.of(
+                        "actionBy", authLogin.getEmail(),
+                        "requestedBy", authLogin.getId(),
+                        "requestedTo", profileLogin.getId(),
+                        "requestedByEmail", authLogin.getEmail(),
+                        "requestedToEmail", profileLogin.getEmail()
+                ));
     }
 
     private void acceptFriendRequest(Login authLogin, Login profileLogin) {
@@ -146,7 +169,20 @@ public class ProfileService {
         if (logInvalidRequest(authLogin, profileLogin, request)) return;
 
         friendRequestRepository.delete(request.get());
-        connectionRepository.saveConnection(authLogin.getId(), profileLogin.getId());
+
+        Connection connection = connectionRepository.save(new Connection(authLogin, profileLogin));
+        Connection reverseConnection = connectionRepository.save(new Connection(profileLogin, authLogin));
+
+        activityService.saveActivityOutbox(ActivityType.ADD_FRIEND,
+                connection.getId(),
+                Map.of(
+                        "actionBy", authLogin.getEmail(),
+                        "acceptedBy", authLogin.getId(),
+                        "requestFrom", profileLogin.getId(),
+                        "acceptedByEmail", authLogin.getEmail(),
+                        "requestFromEmail", profileLogin.getEmail(),
+                        "reverseConnection", reverseConnection.getId()
+                ));
     }
 
     private void declineFriendRequest(Login authLogin, Login profileLogin) {
@@ -155,11 +191,35 @@ public class ProfileService {
         if (logInvalidRequest(authLogin, profileLogin, request)) return;
 
         friendRequestRepository.delete(request.get());
+
+        activityService.saveActivityOutbox(ActivityType.DECLINE_FRIEND_REQ,
+                request.get().getId(),
+                Map.of(
+                        "actionBy", authLogin.getEmail(),
+                        "declinedBy", authLogin.getId(),
+                        "requestBy", profileLogin.getId(),
+                        "declinedByEmail", authLogin.getEmail(),
+                        "requestByEmail", profileLogin.getEmail()
+                ));
     }
 
     private void removeFriend(Login authLogin, Login profileLogin) {
-        connectionRepository.deleteConnection(authLogin.getId(), profileLogin.getId());
-        connectionRepository.deleteConnection(profileLogin.getId(), authLogin.getId());
+        Connection connection = connectionRepository.findConnectionByPerson1AndPerson2(authLogin, profileLogin);
+        Connection reverseConnection = connectionRepository.findConnectionByPerson1AndPerson2(profileLogin, authLogin);
+
+        connectionRepository.delete(connection);
+        connectionRepository.delete(reverseConnection);
+
+        activityService.saveActivityOutbox(ActivityType.REMOVE_FRIEND,
+                connection.getId(),
+                Map.of(
+                        "actionBy", authLogin.getEmail(),
+                        "removedBy", authLogin.getId(),
+                        "removedFrom", profileLogin.getId(),
+                        "removedByEmail", authLogin.getEmail(),
+                        "removedFromEmail", profileLogin.getEmail(),
+                        "reverseConnection", reverseConnection.getId()
+                ));
     }
 
     private boolean logInvalidRequest(Login authLogin, Login profileLogin, Optional<FriendRequest> request) {

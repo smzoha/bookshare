@@ -18,5 +18,10 @@ public class Connection extends BaseConnection {
 
     @Id
     private Long id;
+
+    public Connection(Login person1, Login person2) {
+        setPerson1(person1);
+        setPerson2(person2);
+    }
 }
 

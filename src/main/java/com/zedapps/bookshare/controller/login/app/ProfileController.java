@@ -1,17 +1,21 @@
 package com.zedapps.bookshare.controller.login.app;
 
+import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.login.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -28,6 +32,7 @@ public class ProfileController {
 
     private final ProfileService profileService;
     private final LoginService loginService;
+    private final ApplicationEventPublisher publisher;
 
     @GetMapping
     public String getProfile(@AuthenticationPrincipal LoginDetails loginDetails) {
@@ -42,6 +47,17 @@ public class ProfileController {
         Login login = loginService.getLoginByHandle(handle);
 
         profileService.setupReferenceData(login.getEmail(), loginDetails, model);
+
+        publisher.publishEvent(ActivityEvent.builder()
+                .loginEmail(loginDetails.getEmail())
+                .referenceId(login.getId())
+                .eventType(ActivityType.PROFILE_VIEW)
+                .metadata(Map.of(
+                        "actionBy", loginDetails.getEmail(),
+                        "profileHandle", handle
+                ))
+                .internal(true)
+                .build());
 
         return "app/profile/profile";
     }
