@@ -12,17 +12,19 @@
         </span>
 
         <button type="button" class="btn btn-sm btn-bookshare send-friend-req-btn"
-                th:if="${not ownProfile and showFriendReqBtn}">
+                th:if="${not ownProfile and showFriendReqBtn}" data-action="SEND_FRIEND_REQ">
             <span class="fas fa-user-plus"></span>
             <span th:text="#{label.add.friend}"></span>
         </button>
 
-        <button type="button" class="btn btn-sm btn-warning revoke-friend-req-btn" th:if="${friendReqReceived}">
+        <button type="button" class="btn btn-sm btn-warning revoke-friend-req-btn"
+                th:if="${friendReqReceived}" data-action="REVOKE_FRIEND_REQ">
             <span class="fas fa-times"></span>&nbsp;
             <span th:text="#{label.remove.friend.req}"></span>
         </button>
 
-        <button type="button" class="btn badge btn-danger remove-friend-btn" th:if="${not ownProfile and isFriends}">
+        <button type="button" class="btn badge btn-danger remove-friend-btn"
+                th:if="${not ownProfile and isFriends}" data-action="REMOVE_FRIEND">
             <span class="fas fa-user-slash"></span>&nbsp;
             <span th:text="#{label.remove.friend}"></span>
         </button>
@@ -32,12 +34,14 @@
         <span class="small text-uppercase text-secondary"
               th:text="|${login.firstName} ${login.lastName} #{label.friend.request.message} |"></span>
 
-        <button type="button" class="btn btn-sm btn-success accept-friend-req-btn" th:if="${friendReqSent}">
+        <button type="button" class="btn btn-sm btn-success accept-friend-req-btn"
+                th:if="${friendReqSent}" data-action="ACCEPT_FRIEND_REQ">
             <span class="fas fa-user-check"></span>&nbsp;
             <span th:text="#{label.accept}"></span>
         </button>
 
-        <button type="button" class="btn btn-sm btn-bookshare decline-friend-req-btn" th:if="${friendReqSent}">
+        <button type="button" class="btn btn-sm btn-bookshare decline-friend-req-btn"
+                th:if="${friendReqSent}" data-action="DECLINE_FRIEND_REQ">
             <span class="fas fa-multiply"></span>&nbsp;
             <span th:text="#{label.decline}"></span>
         </button>

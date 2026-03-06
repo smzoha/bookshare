@@ -2,6 +2,7 @@ package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.*;
+import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,46 +62,28 @@ public class ProfileService {
     }
 
     @Transactional
-    public void saveFriendRequest(Login authLogin, Login profileLogin) {
-        FriendRequest friendRequest = new FriendRequest();
-        friendRequest.setPerson1(authLogin);
-        friendRequest.setPerson2(profileLogin);
+    public void performConnectionAction(Login authLogin, Login profileLogin, ConnectionAction action) {
+        switch (action) {
+            case SEND_FRIEND_REQ:
+                saveFriendRequest(authLogin, profileLogin);
+                break;
 
-        friendRequestRepository.save(friendRequest);
-    }
+            case REVOKE_FRIEND_REQ:
+                revokeFriendRequest(authLogin, profileLogin);
+                break;
 
-    @Transactional
-    public void addFriend(Login authLogin, Login profileLogin) {
-        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
+            case ACCEPT_FRIEND_REQ:
+                acceptFriendRequest(authLogin, profileLogin);
+                break;
 
-        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+            case DECLINE_FRIEND_REQ:
+                declineFriendRequest(authLogin, profileLogin);
+                break;
 
-        friendRequestRepository.delete(request.get());
-        connectionRepository.saveConnection(authLogin.getId(), profileLogin.getId());
-    }
-
-    @Transactional
-    public void declineFriendRequest(Login authLogin, Login profileLogin) {
-        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
-
-        if (logInvalidRequest(authLogin, profileLogin, request)) return;
-
-        friendRequestRepository.delete(request.get());
-    }
-
-    @Transactional
-    public void revokeFriendRequest(Login authLogin, Login profileLogin) {
-        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(authLogin, profileLogin);
-
-        if (logInvalidRequest(authLogin, profileLogin, request)) return;
-
-        friendRequestRepository.delete(request.get());
-    }
-
-    @Transactional
-    public void removeFriend(Login authLogin, Login profileLogin) {
-        connectionRepository.deleteConnection(authLogin.getId(), profileLogin.getId());
-        connectionRepository.deleteConnection(profileLogin.getId(), authLogin.getId());
+            case REMOVE_FRIEND:
+                removeFriend(authLogin, profileLogin);
+                break;
+        }
     }
 
     private void setupShelves(ModelMap model, Login login) {
@@ -136,6 +119,44 @@ public class ProfileService {
                 .stream()
                 .limit(5)
                 .toList();
+    }
+
+    private void saveFriendRequest(Login authLogin, Login profileLogin) {
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setPerson1(authLogin);
+        friendRequest.setPerson2(profileLogin);
+
+        friendRequestRepository.save(friendRequest);
+    }
+
+    private void revokeFriendRequest(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(authLogin, profileLogin);
+
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+
+        friendRequestRepository.delete(request.get());
+    }
+
+    private void acceptFriendRequest(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
+
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+
+        friendRequestRepository.delete(request.get());
+        connectionRepository.saveConnection(authLogin.getId(), profileLogin.getId());
+    }
+
+    private void declineFriendRequest(Login authLogin, Login profileLogin) {
+        Optional<FriendRequest> request = friendRequestRepository.findFriendRequest(profileLogin, authLogin);
+
+        if (logInvalidRequest(authLogin, profileLogin, request)) return;
+
+        friendRequestRepository.delete(request.get());
+    }
+
+    private void removeFriend(Login authLogin, Login profileLogin) {
+        connectionRepository.deleteConnection(authLogin.getId(), profileLogin.getId());
+        connectionRepository.deleteConnection(profileLogin.getId(), authLogin.getId());
     }
 
     private boolean logInvalidRequest(Login authLogin, Login profileLogin, Optional<FriendRequest> request) {

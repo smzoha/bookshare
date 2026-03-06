@@ -2,6 +2,7 @@ package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.login.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -64,57 +65,16 @@ public class ProfileController {
         return "app/profile/profileActiveShelfFragment :: activeShelfFragment";
     }
 
-    @PostMapping("/sendRevokeFriendReq")
+    @PostMapping("/friendRequest")
     public String sendOrRevokeFriendRequest(@AuthenticationPrincipal LoginDetails loginDetails,
                                             @RequestParam String handle,
-                                            @RequestParam boolean send,
+                                            @RequestParam ConnectionAction action,
                                             ModelMap model) {
 
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
         Login profileLogin = loginService.getLoginByHandle(handle);
 
-        if (send) {
-            profileService.saveFriendRequest(authLogin, profileLogin);
-        } else {
-            profileService.revokeFriendRequest(authLogin, profileLogin);
-        }
-
-        model.put("login", profileLogin);
-        profileService.setupFriendFlags(model, profileLogin, authLogin);
-
-        return "app/profile/profileInfoFragment :: profileInfoFragment";
-    }
-
-    @PostMapping("/confirmFriendReq")
-    public String confirmFriendRequest(@AuthenticationPrincipal LoginDetails loginDetails,
-                                       @RequestParam String handle,
-                                       @RequestParam boolean decline,
-                                       ModelMap model) {
-
-        Login authLogin = loginService.getLogin(loginDetails.getEmail());
-        Login profileLogin = loginService.getLoginByHandle(handle);
-
-        if (!decline) {
-            profileService.addFriend(authLogin, profileLogin);
-        } else {
-            profileService.declineFriendRequest(authLogin, profileLogin);
-        }
-
-        model.put("login", profileLogin);
-        profileService.setupFriendFlags(model, profileLogin, authLogin);
-
-        return "app/profile/profileInfoFragment :: profileInfoFragment";
-    }
-
-    @PostMapping("/removeFriend")
-    public String removeFriend(@AuthenticationPrincipal LoginDetails loginDetails,
-                               @RequestParam String handle,
-                               ModelMap model) {
-
-        Login authLogin = loginService.getLogin(loginDetails.getEmail());
-        Login profileLogin = loginService.getLoginByHandle(handle);
-
-        profileService.removeFriend(authLogin, profileLogin);
+        profileService.performConnectionAction(authLogin, profileLogin, action);
 
         model.put("login", profileLogin);
         profileService.setupFriendFlags(model, profileLogin, authLogin);
