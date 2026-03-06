@@ -32,7 +32,7 @@
 
     <div class="d-flex align-items-center gap-2 flex-wrap pb-2" th:if="${friendReqSent}">
         <span class="small text-uppercase text-secondary"
-              th:text="|${login.firstName} ${login.lastName} #{label.friend.request.message} |"></span>
+              th:text="#{label.friend.request.message(${login.firstName}, ${login.lastName})}"></span>
 
         <button type="button" class="btn btn-sm btn-success accept-friend-req-btn"
                 th:if="${friendReqSent}" data-action="ACCEPT_FRIEND_REQ">
