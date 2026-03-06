@@ -105,9 +105,29 @@
 
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h5 class="mb-3">Friends</h5>
+                        <h5 class="mb-3" th:text="#{label.connections}"></h5>
 
-                        <div id="friends-list" class="row text-center">
+                        <div id="friends-list" class="row row-cols-3 g-2 text-center">
+                            <div class="col" th:each="connection : ${connections}">
+                                <a th:href="@{/profile/{handle}(handle=${connection.person2.handle})}" class="text-decoration-none">
+                                    <div class="d-flex flex-column align-items-center gap-1">
+                                        <img th:src="@{/image/{id}(id=${connection.person2.profilePicture.id})}"
+                                             class="profile-avatar"
+                                             style="width: 65px !important; height: 65px !important;"
+                                             th:alt="${connection.person2.handle}"
+                                             th:if="${connection.person2.profilePicture != null}">
+
+                                        <img th:src="@{/img/user-avatar.png}"
+                                             class="profile-avatar"
+                                             style="width: 65px !important; height: 65px !important;"
+                                             th:alt="${connection.person2.handle}"
+                                             th:if="${connection.person2.profilePicture == null}">
+
+                                        <span class="small fw-medium text-dark text-truncate w-100"
+                                              th:text="|${connection.person2.firstName} ${connection.person2.lastName}|"></span>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
