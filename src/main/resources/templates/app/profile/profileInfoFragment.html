@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div id="profileInfo" th:fragment="profileInfoFragment">
+    <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+        <h3 id="username" class="mb-0 me-2"
+            th:text="|${login.firstName} ${login.lastName}|"></h3>
+
+        <span class="badge rounded-pill bg-success" th:if="${not ownProfile and isFriends}">
+            <span class="fas fa-user-group"></span>
+            <span th:text="#{label.friend}"></span>
+        </span>
+
+        <button type="button" class="btn btn-sm btn-bookshare send-friend-req-btn"
+                th:if="${not ownProfile and showFriendReqBtn}" data-action="SEND_FRIEND_REQ">
+            <span class="fas fa-user-plus"></span>
+            <span th:text="#{label.add.friend}"></span>
+        </button>
+
+        <button type="button" class="btn btn-sm btn-warning revoke-friend-req-btn"
+                th:if="${friendReqReceived}" data-action="REVOKE_FRIEND_REQ">
+            <span class="fas fa-times"></span>&nbsp;
+            <span th:text="#{label.remove.friend.req}"></span>
+        </button>
+
+        <button type="button" class="btn badge btn-danger remove-friend-btn"
+                th:if="${not ownProfile and isFriends}" data-action="REMOVE_FRIEND">
+            <span class="fas fa-user-slash"></span>&nbsp;
+            <span th:text="#{label.remove.friend}"></span>
+        </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 flex-wrap pb-2" th:if="${friendReqSent}">
+        <span class="small text-uppercase text-secondary"
+              th:text="#{label.friend.request.message(${login.firstName}, ${login.lastName})}"></span>
+
+        <button type="button" class="btn btn-sm btn-success accept-friend-req-btn"
+                th:if="${friendReqSent}" data-action="ACCEPT_FRIEND_REQ">
+            <span class="fas fa-user-check"></span>&nbsp;
+            <span th:text="#{label.accept}"></span>
+        </button>
+
+        <button type="button" class="btn btn-sm btn-bookshare decline-friend-req-btn"
+                th:if="${friendReqSent}" data-action="DECLINE_FRIEND_REQ">
+            <span class="fas fa-multiply"></span>&nbsp;
+            <span th:text="#{label.decline}"></span>
+        </button>
+    </div>
+</div>
+</body>
+</html>

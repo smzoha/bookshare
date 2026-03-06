@@ -1,12 +1,12 @@
 package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;

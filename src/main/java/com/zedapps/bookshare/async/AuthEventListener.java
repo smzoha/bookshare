@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.async;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;

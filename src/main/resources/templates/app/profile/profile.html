@@ -18,11 +18,17 @@
                 <div class="row align-items-center">
                     <div class="col-auto">
                         <img th:src="@{/image/{id}(id=${login.profilePicture.id})}"
-                             class="profile-avatar" alt="Profile Picture">
+                             class="profile-avatar" alt="Profile Picture" th:if="${login.profilePicture != null}">
+
+                        <img th:src="@{/img/user-avatar.png}"
+                             class="profile-avatar" alt="Profile Picture" th:if="${login.profilePicture == null}">
                     </div>
 
                     <div class="col">
-                        <h3 id="username" th:text="|${login.firstName} ${login.lastName}|"></h3>
+                        <div id="profileInfoContainer">
+                            <div th:replace="~{app/profile/profileInfoFragment :: profileInfoFragment}"></div>
+                        </div>
+
                         <p class="text-muted mb-3" th:text="${login.bio}"></p>
 
                         <div class="row text-center">
@@ -111,14 +117,18 @@
 
     <script type="text/javascript" th:inline="javascript">
         $(function () {
+            const href = $(location).attr('href');
+            const handle = href.split('/').pop();
+
             $('.shelf-btn').on('click', function (e) {
                 e.preventDefault();
 
                 let activeShelf = $('.shelf-btn.active');
                 let currentShelf = $(e.currentTarget);
+                let currentShelfId = currentShelf.data('shelfId');
 
                 $.ajax({
-                    url: '/profile/shelf?shelfId=' + currentShelf.data('shelfId'),
+                    url: (handle ? `${handle}` : '') + `/shelf?shelfId=${currentShelfId}`,
                     method: 'GET',
                     success: function (data) {
                         $('.active-shelf-container').html(data);
@@ -130,6 +140,30 @@
                         console.error('Error retrieving shelf information ', currentShelf.data('shelfId'));
                     }
                 })
+            });
+
+            $(document).on('click', '.send-friend-req-btn, .revoke-friend-req-btn,' +
+                ' .accept-friend-req-btn, .decline-friend-req-btn, .remove-friend-btn', function (e) {
+
+                e.preventDefault();
+                let action = $(e.currentTarget).data('action');
+
+                $.ajax({
+                    url: '/profile/friendRequest',
+                    method: 'POST',
+                    data: {
+                        handle: handle,
+                        action: action
+                    },
+                    beforeSend: () => showLoader(),
+                    success: function (data) {
+                        $('#profileInfoContainer').html(data);
+                    },
+                    error: function () {
+                        console.error(`Error performing action ${action} for ${handle}`);
+                    },
+                    complete: () => removeLoader()
+                });
             });
         });
     </script>
