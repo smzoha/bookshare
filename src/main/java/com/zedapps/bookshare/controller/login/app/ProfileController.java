@@ -30,12 +30,8 @@ public class ProfileController {
     private final LoginService loginService;
 
     @GetMapping
-    public String getProfile(@AuthenticationPrincipal LoginDetails loginDetails,
-                             ModelMap model) {
-
-        profileService.setupReferenceData(loginDetails.getEmail(), loginDetails, model);
-
-        return "app/profile/profile";
+    public String getProfile(@AuthenticationPrincipal LoginDetails loginDetails) {
+        return "redirect:/profile/" + loginDetails.getHandle();
     }
 
     @GetMapping("/{handle}")
