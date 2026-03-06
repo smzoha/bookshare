@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 /**
  * @author smzoha
  * @since 21/2/26
@@ -73,6 +75,10 @@ public class ProfileController {
 
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
         Login profileLogin = loginService.getLoginByHandle(handle);
+
+        if (Objects.equals(authLogin.getEmail(), profileLogin.getEmail())) {
+            throw new IllegalArgumentException("You cannot send friend requests to yourself!");
+        }
 
         profileService.performConnectionAction(authLogin, profileLogin, action);
 
