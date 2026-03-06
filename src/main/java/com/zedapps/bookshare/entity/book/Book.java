@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.entity.book;
 
-import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

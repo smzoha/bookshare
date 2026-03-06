@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.service.image;
 
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.entity.image.Image;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
