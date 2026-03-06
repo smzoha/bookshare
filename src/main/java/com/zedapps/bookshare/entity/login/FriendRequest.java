@@ -16,7 +16,7 @@ import lombok.*;
 public class FriendRequest extends BaseConnection {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "connection_seq")
-    @SequenceGenerator(name = "connection_seq", sequenceName = "connection_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "friend_req_seq")
+    @SequenceGenerator(name = "friend_req_seq", sequenceName = "friend_req_seq", allocationSize = 1)
     private Long id;
 }
