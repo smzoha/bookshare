@@ -156,7 +156,9 @@
             plugins: 'lists link image table code',
             toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
             height: 300,
-            branding: false
+            branding: false,
+            content_css: localStorage.getItem('isDark') === 'true' ? 'dark' : '',
+            skin: localStorage.getItem('isDark') === 'true' ? 'oxide-dark' : ''
         });
 
         const imageContainer = $('.image-input-container');
