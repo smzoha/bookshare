@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<div th:fragment="themeToggle">
+    <button class="theme-fab" id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">
+        <span class="thumb-icon">☀️</span>
+    </button>
+
+    <script>
+        $(document).ready(function () {
+            let isDark = localStorage.getItem('isDark') === 'true';
+            let $toggle = $('#themeToggle');
+            toggleDarkMode();
+
+            function toggleDarkMode() {
+                document.documentElement.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+
+                $('.navbar-brand').find('img').attr('src', isDark
+                    ? '/img/bookshare-logo-dark.png'
+                    : '/img/bookshare-logo.png'
+                );
+
+                $(this).attr('aria-pressed', isDark);
+                $(this).find('.thumb-icon').text(isDark ? '🌙' : '☀️');
+            }
+
+            $toggle.on('click', function () {
+                isDark = !isDark;
+                localStorage.setItem('isDark', isDark);
+
+                toggleDarkMode.call(this);
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
