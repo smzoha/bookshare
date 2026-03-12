@@ -33,7 +33,6 @@ public class FeedEntry {
     @JoinColumn(name = "activity_id", nullable = false)
     private Activity activity;
 
-    @NotNull
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
