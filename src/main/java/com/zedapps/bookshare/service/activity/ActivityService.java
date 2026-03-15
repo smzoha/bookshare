@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.service.activity;
 
+import com.zedapps.bookshare.dto.activity.ActivityFeedDto;
 import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.login.Login;
@@ -9,6 +10,8 @@ import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
 import com.zedapps.bookshare.repository.activity.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ public class ActivityService {
 
     private final ActivityOutboxRepository activityOutboxRepository;
     private final ActivityRepository activityRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public List<ActivityOutbox> getUnprocessedActivityOutboxItems() {
         return activityOutboxRepository.findTop100ByStatusOrderByCreatedAt(ActivityStatus.PENDING);
@@ -76,11 +80,25 @@ public class ActivityService {
     }
 
     @Transactional
+    public void saveActivityList(List<Activity> activityList) {
+        for (Activity activity : activityList) {
+            saveActivity(activity);
+        }
+    }
+
+    @Transactional
     public void saveActivity(Activity activity) {
         try {
-            activityRepository.save(activity);
+            activity = activityRepository.save(activity);
 
-        } catch (Exception e) {
+            if (!activity.isInternal()) {
+                applicationEventPublisher.publishEvent(ActivityFeedDto.builder()
+                        .activity(activity)
+                        .login(activity.getLogin())
+                        .build());
+            }
+
+        } catch (DataAccessException | IllegalArgumentException e) {
             log.error("Error publishing activity: {}, {}", activity.getEventType().name(),
                     activity.getMetadata().getOrDefault("actionBy", ""));
         }
@@ -89,7 +107,7 @@ public class ActivityService {
     @Transactional
     public void processOutboxActivity(List<ActivityOutbox> activityOutboxList, List<Activity> activityList) {
         activityOutboxRepository.saveAll(activityOutboxList);
-        activityRepository.saveAll(activityList);
+        saveActivityList(activityList);
     }
 
     @Transactional
