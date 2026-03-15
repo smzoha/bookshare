@@ -96,10 +96,45 @@
             </div>
 
             <div class="col-lg-4">
-                <div class="card mb-4 shadow-sm">
+                <div class="card mb-4 shadow-sm" th:if="${ownProfile}">
                     <div class="card-body">
-                        <h5 class="mb-3">Activity</h5>
-                        <div id="activity-feed"></div>
+                        <h5 class="mb-3" th:text="#{label.activity}"></h5>
+                        <div id="activity-feed">
+                            <div class="d-flex align-items-start gap-3 py-3 border-bottom" th:each="feedDto : ${feedDtoList}">
+                                <img th:src="@{/image/{id}(id=${feedDto.actor.profilePicture.id})}"
+                                     class="avatar flex-shrink-0"
+                                     th:alt="${feedDto.actor.handle}"
+                                     th:if="${feedDto.actor.profilePicture != null}">
+
+                                <img th:src="@{/img/user-avatar.png}"
+                                     class="avatar flex-shrink-0"
+                                     th:alt="${feedDto.actor.handle}"
+                                     th:if="${feedDto.actor.profilePicture == null}">
+
+                                <div class="flex-grow-1 overflow-hidden">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <p class="mb-0" style="font-size: 13px;">
+                                            <a class="fw-medium text-bookshare text-decoration-none"
+                                               th:href="@{/profile/{handle}(handle=${feedDto.actor.handle})}"
+                                               th:text="${feedDto.actor.name}"></a>
+
+                                            <span th:text="${feedDto.message}"></span>
+
+                                            <a class="fw-medium text-bookshare text-decoration-none"
+                                               th:href="@{/book/{id}(id=${feedDto.target[id]})}"
+                                               th:text="${feedDto.target[value]}"
+                                               th:if="${feedDto.target != null and not feedDto.activityType.equals('ADD_FRIEND')}"></a>
+
+                                            <a class="fw-medium text-bookshare text-decoration-none"
+                                               th:href="@{/profile/{handle}(handle=${feedDto.target[id]})}"
+                                               th:text="${feedDto.target[value]}"
+                                               th:if="${feedDto.target != null and feedDto.activityType.equals('ADD_FRIEND')}"></a>
+                                        </p>
+                                        <small class="text-muted ms-2 flex-shrink-0" th:text="${feedDto.timeElapsed}"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

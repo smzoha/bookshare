@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.service.login;
 
+import com.zedapps.bookshare.dto.feed.FeedDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
@@ -29,6 +30,7 @@ public class ProfileService {
     private final FriendRequestRepository friendRequestRepository;
     private final ConnectionRepository connectionRepository;
     private final ActivityService activityService;
+    private final FeedService feedService;
 
     public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
         Login profileLogin = loginService.getLogin(profileEmail);
@@ -49,6 +51,9 @@ public class ProfileService {
         model.put("connections", connections);
 
         setupConnectionRefData(model, profileLogin, authLogin);
+
+        List<FeedDto> feedDtoList = feedService.getFeedDtoList(profileLogin, 5, 0);
+        model.put("feedDtoList", feedDtoList);
     }
 
     public void setupConnectionRefData(ModelMap model, Login profileLogin, Login authLogin) {
