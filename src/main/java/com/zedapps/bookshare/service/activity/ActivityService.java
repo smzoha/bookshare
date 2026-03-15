@@ -11,6 +11,7 @@ import com.zedapps.bookshare.repository.activity.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +98,7 @@ public class ActivityService {
                         .build());
             }
 
-        } catch (Exception e) {
+        } catch (DataAccessException | IllegalArgumentException e) {
             log.error("Error publishing activity: {}, {}", activity.getEventType().name(),
                     activity.getMetadata().getOrDefault("actionBy", ""));
         }
