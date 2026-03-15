@@ -215,6 +215,7 @@ public class BookService {
                         "bookId", readingProgress.getBook().getId(),
                         "progressId", readingProgress.getId(),
                         "pagesRead", Objects.toString(readingProgress.getPagesRead(), ""),
+                        "totalPages", Objects.toString(readingProgress.getBook().getPages(), ""),
                         "completed", Objects.toString(readingProgress.isCompleted(), ""),
                         "startDate", Objects.toString(readingProgress.getStartDate(), ""),
                         "endDate", Objects.toString(readingProgress.getEndDate(), "")

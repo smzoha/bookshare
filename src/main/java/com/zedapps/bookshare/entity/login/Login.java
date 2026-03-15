@@ -103,6 +103,10 @@ public class Login {
                 '}';
     }
 
+    public String getName() {
+        return firstName + " " + lastName;
+    }
+
     public Shelf getShelf(Long shelfId) {
         return getShelves().stream()
                 .filter(s -> Objects.equals(s.getId(), shelfId))
