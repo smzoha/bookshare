@@ -4,11 +4,12 @@
 ![Spring Boot](https://img.shields.io/badge/Spring--Boot-3.x-brightgreen.svg)
 ![Gradle](https://img.shields.io/badge/Build-Gradle-02303A.svg?logo=gradle)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg?logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)
 ![Build](https://github.com/smzoha/bookshare/actions/workflows/gradle.yml/badge.svg)
 ![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Development-yellow)
 
-BookShare is a **modern web application** to track your books, reading progress, and connect with other readers. Keep your library organized and stay updated with friends’ reading activity!
+BookShare is a **modern web application** to track your books, reading progress, and connect with other readers. Keep your library organized and stay updated with friends' reading activity!
 
 ---
 
@@ -20,6 +21,7 @@ BookShare is a **modern web application** to track your books, reading progress,
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Running the Application](#running)
+  - [Running with Docker](#docker)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -56,8 +58,9 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 - Java 25+
 - Gradle 8+
-- Database setup (PostgreSQL)
+- PostgreSQL
 - Git
+- Docker & Docker Compose _(optional, for containerized setup)_
 
 <h3 id="installation">Installation</h3>
 
@@ -67,7 +70,7 @@ git clone https://github.com/smzoha/bookshare.git
 cd bookshare
 
 # Configure database in src/main/resources/application-dev.properties:
-spring.datasource.url=jdbc:mysql://localhost:3306/bookshare
+spring.datasource.url=jdbc:postgresql://localhost:5432/bookshare
 spring.datasource.username=your_db_user
 spring.datasource.password=your_db_password
 ```
@@ -83,6 +86,42 @@ spring.datasource.password=your_db_password
 ```
 http://localhost:6001
 ```
+
+---
+
+<h3 id="docker">🐳 Running with Docker</h3>
+
+Docker will spin up both the application and a PostgreSQL database together, with no local setup required.
+
+**1. Set up your environment file:**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your preferred credentials:
+
+```env
+DATABASE_NAME=bookshare
+DATABASE_USER=your_db_user
+DATABASE_PASSWORD=your_db_password
+```
+
+**2. Start all services:**
+
+```bash
+./deploy.sh start
+```
+
+**3. Stop all services:**
+
+```bash
+./deploy.sh stop
+```
+
+> App logs are persisted to the `./logs/` directory on your host machine.
+
+---
 
 <h2 id="usage">💻 Usage</h2>
 
