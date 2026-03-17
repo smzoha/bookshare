@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body>
 <div th:fragment="themeToggle">
-    <button class="theme-fab" id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">
-        <span class="thumb-icon">☀️</span>
+    <button class="day-night-toggle" id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">
+        <span class="day-night-toggle-icon">☀️</span>
     </button>
 
     <script>
@@ -21,7 +21,7 @@
                 );
 
                 $(this).attr('aria-pressed', isDark);
-                $(this).find('.thumb-icon').text(isDark ? '🌙' : '☀️');
+                $(this).find('.day-night-toggle-icon').text(isDark ? '🌙' : '☀️');
             }
 
             $toggle.on('click', function () {
