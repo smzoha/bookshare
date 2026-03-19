@@ -8,6 +8,7 @@ import java.util.Map;
  * @author smzoha
  * @since 15/3/26
  **/
-public record FeedDto(String activityType, Login actor, String message, Map<String, Object> target,
+public record FeedDto(String activityType, Login actor, String message,
+                      String truncDetails, Map<String, Object> target,
                       String timeElapsed) {
 }
