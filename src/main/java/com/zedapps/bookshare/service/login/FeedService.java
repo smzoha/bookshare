@@ -5,11 +5,14 @@ import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.repository.feed.FeedEntryRepository;
 import com.zedapps.bookshare.service.book.BookService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Page;
@@ -37,6 +40,7 @@ public class FeedService {
     private final BookService bookService;
 
     private final MessageSource messageSource;
+    private final ReviewRepository reviewRepository;
     private MessageSourceAccessor msa;
 
     @PostConstruct
@@ -57,7 +61,7 @@ public class FeedService {
 
         model.put("feedDtoList", feedDtoList);
         model.put("currentPage", page);
-        model.put("totalPages",  feedEntries.getTotalPages() - 1);
+        model.put("totalPages", feedEntries.getTotalPages() - 1);
     }
 
     public List<FeedDto> getFeedDtoList(Login audience, int pageSize, int page) {
@@ -97,6 +101,7 @@ public class FeedService {
                 return new FeedDto(activity.getEventType().name(),
                         activity.getLogin(),
                         msa.getMessage("feed.activity.add.friend"),
+                        null,
                         Map.of("id", friend.getHandle(),
                                 "value", friend.getName()),
                         getTimeElapsed(activity.getCreatedAt()));
@@ -112,9 +117,19 @@ public class FeedService {
         Map<String, Object> activityMetadata = activity.getMetadata();
         Book book = bookService.getBook(Long.parseLong(activityMetadata.get("bookId").toString()));
 
+        String truncDetails = null;
+
+        if (activity.getEventType().isReviewActivity()) {
+            long reviewId = Long.parseLong(activityMetadata.get("reviewId").toString());
+            Review review = reviewRepository.getReferenceById(reviewId);
+
+            truncDetails = StringUtils.abbreviate(review.getContent(), 50) + " (" + review.getRating() + "/5)";
+        }
+
         return new FeedDto(activity.getEventType().name(),
                 activity.getLogin(),
                 message,
+                truncDetails,
                 Map.of("id", book.getId(),
                         "value", book.getTitle()),
                 getTimeElapsed(activity.getCreatedAt())

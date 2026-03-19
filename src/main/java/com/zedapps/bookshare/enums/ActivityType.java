@@ -70,4 +70,8 @@ public enum ActivityType {
     ActivityType(String referenceEntity) {
         this.referenceEntity = referenceEntity;
     }
+
+    public boolean isReviewActivity() {
+        return this == BOOK_ADD_REVIEW || this == BOOK_LIKE_REVIEW;
+    }
 }
