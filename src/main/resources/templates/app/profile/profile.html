@@ -88,7 +88,7 @@
                         <h5 class="mb-3" th:text="#{label.reading.progress}"></h5>
                         <div id="reading-progress">
                             <div class="py-2" th:each="progress : ${readingProgressList}">
-                                <div th:replace="~{app/common/bookProgressFragment :: shelfBookRow(${progress.book}, ${progress})}"></div>
+                                <div th:replace="~{app/common/bookProgressFragment :: shelfBookRow(${progress.book}, ${progress}, true)}"></div>
                             </div>
                         </div>
                     </div>
