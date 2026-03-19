@@ -1,9 +1,15 @@
 package com.zedapps.bookshare.controller;
 
+import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
+import com.zedapps.bookshare.service.login.FeedService;
+import com.zedapps.bookshare.service.login.LoginService;
+import com.zedapps.bookshare.service.login.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +26,24 @@ import java.util.Comparator;
 @RequiredArgsConstructor
 public class HomeController {
 
+    private final LoginService loginService;
+    private final ProfileService profileService;
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
+    private final FeedService feedService;
 
     @GetMapping
-    public String getHome(ModelMap model) {
+    public String getHome(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
         model.put("featuredBooks", bookRepository.getFeaturedBooks());
         model.put("genres", genreRepository.findAll().stream().sorted(Comparator.comparing(Genre::getName)).toList());
+
+        if (loginDetails != null) {
+            Login login = loginService.getLogin(loginDetails.getUsername());
+
+            model.put("login", login);
+            model.put("readingProgressList", profileService.getDistinctReadingProgressList(login));
+            model.put("feed", feedService.getFeedDtoList(login, 10, 0));
+        }
 
         return "home";
     }

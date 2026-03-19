@@ -97,6 +97,23 @@ public class ProfileService {
         }
     }
 
+    public List<ReadingProgress> getDistinctReadingProgressList(Login login) {
+        return login.getReadingProgresses()
+                .stream()
+                .filter(rp -> !rp.isCompleted())
+                .collect(Collectors.toMap(
+                        ReadingProgress::getBook,
+                        rp -> rp,
+                        (existing, replacement) -> existing
+                ))
+                .values()
+                .stream()
+                .sorted(Comparator.comparing(ReadingProgress::getStartDate).reversed()
+                        .thenComparing(rp -> rp.getBook().getTitle()))
+                .limit(5)
+                .toList();
+    }
+
     private void setupShelves(ModelMap model, Login login) {
         Map<Long, String> defaultShelves = new LinkedHashMap<>();
         Map<Long, String> shelves = new LinkedHashMap<>();
@@ -115,21 +132,6 @@ public class ProfileService {
         model.put("defaultShelves", defaultShelves);
         model.put("shelves", shelves);
         model.put("activeShelf", activeShelf);
-    }
-
-    private List<ReadingProgress> getDistinctReadingProgressList(Login login) {
-        return login.getReadingProgresses()
-                .stream()
-                .filter(rp -> !rp.isCompleted())
-                .collect(Collectors.toMap(
-                        ReadingProgress::getBook,
-                        rp -> rp,
-                        (existing, replacement) -> existing
-                ))
-                .values()
-                .stream()
-                .limit(5)
-                .toList();
     }
 
     private void saveFriendRequest(Login authLogin, Login profileLogin) {

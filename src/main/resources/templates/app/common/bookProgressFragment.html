@@ -1,4 +1,4 @@
-<div class="shelved-book-row" th:fragment="shelfBookRow(book, progress)">
+<div class="shelved-book-row" th:fragment="shelfBookRow(book, progress, showAudit)">
     <img th:src="@{/image/{id}(id=${book.image.id})}"
          th:alt="${book.title}"
          class="shelved-book-cover rounded shadow-sm"
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="shelved-book-progress d-none d-md-block" th:if="${progress ne null}">
+    <div class="shelved-book-progress d-none d-md-block" th:style="${showAudit ? 'width: 40%;' : 'width: 100%'}" th:if="${progress ne null}">
         <div class="d-flex justify-content-between small mb-1">
             <span>Progress</span>
             <span th:text="|${progress.pagesRead}/${book.pages}|"></span>
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${progress ne null}">
+    <div class="shelved-book-audit d-none d-lg-block text-muted small" th:if="${showAudit and progress ne null}">
         <div class="text-end"
              th:text="|Added: ${#temporals.format(progress.startDate, 'dd-MM-yyyy')}|"></div>
 
