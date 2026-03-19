@@ -22,7 +22,7 @@
     <div class="shelved-book-progress d-none d-md-block" th:style="${showAudit ? 'width: 40%;' : 'width: 100%'}" th:if="${progress ne null}">
         <div class="d-flex justify-content-between small mb-1">
             <span>Progress</span>
-            <span th:text="|${progress.pagesRead}/${book.pages}|"></span>
+            <span th:text="|${progress.pagesRead}/${book.pages} (${progress.percentile}%)|"></span>
         </div>
 
         <div class="progress" style="height: 8px;">
