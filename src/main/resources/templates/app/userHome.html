@@ -15,55 +15,7 @@
 
             <main class="col-lg-9">
                 <section class="mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <p class="section-label" th:text="#{label.activity}"></p>
-                        <div class="d-flex gap-1">
-                            <button id="feed-prev" class="btn btn-bookshare-outline feed-nav-btn" disabled
-                                    aria-label="Previous">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button id="feed-next" class="btn btn-bookshare-outline feed-nav-btn" aria-label="Next">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <ul class="list-group friend-activity">
-                        <li class="list-group-item" th:each="feedDto : ${feed}"
-                            th:classappend="${feedDto.activityType eq 'BOOK_ADD_REVIEW'
-                                            or feedDto.activityType eq 'BOOK_LIKE_REVIEW' ? ' activity-review'
-                                            : (feedDto.activityType eq 'BOOK_UPDATE_READING_PROGRESS'
-                                            ? ' activity-progress' : ' activity-friends')}">
-
-                            <img th:src="@{/image/{id}(id=${feedDto.actor.profilePicture.id})}"
-                                 class="avatar flex-shrink-0"
-                                 th:alt="${feedDto.actor.handle}"
-                                 th:if="${feedDto.actor.profilePicture != null}">
-
-                            <img th:src="@{/img/user-avatar.png}"
-                                 class="avatar flex-shrink-0"
-                                 th:alt="${feedDto.actor.handle}"
-                                 th:if="${feedDto.actor.profilePicture == null}">
-
-                            <a class="ps-1 fw-medium text-bookshare text-decoration-none"
-                               th:href="@{/profile/{handle}(handle=${feedDto.actor.handle})}"
-                               th:text="${feedDto.actor.name}"></a>
-
-                            <span th:text="${feedDto.message}"></span>
-
-                            <a class="fw-medium text-bookshare text-decoration-none"
-                               th:href="@{/book/{id}(id=${feedDto.target[id]})}"
-                               th:text="${feedDto.target[value]}"
-                               th:if="${feedDto.target != null and not feedDto.activityType.equals('ADD_FRIEND')}"></a>
-
-                            <a class="fw-medium text-bookshare text-decoration-none"
-                               th:href="@{/profile/{handle}(handle=${feedDto.target[id]})}"
-                               th:text="${feedDto.target[value]}"
-                               th:if="${feedDto.target != null and feedDto.activityType.equals('ADD_FRIEND')}"></a>
-
-                            <small class="text-muted ms-2 flex-shrink-0" th:text="${feedDto.timeElapsed}"></small>
-                        </li>
-                    </ul>
+                    <div id="userFeedContainer"></div>
                 </section>
 
                 <section class="mb-4">
@@ -83,6 +35,29 @@
             </main>
         </div>
     </div>
+
+    <script th:inline="javascript">
+        $(function() {
+            loadFeed(0);
+
+            $(document).on('click', '.feed-nav-btn', function(e) {
+                loadFeed($(e.currentTarget).data('page'));
+            });
+        });
+
+        function loadFeed(page) {
+            $.ajax({
+                url: `/feed?page=${page}`,
+                method: 'GET',
+                beforeSend: () => showLoader(),
+                success: function (fragment) {
+                    $('#userFeedContainer').html(fragment);
+                },
+                error: () => console.error('Unable to retrieve feed!'),
+                complete: () => removeLoader()
+            });
+        }
+    </script>
 </div>
 </body>
 </html>

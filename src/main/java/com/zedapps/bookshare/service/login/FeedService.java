@@ -12,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -42,11 +44,27 @@ public class FeedService {
         msa = new MessageSourceAccessor(messageSource);
     }
 
+    public void setupFeed(Login audience, int pageSize, int page, ModelMap model) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+
+        Page<FeedEntry> feedEntries = feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
+
+        List<FeedDto> feedDtoList = feedEntries.stream()
+                .map(this::getFeedDto)
+                .filter(Objects::nonNull)
+                .toList();
+
+        model.put("feedDtoList", feedDtoList);
+        model.put("currentPage", page);
+        model.put("totalPages",  feedEntries.getTotalPages() - 1);
+    }
+
     public List<FeedDto> getFeedDtoList(Login audience, int pageSize, int page) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
-        List<FeedEntry> feedEntries = feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
+        Page<FeedEntry> feedEntries = feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
 
         return feedEntries.stream()
                 .map(this::getFeedDto)

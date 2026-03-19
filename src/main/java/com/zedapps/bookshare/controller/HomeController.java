@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
 
@@ -42,11 +43,21 @@ public class HomeController {
 
             model.put("login", login);
             model.put("readingProgressList", profileService.getDistinctReadingProgressList(login));
-            model.put("feed", feedService.getFeedDtoList(login, 10, 0));
         }
 
         return "home";
     }
+
+    @GetMapping("/feed")
+    public String getFeed(@AuthenticationPrincipal LoginDetails loginDetails,
+                          @RequestParam(defaultValue = "0") int page,
+                          ModelMap model) {
+
+        feedService.setupFeed(loginService.getLogin(loginDetails.getEmail()), 5, page, model);
+
+        return "app/userFeedFragment :: userFeed";
+    }
+
 
     @GetMapping("/admin")
     public String getAdminHome() {
