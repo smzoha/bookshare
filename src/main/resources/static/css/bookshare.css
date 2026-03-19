@@ -177,7 +177,7 @@ body {
         margin: 0 auto 0.5rem;
     }
 
-    .recent-books-slider .text-center {
+    .book-box {
         width: 120px;
     }
 }
@@ -353,11 +353,12 @@ body {
     border-radius: var(--radius-lg);
     margin-bottom: 0.5rem;
     padding: 0.75rem 1rem;
-    transition: box-shadow var(--transition-fast);
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .friend-activity .list-group-item:hover {
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
 }
 
 .activity-friends {
@@ -796,15 +797,8 @@ body {
     padding-top: .1rem;
 }
 
-.friend-activity .list-group-item {
-    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
-}
-
-.friend-activity .list-group-item:hover {
-    box-shadow: var(--shadow-md);
-}
-
 .book-box .book-cover:hover {
+    transform: translateY(-4px) scale(1.03);
     box-shadow: var(--shadow-lg);
 }
 
