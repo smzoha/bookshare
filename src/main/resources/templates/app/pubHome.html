@@ -39,7 +39,8 @@
                     <div class="input-group">
                         <input class="form-control border-0 bg-bookshare-50 text-bookshare" type="search" name="query"
                                th:placeholder="#{label.search}"
-                               aria-label="Search">
+                               aria-label="Search"
+                               oninput="this.nextElementSibling.disabled = this.value.trim().length < 3">
 
                         <button class="btn btn-bookshare" type="submit">
                             <i class="fa-solid fa-magnifying-glass"></i>
