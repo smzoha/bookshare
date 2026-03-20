@@ -16,6 +16,7 @@ import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,7 +55,7 @@ public class BookService {
         String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
 
         if (StringUtils.isNotBlank(query)) {
-            query = "%" + query.toLowerCase().trim() + "%";
+            query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
         }
 
         return bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
