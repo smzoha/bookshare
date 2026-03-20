@@ -37,7 +37,8 @@
             <div class="row mb-3">
                 <form th:action="@{/book/list}" method="get" role="search">
                     <div class="input-group">
-                        <input class="form-control border-0 bg-bookshare-50 text-bookshare" type="search" name="query"
+                        <input class="form-control border-0 bg-bookshare-50 text-bookshare" id="pubSearch"
+                               type="search" name="query"
                                th:placeholder="#{label.search}"
                                aria-label="Search"
                                oninput="this.nextElementSibling.disabled = this.value.trim().length < 3">
@@ -71,6 +72,12 @@
             <a th:href="@{/book/addRequest}" class="btn btn-bookshare" th:text="#{label.add.your.book}"/>
         </section>
     </div>
+
+    <script>
+        $(function () {
+            initSearchBar('#pubSearch');
+        });
+    </script>
 </div>
 </body>
 </html>

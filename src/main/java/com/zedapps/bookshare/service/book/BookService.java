@@ -49,8 +49,8 @@ public class BookService {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
     }
 
-    public Page<Book> getPaginatedBooks(int page, String query, String sort, String rating, String genre, String tag) {
-        Pageable pageable = PageRequest.of(page, 18);
+    public Page<Book> getPaginatedBooks(int page, Integer pageSize, String query, String sort, String rating, String genre, String tag) {
+        Pageable pageable = PageRequest.of(page, Optional.ofNullable(pageSize).orElse(18));
 
         String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
 

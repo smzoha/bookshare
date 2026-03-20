@@ -28,9 +28,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author smzoha
@@ -62,7 +60,7 @@ public class BookController {
                               ModelMap model,
                               HttpServletRequest request) {
 
-        model.put("bookPage", bookService.getPaginatedBooks(page, query, sort, rating, genre, tag));
+        model.put("bookPage", bookService.getPaginatedBooks(page, null, query, sort, rating, genre, tag));
 
         if (loginDetails != null) {
             publisher.publishEvent(ActivityEvent.builder()
@@ -88,6 +86,24 @@ public class BookController {
         model.put("tags", tagRepository.findAll().stream().sorted(Comparator.comparing(Tag::getName)).toList());
 
         return "app/book/bookList";
+    }
+
+    @ResponseBody
+    @GetMapping("/search")
+    public List<Map<String, String>> getSearchSuggestions(@RequestParam String query) {
+        return bookService.getPaginatedBooks(0, 5, query, null, null, null, null)
+                .stream()
+                .map(book -> {
+                    Map<String, String> suggestions = new HashMap<>();
+
+                    suggestions.put("id", book.getId().toString());
+                    suggestions.put("imageId", book.getImage() != null ? book.getImage().getId().toString() : null);
+                    suggestions.put("title", book.getTitle());
+                    suggestions.put("authors", book.getAuthorNames());
+
+                    return suggestions;
+                })
+                .toList();
     }
 
     @GetMapping("/{id}")
