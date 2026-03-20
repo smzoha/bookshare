@@ -53,6 +53,7 @@ public class BookController {
 
     @GetMapping("/list")
     public String getBookList(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(required = false) String query,
                               @RequestParam(required = false) String sort,
                               @RequestParam(required = false) String rating,
                               @RequestParam(required = false) String genre,
@@ -61,7 +62,7 @@ public class BookController {
                               ModelMap model,
                               HttpServletRequest request) {
 
-        model.put("bookPage", bookService.getPaginatedBooks(page, sort, rating, genre, tag));
+        model.put("bookPage", bookService.getPaginatedBooks(page, query, sort, rating, genre, tag));
 
         if (loginDetails != null) {
             publisher.publishEvent(ActivityEvent.builder()

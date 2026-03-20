@@ -23,6 +23,7 @@ public interface BookListRepository extends PagingAndSortingRepository<Book, Lon
             LEFT JOIN b.authors a
             WHERE (:genre IS NULL OR g.id IN :genre)
             AND (:tag IS NULL OR t.id IN :tag)
+            AND (:query IS NULL OR b.isbn LIKE :query OR LOWER(b.title) LIKE :query)
             GROUP BY b
             HAVING (:rating IS NULL OR COALESCE(AVG(r.rating), 0) >= :rating)
             ORDER BY
@@ -34,5 +35,5 @@ public interface BookListRepository extends PagingAndSortingRepository<Book, Lon
                 CASE WHEN :sortAttr = 'title' AND :sortDirection = 'desc' THEN b.title END DESC,
                 b.title ASC
             """)
-    Page<Book> getPaginatedBooks(Pageable pageable, String rating, String genre, String tag, String sortAttr, String sortDirection);
+    Page<Book> getPaginatedBooks(Pageable pageable, String query, String rating, String genre, String tag, String sortAttr, String sortDirection);
 }

@@ -64,11 +64,14 @@
 
     <script type="text/javascript" th:inline="javascript">
         function submitFilterForm() {
-            let url = '/book/list';
+            let url = '/book/list' + window.location.search;
             const params = $('#filterForm').serialize();
 
+            url += url.indexOf('?') >= 0 ? '&' : '?';
+            url += params;
+
             $.ajax({
-                url: url + '?' + params,
+                url: url,
                 headers: {"X-Requested-With": "XMLHttpRequest"},
                 success: function (data) {
                     $("#booksWrapper").html(data);
