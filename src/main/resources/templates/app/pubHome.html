@@ -35,11 +35,17 @@
         <h5 th:text="#{label.discover.more}"/>
         <section class="block-section p-4 my-4">
             <div class="row mb-3">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="fas fa-book"></i></span>
-                    <input type="text" class="form-control" id="isbnNameSearch"
-                           th:placeholder="#{label.search.isbn.name}" maxlength="255"/>
-                </div>
+                <form th:action="@{/book/list}" method="get" role="search">
+                    <div class="input-group">
+                        <input class="form-control border-0 bg-bookshare-50 text-bookshare" type="search" name="query"
+                               th:placeholder="#{label.search}"
+                               aria-label="Search">
+
+                        <button class="btn btn-bookshare" type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <div class="row">
