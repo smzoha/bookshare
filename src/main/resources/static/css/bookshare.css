@@ -137,6 +137,21 @@ body {
     border-color: var(--bs-dark-accent);
 }
 
+.nav-icon-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+}
+
+.navbar .input-group .form-control:focus {
+    box-shadow: none;
+    outline: none;
+}
+
 .book-cover {
     aspect-ratio: 2 / 3;
     object-fit: cover;

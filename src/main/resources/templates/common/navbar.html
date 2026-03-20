@@ -1,50 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-<nav th:fragment="navbar" class="navbar navbar-expand-md bg-bookshare shadow-lg">
+<nav th:fragment="navbar" class="navbar navbar-expand-md bg-bookshare shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="/" aria-label="BookShare">
-            <img th:src="@{/img/bookshare-logo.png}" alt="Logo" class="img-fluid" style="max-height: 100px; max-width: 180px;">
+        <a class="navbar-brand py-0" href="/" aria-label="BookShare">
+            <img th:src="@{/img/bookshare-logo.png}" alt="Logo" class="img-fluid" style="max-height: 56px; max-width: 140px;">
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        <button class="navbar-toggler border-0" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto gap-2">
+            <form class="d-flex mx-md-3 my-2 my-md-0 flex-grow-1" th:action="@{/book/list}" method="get" role="search">
+                <div class="input-group">
+                    <input class="form-control border-0 bg-bookshare-50 text-bookshare" type="search" name="query"
+                           th:placeholder="#{label.search}"
+                           aria-label="Search"
+                           oninput="this.nextElementSibling.disabled = this.value.trim().length < 3">
+
+                    <button class="btn btn-bookshare" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </form>
+
+            <ul class="navbar-nav gap-1 align-items-md-center">
                 <li class="nav-item">
                     <a class="nav-link text-bookshare" th:href="@{/book/list}" th:text="#{label.browse}"></a>
                 </li>
 
                 <li class="nav-item" sec:authorize="!isAuthenticated()">
-                    <a class="btn btn-success text-light" href="/login" th:text="#{label.login}"></a>
+                    <a class="btn btn-bookshare ms-1" href="/login" th:text="#{label.login}"></a>
                 </li>
 
                 <th:block sec:authorize="isAuthenticated()">
                     <li class="nav-item">
-                        <a class="nav-link text-bookshare" th:href="@{/collection}" th:text="#{label.collection}"/>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link text-bookshare" th:href="@{/profile}" th:text="#{label.profile}"/>
+                        <a class="nav-link text-bookshare" th:href="@{/collection}" th:text="#{label.collection}"></a>
                     </li>
 
                     <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'MODERATOR')">
-                        <a class="nav-link text-bookshare" th:href="@{/admin}" th:text="#{label.manage}"/>
+                        <a class="nav-link text-bookshare" th:href="@{/admin}" th:text="#{label.manage}"></a>
                     </li>
 
-                    <li class="nav-item d-none d-md-block">
-                        <button class="btn btn-bookshare rounded-5">
-                            <i class="fa-solid fa-bell"></i>
-                        </button>
-                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link text-bookshare dropdown-toggle p-0 d-flex align-items-center gap-2"
+                           href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img th:src="@{/img/user-avatar.png}" class="avatar"
+                                 style="width: 32px; height: 32px;" alt="Profile">
+                            <span class="d-md-none" th:text="#{label.profile}"></span>
+                        </a>
 
-                    <li class="nav-item">
-                        <form th:action="@{/logout}" method="post" class="d-inline">
-                            <button class="btn btn-danger text-light" type="submit" th:text="#{label.logout}"></button>
-                        </form>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" th:href="@{/profile}">
+                                    <i class="fa-solid fa-user fa-fw me-2"></i>
+                                    <span th:text="#{label.profile}"></span>
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
+                                <form th:action="@{/logout}" method="post">
+                                    <button class="dropdown-item text-danger" type="submit">
+                                        <i class="fa-solid fa-right-from-bracket fa-fw me-2"></i>
+                                        <span th:text="#{label.logout}"></span>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 </th:block>
             </ul>

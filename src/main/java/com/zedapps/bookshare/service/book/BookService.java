@@ -16,6 +16,7 @@ import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,11 +49,16 @@ public class BookService {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
     }
 
-    public Page<Book> getPaginatedBooks(int page, String sort, String rating, String genre, String tag) {
+    public Page<Book> getPaginatedBooks(int page, String query, String sort, String rating, String genre, String tag) {
         Pageable pageable = PageRequest.of(page, 18);
 
         String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
-        return bookListRepository.getPaginatedBooks(pageable, rating, genre, tag, sortComponents[0], sortComponents[1]);
+
+        if (StringUtils.isNotBlank(query)) {
+            query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
+        }
+
+        return bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
     }
 
     public List<Book> getRelatedBooks(Book book) {
