@@ -842,3 +842,14 @@ body {
     opacity: .35;
     cursor: default;
 }
+
+.ui-autocomplete {
+    border-radius: var(--radius-md);
+}
+
+.ui-menu-item:hover > div {
+    background-color: var(--bs-warm-200);
+}
+.ui-menu-item.ui-state-active > div {
+    background-color: var(--bs-warm-200);
+}
