@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -34,9 +33,8 @@ public class PasswordResetToken {
     @Size(max = 1000)
     private String hashedSignature;
 
-    @CreationTimestamp
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(updatable = false)
     private LocalDateTime generatedAt;
 
     @NotNull
