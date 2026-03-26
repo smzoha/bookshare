@@ -83,11 +83,31 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{''(lang=en)}" th:text="#{lang.en}"></a></li>
-                        <li><a class="dropdown-item" th:href="@{''(lang=fr)}" th:text="#{lang.fr}"></a></li>
-                        <li><a class="dropdown-item" th:href="@{''(lang=de)}" th:text="#{lang.de}"></a></li>
-                        <li><a class="dropdown-item" th:href="@{''(lang=es)}" th:text="#{lang.es}"></a></li>
-                        <li><a class="dropdown-item" th:href="@{''(lang=bn)}" th:text="#{lang.bn}"></a></li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=en)}">
+                                <span class="fi fi-gb me-2"></span><span th:text="#{lang.en}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=fr)}">
+                                <span class="fi fi-fr me-2"></span><span th:text="#{lang.fr}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=de)}">
+                                <span class="fi fi-de me-2"></span><span th:text="#{lang.de}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=es)}">
+                                <span class="fi fi-es me-2"></span><span th:text="#{lang.es}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=bn)}">
+                                <span class="fi fi-bd me-2"></span><span th:text="#{lang.bn}"></span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
