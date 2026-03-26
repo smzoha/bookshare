@@ -26,10 +26,14 @@
                 </button>
             </div>
         </div>
-        <div class="d-grid mb-3">
+        <div class="d-grid mb-1">
             <button type="submit" class="btn btn-bookshare" th:text="#{label.login}"/>
         </div>
     </form>
+
+    <div class="d-grid mb-3">
+        <a class="btn btn-bookshare" th:href="@{/reset-password}" th:text="#{label.reset.password}"></a>
+    </div>
 
     <script type="application/javascript">
         $(function () {
