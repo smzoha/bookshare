@@ -11,6 +11,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class PasswordResetController {
     @PostMapping("/resetPasswordRequest")
     public String submitResetPasswordRequest(@AuthenticationPrincipal LoginDetails loginDetails,
                                              @RequestParam String email,
+                                             RedirectAttributes redirectAttributes,
                                              ModelMap model) {
 
         if (Objects.nonNull(loginDetails)) {
@@ -52,6 +54,8 @@ public class PasswordResetController {
         }
 
         passwordResetService.savePasswordResetToken(email);
+
+        redirectAttributes.addFlashAttribute("passwordResetReqSuccess", true);
 
         return "redirect:/login";
     }

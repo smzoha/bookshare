@@ -5,6 +5,9 @@
     <div id="invalidLoginMsg" th:if="${param.error}" class="alert alert-danger py-2 text-center"
          th:text="#{error.invalid.email.password}"></div>
 
+    <div id="passwordResetMsg" th:if="${passwordResetReqSuccess}" class="alert alert-success py-2 text-center"
+         th:text="#{msg.password.reset.req.success}"></div>
+
     <!--/*@thymesVar id="login" type="com.zedapps.bookshare.dto.login.LoginRequestDto"*/-->
     <form th:action="@{/login}" th:object="${login}" method="post">
         <div class="mb-3 text-start">

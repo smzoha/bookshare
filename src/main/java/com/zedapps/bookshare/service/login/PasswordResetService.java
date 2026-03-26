@@ -2,10 +2,13 @@ package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.entity.login.PasswordResetToken;
 import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
+import com.zedapps.bookshare.service.MailService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final MailService mailService;
 
     private final long EXPIRY_OFFSET_MINS = 10;
 
@@ -33,10 +37,15 @@ public class PasswordResetService {
         try {
             PasswordResetToken resetToken = getPasswordResetToken(email, token, now);
 
+            mailService.sendPasswordResetEmail(email, token);
             passwordResetTokenRepository.save(resetToken);
 
         } catch (NoSuchAlgorithmException e) {
             log.error("Error while generating hashed token", e);
+            throw new RuntimeException(e);
+
+        } catch (MessagingException | IOException e) {
+            log.error("Error while sending mail", e);
             throw new RuntimeException(e);
         }
     }
