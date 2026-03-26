@@ -3,12 +3,13 @@
 <body>
 <div id="loginComponent" th:fragment="loginComponent">
     <div id="invalidLoginMsg" th:if="${param.error}" class="alert alert-danger py-2 text-center"
-         th:text="#{error.invalid.email.password}"/>
+         th:text="#{error.invalid.email.password}"></div>
 
     <!--/*@thymesVar id="login" type="com.zedapps.bookshare.dto.login.LoginRequestDto"*/-->
     <form th:action="@{/login}" th:object="${login}" method="post">
         <div class="mb-3 text-start">
-            <label for="loginEmail" class="form-label" th:text="#{label.email}"/>
+            <label for="loginEmail" class="form-label" th:text="#{label.email}"></label>
+
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                 <input type="email" class="form-control" id="loginEmail" th:field="*{username}"
@@ -16,23 +17,26 @@
             </div>
         </div>
         <div class="mb-3 text-start">
-            <label for="loginPass" class="form-label" th:text="#{label.password}"/>
+            <label for="loginPassword" class="form-label" th:text="#{label.password}"></label>
+
             <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                 <input type="password" class="form-control" id="loginPassword" th:field="*{password}"
                        th:placeholder="#{hint.password}" maxlength="32" required="required"/>
+
                 <button type="button" class="btn btn-outline-light text-muted border" id="toggleLoginPassword">
                     <span class="far fa-eye"></span>
                 </button>
             </div>
         </div>
+
         <div class="d-grid mb-1">
-            <button type="submit" class="btn btn-bookshare" th:text="#{label.login}"/>
+            <button type="submit" class="btn btn-bookshare" th:text="#{label.login}"></button>
         </div>
     </form>
 
     <div class="d-grid mb-3">
-        <a class="btn btn-bookshare" th:href="@{/reset-password}" th:text="#{label.reset.password}"></a>
+        <a class="btn btn-bookshare" th:href="@{/resetPasswordRequest}" th:text="#{label.reset.password}"></a>
     </div>
 
     <script type="application/javascript">
