@@ -75,6 +75,41 @@
                         </ul>
                     </li>
                 </th:block>
+
+                <li class="nav-item dropdown ms-1">
+                    <a class="nav-link text-bookshare dropdown-toggle p-0 d-flex align-items-center gap-2"
+                       href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="fas fa-language"></span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=en)}">
+                                <span class="fi fi-gb me-2"></span><span th:text="#{lang.en}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=fr)}">
+                                <span class="fi fi-fr me-2"></span><span th:text="#{lang.fr}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=de)}">
+                                <span class="fi fi-de me-2"></span><span th:text="#{lang.de}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=es)}">
+                                <span class="fi fi-es me-2"></span><span th:text="#{lang.es}"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" th:href="@{''(lang=bn)}">
+                                <span class="fi fi-bd me-2"></span><span th:text="#{lang.bn}"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

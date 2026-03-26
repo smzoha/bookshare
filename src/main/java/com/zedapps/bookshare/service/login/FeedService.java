@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import org.springframework.ui.ModelMap;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -80,27 +82,29 @@ public class FeedService {
         Activity activity = feedEntry.getActivity();
         Map<String, Object> activityMetadata = activity.getMetadata();
 
+        Locale locale = LocaleContextHolder.getLocale();
+
         switch (activity.getEventType()) {
             case BOOK_ADD_REVIEW:
-                return getFeedDtoForBook(activity, msa.getMessage("feed.activity.book.add.review"));
+                return getFeedDtoForBook(activity, msa.getMessage("feed.activity.book.add.review", locale));
 
             case BOOK_LIKE_REVIEW:
                 Login reviewer = loginService.getLogin(activityMetadata.get("reviewedBy").toString());
 
                 return getFeedDtoForBook(activity, msa.getMessage("feed.activity.book.like.review",
-                        new String[]{reviewer.getName()}));
+                        new String[]{reviewer.getName()}, locale));
 
             case BOOK_UPDATE_READING_PROGRESS:
                 return getFeedDtoForBook(activity, msa.getMessage("feed.activity.update.reading.progress",
                         new String[]{activityMetadata.get("pagesRead").toString(),
-                                activityMetadata.get("totalPages").toString()}));
+                                activityMetadata.get("totalPages").toString()}, locale));
 
             case ADD_FRIEND:
                 Login friend = loginService.getLogin(activityMetadata.get("requestFromEmail").toString());
 
                 return new FeedDto(activity.getEventType().name(),
                         activity.getLogin(),
-                        msa.getMessage("feed.activity.add.friend"),
+                        msa.getMessage("feed.activity.add.friend", locale),
                         null,
                         Map.of("id", friend.getHandle(),
                                 "value", friend.getName()),
