@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import java.io.IOException;
@@ -66,8 +67,8 @@ public class PasswordResetService {
 
         PasswordResetToken resetToken = getPasswordResetToken(signature);
 
-        if (resetToken.getExpiryTimestamp().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token has been expired!");
+        if (resetToken.isInactive() || resetToken.getExpiryTimestamp().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Token is expired!");
         }
     }
 
@@ -79,6 +80,7 @@ public class PasswordResetService {
         }
     }
 
+    @Transactional
     public void resetPassword(PasswordResetDto passwordResetDto) {
         String token = passwordResetDto.getToken();
         String signature = getHashedSignatureFromToken(token);
@@ -88,6 +90,9 @@ public class PasswordResetService {
         Login login = loginService.getLogin(resetToken.getEmail());
         login.setPassword(passwordEncoder.encode(passwordResetDto.getPassword()));
         loginService.saveLogin(login);
+
+        resetToken.setInactive(true);
+        passwordResetTokenRepository.save(resetToken);
     }
 
     private PasswordResetToken getPasswordResetToken(String signature) {

@@ -40,4 +40,6 @@ public class PasswordResetToken {
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime expiryTimestamp;
+
+    private boolean inactive;
 }
