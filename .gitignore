@@ -41,3 +41,6 @@ out/
 
 ### Env Files ###
 .env
+
+### Secret Properties ###
+secret-*.properties

@@ -123,6 +123,76 @@ DATABASE_PASSWORD=your_db_password
 
 ---
 
+<h3 id="gmail">✉️ Set up Gmail API</h3>
+
+Follow these steps to set up Google OAuth2 credentials and obtain a refresh token for sending emails via Gmail:
+
+**Create OAuth2 Credentials in Google Cloud:**
+- Go to [Google Cloud Console](https://console.cloud.google.com/) and select your project (the name defined for this project is "bookshare").
+- **Enable Gmail API**:
+   - APIs & Services → Library → Gmail API → Enable
+- Configure OAuth Consent Screen:
+   - App Type: External
+   - Fill in App Name and Support Email
+   - Add the scope: `https://www.googleapis.com/auth/gmail.send`
+- Create OAuth Client ID:
+   - Application Type: Web application
+   - Add **Authorized redirect URI**: `http://localhost:6001`
+   - Copy the `client_id` and `client_secret`
+
+**Generate Refresh Token:**
+- Open the following URL in your browser (replace `YOUR_CLIENT_ID`):
+```
+  https://accounts.google.com/o/oauth2/v2/auth?
+  client_id=YOUR_CLIENT_ID
+  &redirect_uri=http://localhost:6001
+  &response_type=code
+  &scope=https://www.googleapis.com/auth/gmail.send
+  &access_type=offline
+  &prompt=consent
+  ```
+- Login with your Gmail account and allow access.
+- Copy the `code` from the redirected URL: `http://localhost:6001/?code=AUTH_CODE`
+- Exchange `AUTH_CODE` for tokens via POST request:
+```http
+POST https://oauth2.googleapis.com/token
+Content-Type: application/x-www-form-urlencoded
+
+code=AUTH_CODE&
+client_id=YOUR_CLIENT_ID&
+client_secret=YOUR_CLIENT_SECRET&
+redirect_uri=http://localhost:6001&
+grant_type=authorization_code
+```
+- The response will include the refresh token:
+```json
+{
+  "access_token": "...",
+  "expires_in": 3599,
+  "refresh_token": "YOUR_REFRESH_TOKEN",
+  "scope": "https://www.googleapis.com/auth/gmail.send",
+  "token_type": "Bearer"
+}
+```
+
+**Add Secret Token to env and properties files:**
+- Add the following key/value pair to the .env file (for Docker deployment)
+  - Refer to the `.env.example` for example 
+```
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+GOOGLE_REFRESH_TOKEN=your_refresh_token
+```
+- For Spring Boot deployment, add `secrets-dev.properties` file and include the following properties
+  - Refer to `secret-dev.properties.example` for example
+```
+app.gmail.client.id=${GOOGLE_CLIENT_ID:client}
+app.gmail.client.secret=${GOOGLE_CLIENT_SECRET:secret}
+app.gmail.refresh.token=${GOOGLE_REFRESH_TOKEN:token}
+```
+
+---
+
 <h2 id="usage">💻 Usage</h2>
 
 1. Register a new account or log in with an existing account.
