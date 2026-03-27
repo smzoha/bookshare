@@ -1,6 +1,8 @@
 package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.entity.login.PasswordResetToken;
+import com.zedapps.bookshare.exception.MailSendException;
+import com.zedapps.bookshare.exception.TokenGenerationException;
 import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
 import com.zedapps.bookshare.service.MailService;
 import jakarta.mail.MessagingException;
@@ -28,7 +30,7 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final MailService mailService;
 
-    private final long EXPIRY_OFFSET_MINS = 10;
+    private static final long EXPIRY_OFFSET_MINS = 10;
 
     public void savePasswordResetToken(String email) {
         String token = UUID.randomUUID().toString();
@@ -42,11 +44,11 @@ public class PasswordResetService {
 
         } catch (NoSuchAlgorithmException e) {
             log.error("Error while generating hashed token", e);
-            throw new RuntimeException(e);
+            throw new TokenGenerationException("Error while generating hashed token", e);
 
         } catch (MessagingException | IOException e) {
             log.error("Error while sending mail", e);
-            throw new RuntimeException(e);
+            throw new MailSendException("Error while sending mail", e);
         }
     }
 
