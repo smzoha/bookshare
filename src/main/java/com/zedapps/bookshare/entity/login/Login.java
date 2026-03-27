@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.entity.login;
 
 import com.zedapps.bookshare.entity.image.Image;
+import com.zedapps.bookshare.enums.AuthProvider;
 import com.zedapps.bookshare.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -51,7 +52,7 @@ public class Login {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "{error.blank}")
+    // Password will be empty for SSO users
     @Size(max = 1024, message = "{error.max.length.exceeded}")
     private String password;
 
@@ -65,6 +66,12 @@ public class Login {
     @NotNull(message = "{error.required}")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @NotNull(message = "{error.required}")
+    @Enumerated(EnumType.STRING)
+    private AuthProvider authProvider;
+
+    private String providerId;
 
     private boolean active;
 
