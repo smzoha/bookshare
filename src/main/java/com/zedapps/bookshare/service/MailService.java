@@ -32,21 +32,21 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String mailAddress;
 
-    private final String PASSWORD_RESET_MAIL_BODY = """
-            Howdy Partner,
-            
-            Looks like you’ve misplaced the keys to your account.
-            
-            Use the link below to set a new password:
-            %s
-            
-            This link will expire in 10 minutes, so be sure to use it soon.
-            
-            If you didn’t request this, you can safely ignore this email.
-            
-            We’ll be glad to have you back in the saddle with a book in hand.
-            
-            — BookShare Team
+    private static final String PASSWORD_RESET_MAIL_BODY = """
+            Howdy Partner,%n\
+            %n\
+            Looks like you've misplaced the keys to your account.%n\
+            %n\
+            Use the link below to set a new password:%n\
+            %s%n\
+            %n\
+            This link will expire in 10 minutes, so be sure to use it soon.%n\
+            %n\
+            If you didn't request this, you can safely ignore this email.%n\
+            %n\
+            We'll be glad to have you back in the saddle with a book in hand.%n\
+            %n\
+            — BookShare Team%n\
             """;
 
     @Async

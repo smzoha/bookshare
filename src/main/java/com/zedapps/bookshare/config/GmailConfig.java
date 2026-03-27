@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 /**
  * @author smzoha
  * @since 26/3/26
@@ -29,7 +32,7 @@ public class GmailConfig {
     private String refreshToken;
 
     @Bean
-    public Gmail gmail() throws Exception {
+    public Gmail gmail() throws IOException, GeneralSecurityException {
         UserCredentials userCredentials = UserCredentials.newBuilder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
