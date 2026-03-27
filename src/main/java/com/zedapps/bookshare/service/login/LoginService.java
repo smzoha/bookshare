@@ -53,6 +53,11 @@ public class LoginService {
     }
 
     @Transactional
+    public Login saveLogin(Login login) {
+        return loginRepository.save(login);
+    }
+
+    @Transactional
     public void saveLogin(@Valid LoginManageDto loginDto) {
         Login login = (loginDto.getId() != null
                 ? loginRepository.findById(loginDto.getId())
@@ -64,7 +69,7 @@ public class LoginService {
             setupShelvesForNewLogin(login);
         }
 
-        login = loginRepository.save(login);
+        login = saveLogin(login);
 
         LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         activityService.saveActivityOutbox(loginDto.getId() != null ? ActivityType.USER_UPDATE : ActivityType.USER_ADD,
