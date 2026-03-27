@@ -3,10 +3,12 @@ package com.zedapps.bookshare.service.login;
 import com.zedapps.bookshare.dto.login.PasswordResetDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.PasswordResetToken;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.exception.MailSendException;
 import com.zedapps.bookshare.exception.TokenGenerationException;
 import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
 import com.zedapps.bookshare.service.MailService;
+import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.HexFormat;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author smzoha
@@ -36,11 +35,12 @@ import java.util.UUID;
 public class PasswordResetService {
 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final ActivityService activityService;
     private final MailService mailService;
-
-    private static final long EXPIRY_OFFSET_MINS = 10;
     private final LoginService loginService;
     private final PasswordEncoder passwordEncoder;
+
+    private static final long EXPIRY_OFFSET_MINS = 10;
 
     public void savePasswordResetToken(String email) {
         String token = UUID.randomUUID().toString();
@@ -51,6 +51,14 @@ public class PasswordResetService {
 
             mailService.sendPasswordResetEmail(email, token);
             passwordResetTokenRepository.save(resetToken);
+
+            Login login = loginService.getLogin(email);
+
+            activityService.saveActivityOutbox(ActivityType.RESET_PASSWORD_REQUEST,
+                    login.getId(),
+                    Map.of(
+                            "affectedUserEmail", login.getEmail()
+                    ));
 
         } catch (NoSuchAlgorithmException e) {
             log.error("Error while generating hashed token", e);
@@ -89,7 +97,13 @@ public class PasswordResetService {
 
         Login login = loginService.getLogin(resetToken.getEmail());
         login.setPassword(passwordEncoder.encode(passwordResetDto.getPassword()));
-        loginService.saveLogin(login);
+        login = loginService.saveLogin(login);
+
+        activityService.saveActivityOutbox(ActivityType.RESET_PASSWORD,
+                login.getId(),
+                Map.of(
+                        "affectedUserEmail", login.getEmail()
+                ));
 
         resetToken.setInactive(true);
         passwordResetTokenRepository.save(resetToken);
