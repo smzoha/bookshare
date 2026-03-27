@@ -33,10 +33,6 @@ public class PasswordResetController {
 
     @GetMapping("/resetPasswordRequest")
     public String getResetPasswordRequest(@AuthenticationPrincipal LoginDetails loginDetails) {
-        if (Objects.nonNull(loginDetails)) {
-            return "redirect:/";
-        }
-
         return "app/login/resetPasswordRequest";
     }
 
@@ -45,10 +41,6 @@ public class PasswordResetController {
                                              @RequestParam String email,
                                              RedirectAttributes redirectAttributes,
                                              ModelMap model) {
-
-        if (Objects.nonNull(loginDetails)) {
-            return "redirect:/";
-        }
 
         Optional<Login> login = loginRepository.findActiveLoginByEmail(email);
 
