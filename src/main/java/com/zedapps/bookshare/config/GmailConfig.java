@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.config;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.gmail.Gmail;
@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 
 /**
  * @author smzoha
@@ -32,7 +31,7 @@ public class GmailConfig {
     private String refreshToken;
 
     @Bean
-    public Gmail gmail() throws IOException, GeneralSecurityException {
+    public Gmail gmail() throws IOException {
         UserCredentials userCredentials = UserCredentials.newBuilder()
                 .setClientId(clientId)
                 .setClientSecret(clientSecret)
@@ -42,7 +41,7 @@ public class GmailConfig {
         userCredentials.refreshIfExpired();
 
         return new Gmail.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
+                new NetHttpTransport(),
                 JSON_FACTORY,
                 new HttpCredentialsAdapter(userCredentials))
                 .setApplicationName("bookshare")
