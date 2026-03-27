@@ -35,6 +35,7 @@ public class SecurityConfig {
                             .requestMatchers("/profile/**").hasAnyAuthority(Role.getAllRoleNames())
                             .requestMatchers("/book/add*", "/book/remove*", "/book/update*", "/book/like",
                                     "/shelf/add", "/collection/**").authenticated()
+                            .requestMatchers("/resetPasswordRequest", "/resetPassword").anonymous()
                             .anyRequest().permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login")

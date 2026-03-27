@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.async;
 
 import com.zedapps.bookshare.dto.activity.ActivityFeedDto;
-import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.activity.Activity;
+import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.Connection;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.feed.FeedEntryRepository;

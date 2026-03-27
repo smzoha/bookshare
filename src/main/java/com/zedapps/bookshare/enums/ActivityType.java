@@ -26,6 +26,8 @@ public enum ActivityType {
     LOGIN("LOGIN"),
     LOGOUT("LOGIN"),
     REGISTER("LOGIN"),
+    RESET_PASSWORD_REQUEST("LOGIN"),
+    RESET_PASSWORD("LOGIN"),
 
     // Admin Activities
     USER_LIST_VIEW("LOGIN"),

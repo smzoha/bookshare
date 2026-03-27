@@ -2,6 +2,7 @@ package com.zedapps.bookshare.async;
 
 import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
+import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityStatus;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.service.activity.ActivityService;
@@ -42,8 +43,14 @@ public class ActivityOutboxProcessor {
 
         for (ActivityOutbox activityOutbox : unprocessedActivityOutboxItems) {
             try {
+                Login login = null;
+
+                if (activityOutbox.getPayload().containsKey("actionBy")) {
+                    login = loginService.getLogin(activityOutbox.getPayload().get("actionBy").toString());
+                }
+
                 Activity activity = Activity.builder()
-                        .login(loginService.getLogin(activityOutbox.getPayload().get("actionBy").toString()))
+                        .login(login)
                         .eventType(activityOutbox.getEventType())
                         .referenceEntity(activityOutbox.getReferenceEntity())
                         .referenceId(activityOutbox.getReferenceId())
