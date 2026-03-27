@@ -31,8 +31,7 @@ public class Activity {
     private Long id;
 
     @ManyToOne
-    @NotNull(message = "{error.required}")
-    @JoinColumn(name = "login_id", nullable = false)
+    @JoinColumn(name = "login_id")
     private Login login;
 
     @Enumerated(EnumType.STRING)
