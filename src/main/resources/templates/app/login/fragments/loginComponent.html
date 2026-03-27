@@ -41,6 +41,12 @@
         </div>
     </form>
 
+    <div class="d-grid mb-1">
+        <a class="btn btn-bookshare" href="/oauth2/authorization/google">
+            <span class="fab fa-google me-1"></span><span th:text="#{label.login.google}"></span>
+        </a>
+    </div>
+
     <div class="d-grid mb-3">
         <a class="btn btn-bookshare" th:href="@{/resetPasswordRequest}" th:text="#{label.reset.password}"></a>
     </div>
