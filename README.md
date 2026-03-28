@@ -22,6 +22,7 @@ BookShare is a **modern web application** to track your books, reading progress,
   - [Installation](#installation)
   - [Running the Application](#running)
   - [Running with Docker](#docker)
+  - [Set up Gmail API & Google OAuth2 Login](#google)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -123,24 +124,32 @@ DATABASE_PASSWORD=your_db_password
 
 ---
 
-<h3 id="gmail">✉️ Set up Gmail API</h3>
+<h3 id="google">✉️ 🔐 Set up Gmail API & Google OAuth2 Login</h3>
 
-Follow these steps to set up Google OAuth2 credentials and obtain a refresh token for sending emails via Gmail:
+Follow these steps to set up Google OAuth2 credentials for two features:
+- **Gmail API** — sending emails via Gmail
+- **Google OAuth2 Login** — Login with Google authentication
 
 **Create OAuth2 Credentials in Google Cloud:**
 - Go to [Google Cloud Console](https://console.cloud.google.com/) and select your project (the name defined for this project is "bookshare").
-- **Enable Gmail API**:
-   - APIs & Services → Library → Gmail API → Enable
-- Configure OAuth Consent Screen:
-   - App Type: External
-   - Fill in App Name and Support Email
-   - Add the scope: `https://www.googleapis.com/auth/gmail.send`
-- Create OAuth Client ID:
-   - Application Type: Web application
-   - Add **Authorized redirect URI**: `http://localhost:6001`
-   - Copy the `client_id` and `client_secret`
+- **Enable Required APIs**:
+  - APIs & Services → Library → **Gmail API** → Enable
+- **Configure OAuth Consent Screen**:
+  - App Type: External
+  - Fill in App Name and Support Email (bookshare and your choice of Gmail address respectively)
+  - Add the following **OAuth2 scopes**:
+    - `https://www.googleapis.com/auth/gmail.send` — Send emails via Gmail
+    - `openid` — Google Login: authenticate user identity
+    - `https://www.googleapis.com/auth/userinfo.email` — Google Login: access user's email address
+    - `https://www.googleapis.com/auth/userinfo.profile` — Google Login: access user's basic profile info
+- **Create OAuth Client ID**:
+  - Application Type: Web application
+  - Add **Authorized redirect URIs**:
+    - `http://localhost:6001` *(for refresh token generation)*
+    - `http://localhost:8080/login/oauth2/code/google` *(for Google Login callback — adjust host/port as needed)*
+  - Copy the `client_id` and `client_secret`
 
-**Generate Refresh Token:**
+**Generate Refresh Token (for Gmail sending):**
 - Open the following URL in your browser (replace `YOUR_CLIENT_ID`):
 ```
   https://accounts.google.com/o/oauth2/v2/auth?
@@ -150,7 +159,7 @@ Follow these steps to set up Google OAuth2 credentials and obtain a refresh toke
   &scope=https://www.googleapis.com/auth/gmail.send
   &access_type=offline
   &prompt=consent
-  ```
+```
 - Login with your Gmail account and allow access.
 - Copy the `code` from the redirected URL: `http://localhost:6001/?code=AUTH_CODE`
 - Exchange `AUTH_CODE` for tokens via POST request:
@@ -175,20 +184,25 @@ grant_type=authorization_code
 }
 ```
 
-**Add Secret Token to env and properties files:**
-- Add the following key/value pair to the .env file (for Docker deployment)
-  - Refer to the `.env.example` for example 
+> **Note:** The Google Login flow is handled automatically by Spring Security OAuth2 — no manual token exchange is needed for login.
+
+**Add Secret Tokens to env and properties files:**
+- Add the following key/value pairs to the `.env` file (for Docker deployment)
+  - Refer to the `.env.example` for example
 ```
 GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
 GOOGLE_REFRESH_TOKEN=your_refresh_token
 ```
-- For Spring Boot deployment, add `secrets-dev.properties` file and include the following properties
+- For Spring Boot deployment, add a `secrets-dev.properties` file and include the following properties
   - Refer to `secret-dev.properties.example` for example
 ```
 app.gmail.client.id=${GOOGLE_CLIENT_ID:client}
 app.gmail.client.secret=${GOOGLE_CLIENT_SECRET:secret}
 app.gmail.refresh.token=${GOOGLE_REFRESH_TOKEN:token}
+
+spring.security.oauth2.client.registration.google.client-id=${app.gmail.client.id}
+spring.security.oauth2.client.registration.google.client-secret=${app.gmail.client.secret}
 ```
 
 ---
