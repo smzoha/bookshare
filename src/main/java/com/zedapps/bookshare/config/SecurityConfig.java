@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.config;
 
 import com.zedapps.bookshare.enums.Role;
+import com.zedapps.bookshare.service.LoginDetailOidcService;
 import com.zedapps.bookshare.service.LoginDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +24,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final LoginDetailService loginDetailService;
+    private final LoginDetailOidcService loginDetailOidcService;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
+                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests((requests) -> {
                     requests.requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                             .requestMatchers("/manage/**").hasAnyAuthority(Role.ADMIN.name(), Role.MODERATOR.name())
@@ -41,8 +44,10 @@ public class SecurityConfig {
                 .formLogin((form) -> form.loginPage("/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll())
+                .oauth2Login(oauth2 -> oauth2.loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(loginDetailOidcService)))
                 .logout((logout) -> logout.logoutUrl("/logout")
-                        .logoutUrl("/logout")
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/")
                         .permitAll())
