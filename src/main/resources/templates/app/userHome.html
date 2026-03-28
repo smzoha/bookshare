@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="userHome">
     <div class="container my-4">
@@ -27,10 +27,11 @@
                     </div>
                 </section>
 
-                <section class="block-section author-cta-section p-4 text-center">
+                <section class="block-section author-cta-section p-4 text-center" sec:authorize="not hasAnyAuthority('ADMIN', 'MODERATOR')">
                     <h5 th:text="#{label.author.request.book.add}"/>
                     <p th:text="#{label.author.request.book.add.subtitle}"></p>
-                    <a th:href="@{/book/addRequest}" class="btn btn-bookshare" th:text="#{label.add.your.book}"/>
+                    <a th:href="@{/author/bookRequest}" class="btn btn-bookshare" th:text="#{label.add.your.book}" sec:authorize="hasAnyAuthority('AUTHOR')"/>
+                    <a th:href="@{/author/apply}" class="btn btn-bookshare" th:text="#{label.apply.author}" sec:authorize="not hasAuthority('AUTHOR')"/>
                 </section>
             </main>
         </div>
