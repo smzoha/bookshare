@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Author Request List</title>
+    <link rel="stylesheet" th:href="@{/css/datatables.min.css}"/>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div class="text-center mb-4">
+            <h2 th:text="#{label.pending.author.list}"></h2>
+
+            <table id="requestList" class="table table-responsive table-striped">
+                <thead>
+                    <td class="bg-bookshare fw-bold text-center" th:text="#{label.first.name}"></td>
+                    <td class="bg-bookshare fw-bold text-center" th:text="#{label.last.name}"></td>
+                    <td class="bg-bookshare fw-bold text-center"  th:text="#{label.action}"></td>
+                </thead>
+                <tbody>
+                <tr th:each="request : ${requestList}">
+                    <td th:text="${request.login.firstName}"></td>
+                    <td th:text="${request.login.lastName}"></td>
+                    <td>
+                        <button id="processRequest" class="btn btn-bookshare" th:data-id="${request.id}" th:text="#{label.assign.role}"></button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script th:src="@{/js/datatables.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            let requestList = $('#requestList').DataTable({
+                scrollX: true,
+                layout: {
+                    bottomStart: {
+                        buttons: ['excel', 'print']
+                    }
+                }
+            });
+
+            $(document).on('click', '#processRequest', function (e) {
+                e.preventDefault();
+                let btn = e.currentTarget, id = $(btn).data('id');
+
+                $.ajax({
+                    method: 'POST',
+                    url: '/admin/author/request/process',
+                    data: {
+                        id: id
+                    },
+                    beforeSend: () => showLoader(),
+                    success: () => {
+                        window.location.href = '/admin/author/request';
+                    },
+                    error: () => {
+                        alert('Something went wrong. Try again later.');
+                        console.error('Request failed!');
+                    },
+                    complete: () => removeLoader()
+                })
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

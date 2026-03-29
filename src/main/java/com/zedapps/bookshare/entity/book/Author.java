@@ -62,6 +62,13 @@ public class Author {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
+    public Author(Login login) {
+        this.firstName = login.getFirstName();
+        this.lastName = login.getLastName();
+        this.login = login;
+        this.bio = login.getBio();
+    }
+
     @Override
     public String toString() {
         return "Author{" +
