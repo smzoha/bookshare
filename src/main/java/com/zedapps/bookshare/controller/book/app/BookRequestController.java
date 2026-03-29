@@ -98,13 +98,13 @@ public class BookRequestController {
 
         model.put("book", book);
 
-        return "admin/book/bookForm";
+        return "common/bookForm";
     }
 
     @PostMapping
     public String saveBookRequestForm(@Valid @ModelAttribute Book book, Errors errors) {
         if (errors.hasErrors()) {
-            return "admin/book/bookForm";
+            return "common/bookForm";
         }
 
         if (book.getImage() != null && book.getImage().getId() == null) {

@@ -101,7 +101,7 @@ public class BookAdminController {
     public String createNewBook(ModelMap model) {
         model.put("book", new Book());
 
-        return "admin/book/bookForm";
+        return "common/bookForm";
     }
 
     @GetMapping("/{id}")
@@ -118,7 +118,7 @@ public class BookAdminController {
                 .internal(true)
                 .build());
 
-        return "admin/book/bookForm";
+        return "common/bookForm";
     }
 
     @PostMapping("/save")
@@ -126,7 +126,7 @@ public class BookAdminController {
                            Errors errors) {
 
         if (errors.hasErrors()) {
-            return "admin/book/bookForm";
+            return "common/bookForm";
         }
 
         if (book.getImage() != null && book.getImage().getId() == null) {
