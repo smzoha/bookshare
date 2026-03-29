@@ -133,7 +133,7 @@ public class BookAdminController {
             book.setImage(null);
         }
 
-        bookAdminService.saveBook(book);
+        bookAdminService.saveBook(book, null);
 
         return "redirect:/admin";
     }

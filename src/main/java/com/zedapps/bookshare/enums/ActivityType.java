@@ -28,6 +28,7 @@ public enum ActivityType {
     REGISTER("LOGIN"),
     RESET_PASSWORD_REQUEST("LOGIN"),
     RESET_PASSWORD("LOGIN"),
+    AUTHOR_REQUEST("LOGIN"),
 
     // Admin Activities
     USER_LIST_VIEW("LOGIN"),
@@ -39,6 +40,7 @@ public enum ActivityType {
     BOOK_VIEW_ADMIN("BOOK"),
     BOOK_ADD("BOOK"),
     BOOK_UPDATE("BOOK"),
+    BOOK_REQUEST_SAVE("BOOK"),
 
     GENRE_LIST_VIEW("GENRE"),
     GENRE_VIEW("GENRE"),

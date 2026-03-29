@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -81,13 +82,17 @@ public class BookAdminService {
     }
 
     @Transactional
-    public void saveBook(Book book) {
+    public void saveBook(Book book, ActivityType activityType) {
         boolean isNew = book.getId() == null;
 
         book = bookRepository.save(book);
 
+        activityType = Objects.nonNull(activityType)
+                ? activityType
+                : isNew ? ActivityType.BOOK_ADD : ActivityType.BOOK_UPDATE;
+
         LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        activityService.saveActivityOutbox(isNew ? ActivityType.BOOK_ADD : ActivityType.BOOK_UPDATE,
+        activityService.saveActivityOutbox(activityType,
                 book.getId(),
                 Map.of(
                         "actionBy", loginDetails.getEmail(),

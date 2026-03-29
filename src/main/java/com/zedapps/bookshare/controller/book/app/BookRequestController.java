@@ -11,6 +11,7 @@ import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.BookRepository;
@@ -111,7 +112,7 @@ public class BookRequestController {
             book.setImage(null);
         }
 
-        bookAdminService.saveBook(book);
+        bookAdminService.saveBook(book, ActivityType.BOOK_REQUEST_SAVE);
 
         return "redirect:/";
     }
