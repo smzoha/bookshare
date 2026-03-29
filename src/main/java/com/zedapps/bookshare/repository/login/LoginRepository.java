@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.repository.login;
 
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,4 +24,6 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
     Optional<Login> findByHandle(String handle);
 
     List<Login> findAllByActive(boolean active);
+
+    List<Login> findAllByRoleAndActive(Role role, boolean active);
 }

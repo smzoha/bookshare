@@ -5,6 +5,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class AuthorAdminController {
 
     @ModelAttribute("loginList")
     public List<Login> loginList() {
-        return loginService.getActiveLoginList();
+        return loginService.getActiveLoginListByRole(Role.AUTHOR);
     }
 
     @GetMapping("/list")
