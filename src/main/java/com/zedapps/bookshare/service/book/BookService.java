@@ -6,6 +6,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
@@ -76,8 +77,9 @@ public class BookService {
                                    boolean addNewReview, boolean addNewProgress) {
 
         Book book = getBook(bookId);
-        model.put("book", book);
+        assert book.getStatus() == Status.ACTIVE : "Book is not in active status";
 
+        model.put("book", book);
 
         if (Objects.nonNull(loginDetails)) {
             Login login = loginService.getLogin(loginDetails.getEmail());
