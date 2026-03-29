@@ -35,4 +35,4 @@ USER appuser
 
 EXPOSE 6001
 
-ENTRYPOINT ["java", "-jar", "bookshare.jar"]
+ENTRYPOINT ["java", "-ea", "-jar", "bookshare.jar"]

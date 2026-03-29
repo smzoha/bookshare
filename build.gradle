@@ -63,6 +63,10 @@ dependencies {
     implementation 'com.google.apis:google-api-services-gmail:v1-rev20260112-2.0.0'
 }
 
+bootRun {
+    jvmArgs = ['-ea']
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
