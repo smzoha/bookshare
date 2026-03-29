@@ -48,6 +48,11 @@ public class BookAdminController {
     private final ImageRepository imageRepository;
     private final ApplicationEventPublisher publisher;
 
+    @ModelAttribute("actionUrl")
+    public String getActionUrl() {
+        return "/admin/book/save";
+    }
+
     @ModelAttribute("statusList")
     public Status[] getStatusList() {
         return Status.values();
