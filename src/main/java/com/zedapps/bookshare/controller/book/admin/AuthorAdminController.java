@@ -3,15 +3,20 @@ package com.zedapps.bookshare.controller.book.admin;
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Author;
+import com.zedapps.bookshare.entity.book.AuthorRequest;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.enums.Role;
+import com.zedapps.bookshare.repository.book.AuthorRequestRepository;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
+import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +34,12 @@ public class AuthorAdminController {
 
     private final BookAdminService bookAdminService;
     private final LoginService loginService;
+    private final AuthorRequestRepository authorRequestRepository;
     private final ApplicationEventPublisher publisher;
 
     @ModelAttribute("loginList")
     public List<Login> loginList() {
-        return loginService.getActiveLoginList();
+        return loginService.getActiveLoginListByRole(Role.AUTHOR);
     }
 
     @GetMapping("/list")
@@ -89,6 +95,32 @@ public class AuthorAdminController {
         bookAdminService.saveAuthor(author);
 
         return "redirect:/admin";
+    }
+
+    @GetMapping("/request")
+    public String getAuthorRequestList(ModelMap model) {
+        model.put("requestList", authorRequestRepository.findAll());
+
+        return "admin/author/requestList";
+    }
+
+    @Transactional
+    @PostMapping("/request/process")
+    public String processAuthorRequest(@RequestParam Long id) {
+        AuthorRequest request = authorRequestRepository.findById(id).orElseThrow(NoResultException::new);
+        Login login = loginService.getLogin(request.getLogin().getEmail());
+
+        assert login.getRole() == Role.USER : "Login does not belong to User role group!";
+
+        Author author = new Author(login);
+        bookAdminService.saveAuthor(author);
+
+        login.setRole(Role.AUTHOR);
+        loginService.saveLogin(login);
+
+        authorRequestRepository.delete(request);
+
+        return "redirect:/admin/author/request";
     }
 
     private void validateAuthorLoginLink(Author author, Errors errors) {

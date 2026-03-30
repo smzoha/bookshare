@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="pubHome">
     <div class="container my-4">
@@ -69,7 +69,7 @@
         <section class="author-cta-section block-section p-4 text-center my-4">
             <h5 th:text="#{label.author.request.book.add}"/>
             <p th:text="#{label.author.request.book.add.subtitle}"></p>
-            <a th:href="@{/book/addRequest}" class="btn btn-bookshare" th:text="#{label.add.your.book}"/>
+            <a th:href="@{/login}" class="btn btn-bookshare" th:text="#{label.apply.author}"/>
         </section>
     </div>
 

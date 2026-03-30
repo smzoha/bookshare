@@ -21,7 +21,8 @@ public interface BookListRepository extends PagingAndSortingRepository<Book, Lon
             LEFT JOIN b.genres g
             LEFT JOIN b.tags t
             LEFT JOIN b.authors a
-            WHERE (:genre IS NULL OR g.id IN :genre)
+            WHERE b.status = 'ACTIVE'
+            AND (:genre IS NULL OR g.id IN :genre)
             AND (:tag IS NULL OR t.id IN :tag)
             AND (:query IS NULL OR b.isbn LIKE :query OR LOWER(b.title) LIKE :query)
             GROUP BY b

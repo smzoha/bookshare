@@ -1,6 +1,5 @@
-package com.zedapps.bookshare.controller.book.admin;
+package com.zedapps.bookshare.controller.book.app;
 
-import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.editor.AuthorEditor;
 import com.zedapps.bookshare.editor.GenreEditor;
@@ -11,16 +10,19 @@ import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.image.Image;
+import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.enums.Status;
+import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.AuthorRepository;
 import com.zedapps.bookshare.service.book.BookAdminService;
+import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,34 +30,28 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author smzoha
- * @since 22/10/25
+ * @since 29/3/26
  **/
 @Controller
-@RequestMapping("/admin/book")
+@RequestMapping("/author/bookRequest")
 @RequiredArgsConstructor
-public class BookAdminController {
+public class BookRequestController {
 
-    private final BookAdminService bookAdminService;
+    private final LoginService loginService;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
     private final ImageRepository imageRepository;
-    private final ApplicationEventPublisher publisher;
-
-    @ModelAttribute("actionUrl")
-    public String getActionUrl() {
-        return "/admin/book/save";
-    }
+    private final BookRepository bookRepository;
+    private final BookAdminService bookAdminService;
 
     @ModelAttribute("statusList")
     public Status[] getStatusList() {
-        return Status.values();
+        return new Status[]{Status.PENDING};
     }
 
     @ModelAttribute("authorList")
@@ -73,7 +69,13 @@ public class BookAdminController {
         return tagRepository.findAll();
     }
 
+    @ModelAttribute("actionUrl")
+    public String getActionUrl() {
+        return "/author/bookRequest";
+    }
+
     @InitBinder
+    @SuppressWarnings("DuplicatedCode")
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Author.class, new AuthorEditor(authorRepository));
         binder.registerCustomEditor(Genre.class, new GenreEditor(genreRepository));
@@ -84,47 +86,24 @@ public class BookAdminController {
     }
 
     @GetMapping
-    public String getBookList(@AuthenticationPrincipal LoginDetails loginDetails, ModelMap model) {
-        model.put("books", bookAdminService.getBookList());
+    public String getBookRequestForm(@AuthenticationPrincipal LoginDetails loginDetails,
+                                     ModelMap model) {
 
-        publisher.publishEvent(ActivityEvent.builder()
-                .loginEmail(loginDetails.getEmail())
-                .eventType(ActivityType.BOOK_LIST_VIEW_ADMIN)
-                .metadata(Collections.singletonMap("actionBy", loginDetails.getEmail()))
-                .internal(true)
-                .build());
+        Login login = loginService.getLogin(loginDetails.getEmail());
+        Author author = authorRepository.findAuthorByLogin(login).orElse(null);
 
-        return "admin/book/bookList";
-    }
+        assert login.getRole() == Role.AUTHOR && author != null : "User is not an author!";
 
-    @GetMapping("/new")
-    public String createNewBook(ModelMap model) {
-        model.put("book", new Book());
+        Book book = new Book();
+        book.getAuthors().add(author);
+
+        model.put("book", book);
 
         return "common/bookForm";
     }
 
-    @GetMapping("/{id}")
-    public String updateBook(@AuthenticationPrincipal LoginDetails loginDetails, @PathVariable long id, ModelMap model) {
-        model.put("book", bookAdminService.getBook(id));
-
-        publisher.publishEvent(ActivityEvent.builder()
-                .loginEmail(loginDetails.getEmail())
-                .eventType(ActivityType.BOOK_VIEW_ADMIN)
-                .metadata(Map.of(
-                        "actionBy", loginDetails.getEmail(),
-                        "affectedBookId", id
-                ))
-                .internal(true)
-                .build());
-
-        return "common/bookForm";
-    }
-
-    @PostMapping("/save")
-    public String saveBook(@Valid @ModelAttribute Book book,
-                           Errors errors) {
-
+    @PostMapping
+    public String saveBookRequestForm(@Valid @ModelAttribute Book book, Errors errors) {
         if (errors.hasErrors()) {
             return "common/bookForm";
         }
@@ -133,8 +112,8 @@ public class BookAdminController {
             book.setImage(null);
         }
 
-        bookAdminService.saveBook(book, null);
+        bookAdminService.saveBook(book, ActivityType.BOOK_REQUEST_SAVE);
 
-        return "redirect:/admin";
+        return "redirect:/";
     }
 }
