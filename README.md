@@ -1,7 +1,7 @@
 # 📖 BookShare
 
 ![Java](https://img.shields.io/badge/Java-25-blue.svg)
-![Spring Boot](https://img.shields.io/badge/Spring--Boot-3.x-brightgreen.svg)
+![Spring Boot](https://img.shields.io/badge/Spring--Boot-3.5.5-brightgreen.svg)
 ![Gradle](https://img.shields.io/badge/Build-Gradle-02303A.svg?logo=gradle)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)
@@ -32,24 +32,51 @@ BookShare is a **modern web application** to track your books, reading progress,
 
 <h2 id="features">✨ Features</h2>
 
-- User registration, login, and authentication
-- Add books and track reading progress
-- Connect with other users and view their activity
+**Books & Reading**
+- Browse, search, and filter books by genre, tag, and rating
+- Track reading progress per book (pages read / percentage)
+- Write and like book reviews
+- Organize books into custom shelves and view your collection
+
+**Social**
+- Send and manage friend requests
+- View a social activity feed showing friends' reviews, reading progress updates, and new connections
+- Browse user profiles and their public shelves
+
+**Authors**
+- Authors can submit book addition requests for admin review
+
+**Authentication & Account Management**
+- Standard registration and login
+- Google OAuth2 / OIDC login
+- Password reset via email (Gmail API)
+
+**Admin Panel**
+- Manage users, books, authors, genres, and tags
+- Review and approve author book requests
+- Actuator dashboard: live JVM heap, CPU, thread, and disk metrics with health status
+
+**General**
 - Responsive interface built with **Thymeleaf** and **Bootstrap**
-- Secure backend with **Spring Boot** and **Spring Security**
-- Easily extensible for reviews, ratings, and more
+- Internationalization (i18n) support
+- Dark mode
+- Async activity event system with outbox pattern
+- Request logging
 
 ---
 
 <h2 id="technology-stack"> 🛠 Technology Stack</h2>
 
-| Layer      | Technology                                 |
-|------------|--------------------------------------------|
-| Backend    | Java, Spring Boot, Spring Security         |
-| Frontend   | Thymeleaf, Bootstrap, HTML/CSS, JavaScript |
-| Database   | PostgreSQL, Flyway                         |
-| Build Tool | Gradle                                     |
-| Versioning | Git & GitHub                               |
+| Layer          | Technology                                                            |
+|----------------|-----------------------------------------------------------------------|
+| Backend        | Java 25, Spring Boot 3.5.5, Spring Security, Spring Data JPA         |
+| Auth           | Spring Security OAuth2 Client (Google OIDC), Spring Mail, Gmail API  |
+| Frontend       | Thymeleaf, Bootstrap, jQuery, TinyMCE, Font Awesome                  |
+| Database       | PostgreSQL, Flyway                                                    |
+| Observability  | Spring Boot Actuator, Micrometer                                     |
+| Build & QA     | Gradle, SpotBugs, Lombok                                              |
+| Infrastructure | Docker & Docker Compose                                               |
+| Versioning     | Git & GitHub                                                          |
 
 ---
 
@@ -210,11 +237,13 @@ spring.security.oauth2.client.registration.google.client-secret=${app.gmail.clie
 
 <h2 id="usage">💻 Usage</h2>
 
-1. Register a new account or log in with an existing account.
-2. Add books to your library.
-3. Track reading progress (pages read / percentage).
-4. Connect with other users to view their activity.
-5. Manage your book collection across shelves.
+1. Register a new account or sign in with Google.
+2. Browse the book catalog — search and filter by genre, tag, or rating.
+3. Add books to shelves and track your reading progress.
+4. Write reviews and like others' reviews.
+5. Send friend requests and follow your friends' activity in the feed.
+6. Authors can submit new book requests via their author profile.
+7. Admins manage users, books, authors, genres, and tags through the admin panel, and can monitor application health via the Actuator Dashboard.
 
 <h2 id="contributing">🤝 Contributing</h2>
 
