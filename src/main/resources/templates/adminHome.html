@@ -102,12 +102,12 @@
                 <div class="card shadow-sm bg-bookshare-50 h-100 text-center">
                     <div class="card-body d-flex flex-column justify-content-between">
                         <h5 class="card-title">
-                            <i class="fa fa-gauge-high"></i>&nbsp;<span>System</span>
+                            <i class="fa fa-gauge-high"></i>&nbsp;<span th:text="#{label.admin.system.title}"></span>
                         </h5>
-                        <p class="card-text text-muted">Monitor application health, JVM metrics, CPU and disk usage.</p>
+                        <p class="card-text text-muted" th:text="#{label.admin.system.subtitle}"></p>
                         <div class="d-grid gap-2 mt-3">
                             <a th:href="@{/admin/actuator/dashboard}" class="btn btn-bookshare btn-sm">
-                                <i class="fa fa-chart-line"></i>&nbsp;View Dashboard
+                                <i class="fa fa-chart-line"></i>&nbsp;<span th:text="#{label.view.dashboard}"></span>
                             </a>
                         </div>
                     </div>
