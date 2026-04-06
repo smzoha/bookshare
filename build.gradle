@@ -72,6 +72,12 @@ bootRun {
     jvmArgs = ['-ea']
 }
 
+processResources {
+    filesMatching("application.properties") {
+        expand(appVersion: project.version)
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
