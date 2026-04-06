@@ -4,9 +4,9 @@ import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.5'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'com.github.spotbugs' version '6.4.8'
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.spotbugs)
 }
 
 group = 'com.zedapps'
@@ -30,38 +30,38 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation libs.spring.boot.web
+    implementation libs.spring.boot.security
+    implementation libs.spring.security.extras
+    implementation libs.spring.boot.oauth2.client
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation libs.spring.boot.data.jpa
+    implementation libs.spring.boot.validation
 
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0'
+    implementation libs.spring.boot.thymeleaf
+    implementation libs.thymeleaf.layout.dialect
 
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    developmentOnly libs.spring.boot.devtools
+    implementation libs.spring.boot.actuator
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly libs.lombok
+    annotationProcessor libs.lombok
 
-    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql:11.12.0'
+    runtimeOnly libs.postgresql
+    runtimeOnly libs.flyway.postgresql
 
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
+    implementation libs.commons.lang3
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation libs.spring.boot.test
+    testImplementation libs.spring.security.test
+    testRuntimeOnly libs.junit.platform.launcher
 
-    implementation "org.springframework.boot:spring-boot-starter-mail"
+    implementation libs.spring.boot.mail
 
-    implementation 'com.google.api-client:google-api-client:2.9.0'
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.43.0'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.39.0'
-    implementation 'com.google.apis:google-api-services-gmail:v1-rev20260112-2.0.0'
+    implementation libs.google.api.client
+    implementation libs.google.auth.oauth2
+    implementation libs.google.oauth.client.jetty
+    implementation libs.google.api.gmail
 }
 
 bootRun {
