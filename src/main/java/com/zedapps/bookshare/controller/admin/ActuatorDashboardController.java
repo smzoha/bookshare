@@ -8,6 +8,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.Search;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.CompositeHealth;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -41,6 +42,9 @@ public class ActuatorDashboardController {
     private final InfoEndpoint infoEndpoint;
     private final MeterRegistry meterRegistry;
     private final ApplicationEventPublisher publisher;
+
+    @Value("${spring.application.version}")
+    private String appVersion;
 
     @GetMapping("/dashboard")
     public String getDashboard(@AuthenticationPrincipal LoginDetails loginDetails,
@@ -90,6 +94,8 @@ public class ActuatorDashboardController {
         model.put("diskUsedPercent", diskTotal > 0 ? Math.round(((diskTotal - diskFree) / diskTotal) * 100) : 0L);
         model.put("appInfo", infoEndpoint.info());
         model.put("lastRefreshed", LocalTime.now().format(TIME_FORMATTER));
+
+        model.put("appVersion", appVersion);
     }
 
     private double getGaugeValue(String name, String... tags) {

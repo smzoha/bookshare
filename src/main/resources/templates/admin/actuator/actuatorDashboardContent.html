@@ -4,7 +4,13 @@
 <div th:fragment="dashboardContent" id="dashboardContent">
     <div class="d-flex flex-wrap justify-content-between align-items-start mb-4 gap-2">
         <div>
-            <h2 class="mb-1" th:text="#{title.actuator.dashboard}"></h2>
+            <p class="d-flex align-items-center">
+                <span class="fs-2 fw-bold" th:text="#{title.actuator.dashboard}"></span>
+                <span class="badge bg-warning text-dark ms-3"
+                      th:if="${appVersion != null}"
+                      th:text="${appVersion}"></span>
+            </p>
+
             <p class="text-muted mb-0" th:text="#{title.actuator.dashboard.subtitle}"></p>
         </div>
 

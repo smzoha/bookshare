@@ -1,0 +1,51 @@
+[versions]
+spring-boot = "3.5.5"
+spring-dependency-management = "1.1.7"
+spotbugs-plugin = "6.4.8"
+thymeleaf-layout-dialect = "3.4.0"
+flyway-postgresql = "11.12.0"
+commons-lang3 = "3.18.0"
+google-api-client = "2.9.0"
+google-auth = "1.43.0"
+google-oauth-client-jetty = "1.39.0"
+google-api-gmail = "v1-rev20260112-2.0.0"
+
+[libraries]
+# Spring Boot (versions managed by Spring BOM via dependency-management plugin)
+spring-boot-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
+spring-boot-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
+spring-boot-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-mail = { module = "org.springframework.boot:spring-boot-starter-mail" }
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
+spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-security-extras = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+# Thymeleaf
+thymeleaf-layout-dialect = { module = "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect", version.ref = "thymeleaf-layout-dialect" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok" }
+
+# Database
+postgresql = { module = "org.postgresql:postgresql" }
+flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway-postgresql" }
+
+# Apache Commons
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
+
+# Google APIs
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "google-api-client" }
+google-auth-oauth2 = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "google-auth" }
+google-oauth-client-jetty = { module = "com.google.oauth-client:google-oauth-client-jetty", version.ref = "google-oauth-client-jetty" }
+google-api-gmail = { module = "com.google.apis:google-api-services-gmail", version.ref = "google-api-gmail" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugs-plugin" }
