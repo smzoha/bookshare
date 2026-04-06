@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<div th:fragment="dashboardContent" id="dashboardContent">
+    <div class="d-flex flex-wrap justify-content-between align-items-start mb-4 gap-2">
+        <div>
+            <h2 class="mb-1" th:text="#{title.actuator.dashboard}"></h2>
+            <p class="text-muted mb-0" th:text="#{title.actuator.dashboard.subtitle}"></p>
+        </div>
+
+        <div class="text-end">
+            <small class="text-muted d-block mb-1">
+                <span th:text="#{label.last.refreshed}"></span> <strong th:text="${lastRefreshed}"></strong>
+            </small>
+            <button class="btn btn-bookshare btn-sm" id="manualRefreshBtn">
+                <i class="fa fa-rotate-right"></i>&nbsp;<span th:text="#{label.refresh}"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-heart-pulse me-1"></i> <span th:text="#{label.health.status}"></span>
+                    </h6>
+
+                    <div class="mb-3">
+                        <span class="badge fs-6"
+                              th:text="${healthStatus}"
+                              th:classappend="${healthStatus == 'UP'} ? 'bg-success' : (${healthStatus == 'DOWN'} ? 'bg-danger' : 'bg-warning')">
+                        </span>
+                    </div>
+
+                    <div th:if="${not healthComponents.isEmpty()}">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tbody>
+                            <tr th:each="entry : ${healthComponents}">
+                                <td class="ps-0 text-muted small" th:text="${entry.key}"></td>
+                                <td class="text-end">
+                                    <span class="badge"
+                                          th:text="${entry.value.status.code}"
+                                          th:classappend="${entry.value.status.code == 'UP'} ? 'bg-success' : 'bg-danger'">
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-memory me-1"></i> <span th:text="#{label.heap.memory}"></span>
+                    </h6>
+
+                    <p class="fs-5 mb-1 fw-semibold" th:text="${heapUsedMb} + ' MB'"></p>
+
+                    <p class="text-muted small mb-2"
+                       th:with="maxVal=${heapMaxMb < 0} ? #{label.unlimited} : (${heapMaxMb} + ' MB')"
+                       th:text="#{label.heap.memory.of.max(${maxVal})}"></p>
+
+                    <div class="progress mb-1" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar"
+                             th:classappend="${heapUsedPercent > 85} ? 'bg-danger' : (${heapUsedPercent > 70} ? 'bg-warning' : 'bg-success')"
+                             th:style="'width: ' + ${heapUsedPercent} + '%'"
+                             th:attr="aria-valuenow=${heapUsedPercent}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+
+                    <small class="text-muted" th:text="#{label.percent.used(${heapUsedPercent})}"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-microchip me-1"></i> <span th:text="#{label.cpu.usage}"></span>
+                    </h6>
+
+                    <p class="fs-5 mb-1 fw-semibold" th:text="${cpuUsagePercent} + '%'"></p>
+
+                    <p class="text-muted small mb-2" th:text="#{label.process.cpu.usage}"></p>
+
+                    <div class="progress mb-1" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar"
+                             th:classappend="${cpuUsagePercent > 80} ? 'bg-danger' : (${cpuUsagePercent > 50} ? 'bg-warning' : 'bg-success')"
+                             th:style="'width: ' + ${cpuUsagePercent} + '%'"
+                             th:attr="aria-valuenow=${cpuUsagePercent}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-circle-nodes me-1"></i> <span th:text="#{label.live.threads}"></span>
+                    </h6>
+
+                    <p class="display-6 fw-semibold mb-1" th:text="${threadCount}"></p>
+
+                    <p class="text-muted small mb-0" th:text="#{label.active.jvm.threads}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-hard-drive me-1"></i> <span th:text="#{label.disk.space}"></span>
+                    </h6>
+
+                    <p class="fs-5 mb-1 fw-semibold" th:text="#{label.disk.free.mb(${diskFreeMb})}"></p>
+
+                    <p class="text-muted small mb-2" th:text="#{label.disk.of.total.mb(${diskTotalMb})}"></p>
+
+                    <div class="progress mb-1" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar"
+                             th:classappend="${diskUsedPercent > 90} ? 'bg-danger' : (${diskUsedPercent > 70} ? 'bg-warning' : 'bg-success')"
+                             th:style="'width: ' + ${diskUsedPercent} + '%'"
+                             th:attr="aria-valuenow=${diskUsedPercent}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+
+                    <small class="text-muted" th:text="#{label.percent.used(${diskUsedPercent})}"></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-circle-info me-1"></i> <span th:text="#{label.app.info}"></span>
+                    </h6>
+
+                    <div th:if="${appInfo != null and not appInfo.isEmpty()}">
+                        <dl class="row mb-0">
+                            <th:block th:each="entry : ${appInfo}">
+                                <dt class="col-5 text-muted small fw-normal text-truncate" th:text="${entry.key}"></dt>
+                                <dd class="col-7 small mb-1" th:text="${entry.value}"></dd>
+                            </th:block>
+                        </dl>
+                    </div>
+
+                    <div th:if="${appInfo == null or appInfo.isEmpty()}">
+                        <p class="text-muted small mb-0" th:text="#{msg.no.app.info}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

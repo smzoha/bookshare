@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Actuator Dashboard</title>
+</head>
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-5">
+        <div th:replace="~{admin/actuator/actuatorDashboardContent :: dashboardContent}"></div>
+    </div>
+
+    <script th:inline="javascript">
+        const dashboardUrl = /*[[@{/admin/actuator/dashboard}]]*/ '/admin/actuator/dashboard';
+
+        function refreshDashboard() {
+            $.ajax({
+                url: dashboardUrl,
+                type: 'GET',
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
+                beforeSend: () => showLoader(),
+                success: function (fragment) {
+                    $('#dashboardContent').replaceWith(fragment);
+                    bindRefreshButton();
+                },
+                error: () => console.error('Failed to refresh dashboard data.'),
+                complete: () => removeLoader()
+            });
+        }
+
+        function bindRefreshButton() {
+            $('#manualRefreshBtn').off('click').on('click', function () {
+                refreshDashboard();
+            });
+        }
+
+        $(function () {
+            bindRefreshButton();
+            setInterval(refreshDashboard, 30000);
+        });
+    </script>
+</div>
+</body>
+</html>

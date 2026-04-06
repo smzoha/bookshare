@@ -146,7 +146,8 @@ Follow these steps to set up Google OAuth2 credentials for two features:
   - Application Type: Web application
   - Add **Authorized redirect URIs**:
     - `http://localhost:6001` *(for refresh token generation)*
-    - `http://localhost:8080/login/oauth2/code/google` *(for Google Login callback — adjust host/port as needed)*
+    - `http://localhost:6001/login/oauth2/code/google` *(for Google Login callback — adjust host/port as needed)*
+    - `http://localhost:6001/oauth2/authorization/google` *(for Google Login callback — adjust host/port as needed)*
   - Copy the `client_id` and `client_secret`
 
 **Generate Refresh Token (for Gmail sending):**
