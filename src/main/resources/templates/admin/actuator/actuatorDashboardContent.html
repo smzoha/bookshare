@@ -12,6 +12,7 @@
             <small class="text-muted d-block mb-1">
                 <span th:text="#{label.last.refreshed}"></span> <strong th:text="${lastRefreshed}"></strong>
             </small>
+
             <button class="btn btn-bookshare btn-sm" id="manualRefreshBtn">
                 <i class="fa fa-rotate-right"></i>&nbsp;<span th:text="#{label.refresh}"></span>
             </button>
@@ -37,8 +38,8 @@
                         <table class="table table-sm table-borderless mb-0">
                             <tbody>
                             <tr th:each="entry : ${healthComponents}">
-                                <td class="ps-0 text-muted small" th:text="${entry.key}"></td>
-                                <td class="text-end">
+                                <td class="ps-0 text-muted small bg-bookshare-50" th:text="${entry.key}"></td>
+                                <td class="text-end bg-bookshare-50">
                                     <span class="badge"
                                           th:text="${entry.value.status.code}"
                                           th:classappend="${entry.value.status.code == 'UP'} ? 'bg-success' : 'bg-danger'">
