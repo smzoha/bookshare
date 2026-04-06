@@ -7,16 +7,14 @@ import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,20 +24,19 @@ import java.util.UUID;
  **/
 @Service
 @RequiredArgsConstructor
-public class LoginDetailOidcService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class LoginDetailOidcService implements OAuth2UserService<OidcUserRequest, OidcUser> {
 
     private final LoginRepository loginRepository;
-    private final DefaultOAuth2UserService defaultOAuth2UserService = new DefaultOAuth2UserService();
+    private final OidcUserService oidcUserService = new OidcUserService();
 
     @Override
-    public OidcUser loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User user = defaultOAuth2UserService.loadUser(userRequest);
+    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
+        OidcUser oidcUser = oidcUserService.loadUser(userRequest);
 
-        Map<String, Object> attributes = user.getAttributes();
-        String email = (String) attributes.get("email");
-        String firstName = (String) attributes.get("given_name");
-        String lastName = (String) attributes.get("family_name");
-        String providerId = (String) attributes.get("sub");
+        String email = oidcUser.getEmail();
+        String firstName = oidcUser.getGivenName();
+        String lastName = oidcUser.getFamilyName();
+        String providerId = oidcUser.getSubject();
 
         Optional<Login> persistedLogin = loginRepository.findByEmail(email);
         Login login = persistedLogin.orElse(null);
@@ -64,6 +61,6 @@ public class LoginDetailOidcService implements OAuth2UserService<OAuth2UserReque
 
         return new LoginDetails(login.getEmail(), login.getFirstName(), login.getLastName(), login.getHandle(),
                 List.of(new SimpleGrantedAuthority(login.getRole().name())),
-                null, null);
+                oidcUser.getIdToken(), oidcUser.getUserInfo());
     }
 }

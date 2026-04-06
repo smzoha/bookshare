@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .permitAll())
                 .oauth2Login(oauth2 -> oauth2.loginPage("/login")
                         .defaultSuccessUrl("/", true)
-                        .userInfoEndpoint(userInfo -> userInfo.userService(loginDetailOidcService)))
+                        .userInfoEndpoint(userInfo -> userInfo.oidcUserService(loginDetailOidcService)))
                 .logout((logout) -> logout.logoutUrl("/logout")
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/")
