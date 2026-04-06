@@ -41,6 +41,7 @@ public class SecurityConfig {
                             .requestMatchers("/resetPasswordRequest", "/resetPassword").anonymous()
                             .requestMatchers("/author/apply").hasAuthority(Role.USER.name())
                             .requestMatchers("/author/bookRequest").hasAuthority(Role.AUTHOR.name())
+                            .requestMatchers("/actuator/**").hasAuthority(Role.ADMIN.name())
                             .anyRequest().permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login")
