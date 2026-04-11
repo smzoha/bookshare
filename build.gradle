@@ -42,6 +42,9 @@ dependencies {
     implementation libs.spring.boot.data.jpa
     implementation libs.spring.boot.validation
 
+    implementation libs.spring.boot.cache
+    implementation libs.caffeine
+
     implementation libs.spring.boot.thymeleaf
     implementation libs.thymeleaf.layout.dialect
 
