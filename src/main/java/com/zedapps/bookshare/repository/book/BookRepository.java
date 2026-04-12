@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author smzoha
@@ -35,7 +36,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             LEFT JOIN b.tags t
             WHERE g IN (:genres) OR t IN (:tags)
             """)
-    List<Book> getRelatedBooks(List<Genre> genres, List<Tag> tags);
+    List<Book> getRelatedBooks(Set<Genre> genres, Set<Tag> tags);
 
     Optional<Book> findBookById(Long id);
 }

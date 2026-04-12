@@ -6,20 +6,23 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author smzoha
  * @since 6/9/25
  **/
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shelf {
@@ -48,7 +51,7 @@ public class Shelf {
     private Login user;
 
     @OneToMany(mappedBy = "shelf")
-    private List<ShelvedBook> books = new ArrayList<>();
+    private Set<ShelvedBook> books = new LinkedHashSet<>();
 
     @Column(updatable = false)
     private boolean defaultShelf;
@@ -56,6 +59,18 @@ public class Shelf {
     public Shelf(String name, Login user) {
         this.name = name;
         this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Shelf other)) return false;
+        return id != null && Objects.equals(id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override
@@ -76,4 +91,3 @@ public class Shelf {
         return books.stream().anyMatch(b -> Objects.equals(b.getBook(), book));
     }
 }
-
