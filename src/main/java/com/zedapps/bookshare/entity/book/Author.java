@@ -26,6 +26,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "author.withLogin",
+        attributeNodes = @NamedAttributeNode("login")
+)
 public class Author {
 
     @Id

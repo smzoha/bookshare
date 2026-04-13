@@ -32,6 +32,25 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "book.withAssociations",
+        attributeNodes = {
+                @NamedAttributeNode("authors"),
+                @NamedAttributeNode("tags"),
+                @NamedAttributeNode("genres"),
+                @NamedAttributeNode("image")
+        }
+)
+@NamedEntityGraph(
+        name = "book.withAll",
+        attributeNodes = {
+                @NamedAttributeNode("authors"),
+                @NamedAttributeNode("tags"),
+                @NamedAttributeNode("genres"),
+                @NamedAttributeNode("image"),
+                @NamedAttributeNode("reviews")
+        }
+)
 public class Book {
 
     @Id

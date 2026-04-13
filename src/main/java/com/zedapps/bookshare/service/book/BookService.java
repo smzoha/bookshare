@@ -14,6 +14,7 @@ import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
+import com.zedapps.bookshare.service.login.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +49,14 @@ public class BookService {
     private final LoginService loginService;
     private final ActivityService activityService;
     private final BookAdminService bookAdminService;
+    private final ShelfService shelfService;
 
+    @Transactional(readOnly = true)
     public Book getBook(Long bookId) {
         return bookAdminService.getBook(bookId);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "book-lists", key = "'books-' + #page + '-' + #pageSize",
             condition = "#query != null && #sort != null && #rating != null && #genre != null && #tag != null")
     public Page<Book> getPaginatedBooks(int page, Integer pageSize, String query, String sort, String rating, String genre, String tag) {
@@ -64,9 +68,19 @@ public class BookService {
             query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
         }
 
-        return bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
+        Page<Book> books = bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
+
+        // Force-initialize lazy associations within the transaction so cached entities are fully loaded
+        books.forEach(b -> {
+            b.getAuthors().size();
+            b.getGenres().size();
+            b.getTags().size();
+        });
+
+        return books;
     }
 
+    @Transactional(readOnly = true)
     public List<Book> getRelatedBooks(Book book) {
         List<Book> relatedBooks = bookRepository.getRelatedBooks(book.getGenres(), book.getTags());
         relatedBooks.remove(book);
@@ -74,6 +88,7 @@ public class BookService {
         return relatedBooks;
     }
 
+    @Transactional(readOnly = true)
     public Page<Review> getReviewsByBook(Book book, int pageNumber) {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
@@ -241,7 +256,7 @@ public class BookService {
         Map<String, Shelf> defaultShelves = new HashMap<>();
         List<Shelf> otherShelves = new ArrayList<>();
 
-        for (Shelf shelf : login.getShelves()) {
+        for (Shelf shelf : shelfService.getShelvesForCollection(login.getEmail())) {
             if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
             else otherShelves.add(shelf);
         }

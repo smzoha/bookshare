@@ -4,6 +4,7 @@ import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -30,6 +31,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             """)
     List<Book> getFeaturedBooks();
 
+    @EntityGraph("book.withAssociations")
     @Query("""
             SELECT b
             FROM Book b
@@ -37,8 +39,12 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             LEFT JOIN b.tags t
             WHERE g IN (:genres) OR t IN (:tags)
             """)
-    @Cacheable(cacheNames = "books-list", key = "'related-' + #genres.hashCode() + '-' + #tags.hashCode()")
+    @Cacheable(cacheNames = "book-lists", key = "'related-' + #genres.hashCode() + '-' + #tags.hashCode()")
     List<Book> getRelatedBooks(Set<Genre> genres, Set<Tag> tags);
 
+    @EntityGraph("book.withAll")
     Optional<Book> findBookById(Long id);
+
+    @EntityGraph("book.withAssociations")
+    List<Book> findAll();
 }

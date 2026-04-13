@@ -39,19 +39,23 @@ public class LoginService {
     private final ImageRepository imageRepository;
     private final ActivityService activityService;
 
+    @Transactional(readOnly = true)
     public List<Login> getLoginList() {
         return loginRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Login> getActiveLoginListByRole(Role role) {
         return loginRepository.findAllByRoleAndActive(role, true);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "logins", key = "#email")
     public Login getLogin(String email) {
         return loginRepository.findActiveLoginByEmail(email).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "logins", key = "#handle")
     public Login getLoginByHandle(String handle) {
         return loginRepository.findByHandle(handle).orElseThrow(NoResultException::new);

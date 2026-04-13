@@ -37,16 +37,19 @@ public class BookAdminService {
     private final TagRepository tagRepository;
     private final ActivityService activityService;
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "book-lists", key = "'all'")
     public List<Book> getBookList() {
         return bookRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "books", key = "#bookId")
     public Book getBook(Long bookId) {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "genre-lists", key = "'all'")
     public List<Genre> getGenreList() {
         return genreRepository.findAll().stream()
@@ -54,16 +57,19 @@ public class BookAdminService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "genres", key = "#id")
     public Genre getGenre(Long id) {
         return genreRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "genres", key = "#name", unless = "#result == null || #result.isEmpty()")
     public Optional<Genre> getGenreByName(String name) {
         return genreRepository.findGenreByName(name);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "tag-lists", key = "'all'")
     public List<Tag> getTagList() {
         return tagRepository.findAll().stream()
@@ -71,26 +77,31 @@ public class BookAdminService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "tags", key = "#id")
     public Tag getTag(Long id) {
         return tagRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "tags", key = "#name", unless = "#result == null || #result.isEmpty()")
     public Optional<Tag> getTagByName(String name) {
         return tagRepository.findTagByName(name);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "author-lists", key = "'all'")
     public List<Author> getAuthorList() {
         return authorRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "authors", key = "#id")
     public Author getAuthor(Long id) {
         return authorRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "authors", key = "'login-' + #login.id", unless = "#result == null || #result.isEmpty()")
     public Optional<Author> getAuthorByLogin(Login login) {
         return authorRepository.findAuthorByLogin(login);

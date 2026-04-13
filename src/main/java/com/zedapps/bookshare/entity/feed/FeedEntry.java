@@ -19,6 +19,13 @@ import java.util.Objects;
 @Table(name = "feed_entry")
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "feedEntry.withActivity",
+        attributeNodes = {
+                @NamedAttributeNode("audienceLogin"),
+                @NamedAttributeNode("activity")
+        }
+)
 public class FeedEntry {
 
     @Id

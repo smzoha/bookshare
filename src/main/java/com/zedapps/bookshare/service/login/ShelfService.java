@@ -27,11 +27,13 @@ public class ShelfService {
     private final ShelfRepository shelfRepository;
     private final ActivityService activityService;
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "shelf-lists", key = "#email")
     public List<Shelf> getShelvesForCollection(String email) {
         return shelfRepository.getShelvesForCollection(email);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "shelves", key = "#id")
     public Shelf getShelfById(Long id) {
         return shelfRepository.findById(id).orElseThrow(NoResultException::new);

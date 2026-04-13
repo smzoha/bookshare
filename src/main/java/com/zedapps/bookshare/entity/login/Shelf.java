@@ -25,6 +25,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "shelf.withBooks",
+        attributeNodes = @NamedAttributeNode(value = "books", subgraph = "shelved-book-subgraph"),
+        subgraphs = @NamedSubgraph(
+                name = "shelved-book-subgraph",
+                attributeNodes = @NamedAttributeNode("book")
+        )
+)
 public class Shelf {
 
     public final static String SHELF_READ = "Read";

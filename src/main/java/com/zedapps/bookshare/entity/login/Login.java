@@ -31,6 +31,24 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "logins")
+@NamedEntityGraph(
+        name = "login.withCollections",
+        attributeNodes = {
+                @NamedAttributeNode("profilePicture"),
+                @NamedAttributeNode(value = "shelves", subgraph = "shelves-books-subgraph"),
+                @NamedAttributeNode(value = "readingProgresses", subgraph = "progress-book-subgraph")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "shelves-books-subgraph",
+                        attributeNodes = @NamedAttributeNode("books")
+                ),
+                @NamedSubgraph(
+                        name = "progress-book-subgraph",
+                        attributeNodes = @NamedAttributeNode("book")
+                )
+        }
+)
 public class Login {
 
     @Id

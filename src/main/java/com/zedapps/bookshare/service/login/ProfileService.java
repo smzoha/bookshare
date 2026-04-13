@@ -31,13 +31,17 @@ public class ProfileService {
     private final ConnectionRepository connectionRepository;
     private final ActivityService activityService;
     private final FeedService feedService;
+    private final ShelfService shelfService;
 
     public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
         Login profileLogin = loginService.getLogin(profileEmail);
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
 
         model.put("login", profileLogin);
-        model.put("totalBooks", profileLogin.getShelves()
+
+        List<Shelf> shelves = shelfService.getShelvesForCollection(profileEmail);
+
+        model.put("totalBooks", shelves
                 .stream()
                 .mapToInt(shelf -> shelf.getBooks().size())
                 .sum());
