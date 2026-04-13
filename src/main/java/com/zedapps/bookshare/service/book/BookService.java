@@ -18,7 +18,9 @@ import com.zedapps.bookshare.service.login.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -163,6 +165,10 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelves", key = "#shelfId")
+    })
     public void addToShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(bookId);
@@ -194,6 +200,10 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelves", key = "#shelfId")
+    })
     public void removeFromShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(bookId);
@@ -215,6 +225,10 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "logins", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "logins", key = "#loginDetails.handle", condition = "#loginDetails.handle != null")
+    })
     public ReadingProgress saveReadingProgress(ReadingProgress readingProgress, LoginDetails loginDetails) {
         if (readingProgress.getId() != null) {
             ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())

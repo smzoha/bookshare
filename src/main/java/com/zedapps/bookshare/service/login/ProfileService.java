@@ -46,7 +46,7 @@ public class ProfileService {
                 .mapToInt(shelf -> shelf.getBooks().size())
                 .sum());
 
-        setupShelves(model, profileLogin);
+        setupShelves(model, shelves);
 
         model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
 
@@ -118,23 +118,23 @@ public class ProfileService {
                 .toList();
     }
 
-    private void setupShelves(ModelMap model, Login login) {
+    private void setupShelves(ModelMap model, List<Shelf> shelves) {
         Map<Long, String> defaultShelves = new LinkedHashMap<>();
-        Map<Long, String> shelves = new LinkedHashMap<>();
+        Map<Long, String> shelfMap = new LinkedHashMap<>();
         Shelf activeShelf = null;
 
-        for (Shelf shelf : login.getShelves()) {
+        for (Shelf shelf : shelves) {
             if (shelf.isDefaultShelf()) {
                 defaultShelves.put(shelf.getId(), shelf.getName());
                 if (activeShelf == null) activeShelf = shelf;
 
             } else {
-                shelves.put(shelf.getId(), shelf.getName());
+                shelfMap.put(shelf.getId(), shelf.getName());
             }
         }
 
         model.put("defaultShelves", defaultShelves);
-        model.put("shelves", shelves);
+        model.put("shelves", shelfMap);
         model.put("activeShelf", activeShelf);
     }
 
