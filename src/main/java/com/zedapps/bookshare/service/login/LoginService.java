@@ -40,10 +40,6 @@ public class LoginService {
         return loginRepository.findAll();
     }
 
-    public List<Login> getActiveLoginList() {
-        return loginRepository.findAllByActive(true);
-    }
-
     public List<Login> getActiveLoginListByRole(Role role) {
         return loginRepository.findAllByRoleAndActive(role, true);
     }

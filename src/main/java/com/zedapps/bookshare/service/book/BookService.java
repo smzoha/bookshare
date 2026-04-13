@@ -17,6 +17,7 @@ import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,15 +42,19 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookListRepository bookListRepository;
     private final ReviewRepository reviewRepository;
-    private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
+
+    private final LoginService loginService;
     private final ActivityService activityService;
+    private final BookAdminService bookAdminService;
 
     public Book getBook(Long bookId) {
-        return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
+        return bookAdminService.getBook(bookId);
     }
 
+    @Cacheable(cacheNames = "book-lists", key = "'books-' + #page + '-' + #pageSize",
+            condition = "#query != null && #sort != null && #rating != null && #genre != null && #tag != null")
     public Page<Book> getPaginatedBooks(int page, Integer pageSize, String query, String sort, String rating, String genre, String tag) {
         Pageable pageable = PageRequest.of(page, Optional.ofNullable(pageSize).orElse(18));
 
