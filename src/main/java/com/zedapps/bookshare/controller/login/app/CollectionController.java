@@ -3,9 +3,8 @@ package com.zedapps.bookshare.controller.login.app;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.service.login.LoginService;
-import jakarta.persistence.NoResultException;
+import com.zedapps.bookshare.service.login.ShelfService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +27,7 @@ import java.util.Objects;
 public class CollectionController {
 
     private final LoginService loginService;
-    private final ShelfRepository shelfRepository;
+    private final ShelfService shelfService;
 
     @GetMapping
     public String getCollection(@AuthenticationPrincipal LoginDetails loginDetails,
@@ -36,7 +35,7 @@ public class CollectionController {
                                 ModelMap model,
                                 HttpServletRequest request) {
 
-        List<Shelf> userShelves = shelfRepository.getShelvesForCollection(loginDetails.getEmail());
+        List<Shelf> userShelves = shelfService.getShelvesForCollection(loginDetails.getEmail());
         Login login = loginService.getLogin(loginDetails.getEmail());
         Shelf currentShelf;
 
@@ -44,7 +43,7 @@ public class CollectionController {
         model.put("collections", userShelves);
 
         if (Objects.nonNull(shelfId)) {
-            currentShelf = shelfRepository.findById(shelfId).orElseThrow(NoResultException::new);
+            currentShelf = shelfService.getShelfById(shelfId);
             assert Objects.equals(currentShelf.getUser(), login);
 
         } else {

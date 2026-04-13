@@ -5,10 +5,15 @@ import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +27,21 @@ public class ShelfService {
     private final ShelfRepository shelfRepository;
     private final ActivityService activityService;
 
+    @Cacheable(cacheNames = "shelf-lists", key = "#email")
+    public List<Shelf> getShelvesForCollection(String email) {
+        return shelfRepository.getShelvesForCollection(email);
+    }
+
+    @Cacheable(cacheNames = "shelves", key = "#id")
+    public Shelf getShelfById(Long id) {
+        return shelfRepository.findById(id).orElseThrow(NoResultException::new);
+    }
+
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelves", key = "#shelf.id", condition = "#shelf.id != null")
+    })
     public void saveShelf(Shelf shelf, LoginDetails loginDetails) {
         shelf = shelfRepository.save(shelf);
 

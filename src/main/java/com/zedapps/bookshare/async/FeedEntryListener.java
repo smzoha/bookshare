@@ -7,6 +7,7 @@ import com.zedapps.bookshare.entity.login.Connection;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.feed.FeedEntryRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -26,6 +27,7 @@ public class FeedEntryListener {
     private final FeedEntryRepository feedEntryRepository;
 
     @Async
+    @CacheEvict(cacheNames = "feed", allEntries = true)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onActivityPublish(ActivityFeedDto activityFeedDto) {
         Activity activity = activityFeedDto.activity();
