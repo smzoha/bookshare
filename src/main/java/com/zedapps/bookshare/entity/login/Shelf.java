@@ -28,10 +28,20 @@ import java.util.Set;
 @NamedEntityGraph(
         name = "shelf.withBooks",
         attributeNodes = @NamedAttributeNode(value = "books", subgraph = "shelved-book-subgraph"),
-        subgraphs = @NamedSubgraph(
-                name = "shelved-book-subgraph",
-                attributeNodes = @NamedAttributeNode("book")
-        )
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "shelved-book-subgraph",
+                        attributeNodes = @NamedAttributeNode(value = "book", subgraph = "book-subgraph")
+                ),
+                @NamedSubgraph(
+                        name = "book-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("authors"),
+                                @NamedAttributeNode("reviews"),
+                                @NamedAttributeNode("image")
+                        }
+                )
+        }
 )
 public class Shelf {
 

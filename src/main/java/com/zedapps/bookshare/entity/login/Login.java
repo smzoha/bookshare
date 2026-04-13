@@ -45,7 +45,14 @@ import java.util.Set;
                 ),
                 @NamedSubgraph(
                         name = "progress-book-subgraph",
-                        attributeNodes = @NamedAttributeNode("book")
+                        attributeNodes = @NamedAttributeNode(value = "book", subgraph = "book-subgraph")
+                ),
+                @NamedSubgraph(name = "book-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("authors"),
+                                @NamedAttributeNode("reviews"),
+                                @NamedAttributeNode("image")
+                        }
                 )
         }
 )
