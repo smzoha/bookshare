@@ -110,7 +110,8 @@ public class BookAdminService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "book-lists", allEntries = true),
-            @CacheEvict(cacheNames = "books", key = "#book.id", condition = "#book.id != null")
+            @CacheEvict(cacheNames = "books", key = "#book.id", condition = "#book.id != null"),
+            @CacheEvict(cacheNames = {"shelves", "shelf-lists"}, allEntries = true)
     })
     public void saveBook(Book book, ActivityType activityType) {
         boolean isNew = book.getId() == null;
@@ -135,7 +136,8 @@ public class BookAdminService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "genre-lists", allEntries = true),
-            @CacheEvict(cacheNames = "genres", key = "#genre.id", condition = "#genre.id != null")
+            @CacheEvict(cacheNames = "genres", key = "#genre.id", condition = "#genre.id != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
     })
     public void saveGenre(Genre genre) {
         boolean isNew = genre.getId() == null;
@@ -155,7 +157,8 @@ public class BookAdminService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "tag-lists", allEntries = true),
-            @CacheEvict(cacheNames = "tags", key = "#tag.id", condition = "#tag.id != null")
+            @CacheEvict(cacheNames = "tags", key = "#tag.id", condition = "#tag.id != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
     })
     public void saveTag(Tag tag) {
         boolean isNew = tag.getId() == null;
@@ -177,7 +180,8 @@ public class BookAdminService {
             @CacheEvict(cacheNames = "author-lists", allEntries = true),
             @CacheEvict(cacheNames = "authors", key = "#author.id", condition = "#author.id != null"),
             @CacheEvict(cacheNames = "authors", key = "'login-' + #author.login.id",
-                    condition = "#author.id != null && #author.login != null")
+                    condition = "#author.id != null && #author.login != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
     })
     public void saveAuthor(Author author) {
         boolean isNew = author.getId() == null;
