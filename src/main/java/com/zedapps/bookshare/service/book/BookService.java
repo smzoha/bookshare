@@ -18,6 +18,7 @@ import com.zedapps.bookshare.service.login.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -72,11 +73,10 @@ public class BookService {
 
         Page<Book> books = bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
 
-        // Force-initialize lazy associations within the transaction so cached entities are fully loaded
         books.forEach(b -> {
-            b.getAuthors().size();
-            b.getGenres().size();
-            b.getTags().size();
+            Hibernate.initialize(b.getAuthors());
+            Hibernate.initialize(b.getGenres());
+            Hibernate.initialize(b.getTags());
         });
 
         return books;
