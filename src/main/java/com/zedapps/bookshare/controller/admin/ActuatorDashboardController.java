@@ -3,6 +3,7 @@ package com.zedapps.bookshare.controller.admin;
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.enums.ActivityType;
+import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.search.Search;
@@ -13,6 +14,7 @@ import org.springframework.boot.actuate.health.CompositeHealth;
 import org.springframework.boot.actuate.health.HealthComponent;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +44,7 @@ public class ActuatorDashboardController {
     private final HealthEndpoint healthEndpoint;
     private final InfoEndpoint infoEndpoint;
     private final MeterRegistry meterRegistry;
+    private final CacheManager cacheManager;
     private final ApplicationEventPublisher publisher;
 
     @Value("${spring.application.version}")
@@ -94,8 +98,33 @@ public class ActuatorDashboardController {
         model.put("diskUsedPercent", diskTotal > 0 ? Math.round(((diskTotal - diskFree) / diskTotal) * 100) : 0L);
         model.put("appInfo", infoEndpoint.info());
         model.put("lastRefreshed", LocalTime.now().format(TIME_FORMATTER));
-
         model.put("appVersion", appVersion);
+        model.put("cacheStats", buildCacheStats());
+    }
+
+    private List<CacheStatEntry> buildCacheStats() {
+        return cacheManager.getCacheNames().stream()
+                .sorted()
+                .map(name -> {
+                    long hits = getFunctionCounterValue("cache.gets", name, "result", "hit");
+                    long misses = getFunctionCounterValue("cache.gets", name, "result", "miss");
+                    long puts = getFunctionCounterValue("cache.puts", name);
+                    long evictions = getFunctionCounterValue("cache.evictions", name);
+                    long size = (long) getGaugeValue("cache.size", "name", name);
+                    return new CacheStatEntry(name, size, hits, misses, puts, evictions);
+                })
+                .toList();
+    }
+
+    private long getFunctionCounterValue(String metricName, String cacheName, String... extraTags) {
+        Search search = meterRegistry.find(metricName).tag("name", cacheName);
+
+        for (int i = 0; i + 1 < extraTags.length; i += 2) {
+            search = search.tag(extraTags[i], extraTags[i + 1]);
+        }
+
+        FunctionCounter fc = search.functionCounter();
+        return fc != null ? (long) fc.count() : 0L;
     }
 
     private double getGaugeValue(String name, String... tags) {
@@ -108,5 +137,16 @@ public class ActuatorDashboardController {
         Gauge gauge = search.gauge();
 
         return gauge != null ? gauge.value() : 0.0;
+    }
+
+    public record CacheStatEntry(String name, long size, long hits, long misses, long puts, long evictions) {
+
+        public long total() {
+            return hits + misses;
+        }
+
+        public long hitRate() {
+            return total() > 0 ? Math.round((double) hits / total() * 100) : 0L;
+        }
     }
 }
