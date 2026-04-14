@@ -175,7 +175,7 @@ public class BookService {
         Shelf shelf = login.getShelf(shelfId);
 
         if (shelf.isDefaultShelf()) {
-            for (Shelf s : login.getShelves()) {
+            for (Shelf s : shelfService.getShelvesForCollection(login.getEmail())) {
                 if (s.isDefaultShelf() && s.containsBook(book)) {
                     removeFromShelf(loginDetails, bookId, s.getId());
                 }
