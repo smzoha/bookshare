@@ -53,11 +53,7 @@ public class Author {
 
     private String profilePictureUrl;
 
-    @ManyToMany
-    @JoinTable(
-            name = "book_authors",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new LinkedHashSet<>();
 
     @CreationTimestamp
