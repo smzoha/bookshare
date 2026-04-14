@@ -13,7 +13,9 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Page;
@@ -66,6 +68,8 @@ public class FeedService {
         model.put("totalPages", feedEntries.getTotalPages() - 1);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "feed", key = "#audience.id + '-' + #page + '-' + #pageSize")
     public List<FeedDto> getFeedDtoList(Login audience, int pageSize, int page) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         PageRequest pageRequest = PageRequest.of(page, pageSize);

@@ -5,17 +5,27 @@ import com.zedapps.bookshare.entity.login.Login;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "feed_entry")
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "feedEntry.withActivity",
+        attributeNodes = {
+                @NamedAttributeNode("audienceLogin"),
+                @NamedAttributeNode("activity")
+        }
+)
 public class FeedEntry {
 
     @Id
@@ -40,6 +50,18 @@ public class FeedEntry {
     public FeedEntry(Login audienceLogin, Activity activity) {
         this.audienceLogin = audienceLogin;
         this.activity = activity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FeedEntry other)) return false;
+        return id != null && Objects.equals(id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override

@@ -14,14 +14,14 @@ import com.zedapps.bookshare.repository.login.AuthorRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author smzoha
@@ -37,51 +37,82 @@ public class BookAdminService {
     private final TagRepository tagRepository;
     private final ActivityService activityService;
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "book-lists", key = "'all'")
     public List<Book> getBookList() {
         return bookRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "books", key = "#bookId")
     public Book getBook(Long bookId) {
         return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "genre-lists", key = "'all'")
     public List<Genre> getGenreList() {
-        return genreRepository.findAll();
+        return genreRepository.findAll().stream()
+                .sorted(Comparator.comparing(Genre::getName))
+                .toList();
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "genres", key = "#id")
     public Genre getGenre(Long id) {
         return genreRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "genres", key = "#name", unless = "#result == null || #result.isEmpty()")
     public Optional<Genre> getGenreByName(String name) {
         return genreRepository.findGenreByName(name);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "tag-lists", key = "'all'")
     public List<Tag> getTagList() {
-        return tagRepository.findAll();
+        return tagRepository.findAll().stream()
+                .sorted(Comparator.comparing(Tag::getName))
+                .toList();
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "tags", key = "#id")
     public Tag getTag(Long id) {
         return tagRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "tags", key = "#name", unless = "#result == null || #result.isEmpty()")
     public Optional<Tag> getTagByName(String name) {
         return tagRepository.findTagByName(name);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "author-lists", key = "'all'")
     public List<Author> getAuthorList() {
         return authorRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "authors", key = "#id")
     public Author getAuthor(Long id) {
         return authorRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "authors", key = "'login-' + #login.id", unless = "#result == null || #result.isEmpty()")
     public Optional<Author> getAuthorByLogin(Login login) {
         return authorRepository.findAuthorByLogin(login);
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "book-lists", allEntries = true),
+            @CacheEvict(cacheNames = "books", key = "#book.id", condition = "#book.id != null"),
+            @CacheEvict(cacheNames = {"shelves", "shelf-lists"}, allEntries = true)
+    })
     public void saveBook(Book book, ActivityType activityType) {
         boolean isNew = book.getId() == null;
 
@@ -103,6 +134,11 @@ public class BookAdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "genre-lists", allEntries = true),
+            @CacheEvict(cacheNames = "genres", key = "#genre.id", condition = "#genre.id != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
+    })
     public void saveGenre(Genre genre) {
         boolean isNew = genre.getId() == null;
 
@@ -119,6 +155,11 @@ public class BookAdminService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "tag-lists", allEntries = true),
+            @CacheEvict(cacheNames = "tags", key = "#tag.id", condition = "#tag.id != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
+    })
     public void saveTag(Tag tag) {
         boolean isNew = tag.getId() == null;
 
@@ -135,7 +176,14 @@ public class BookAdminService {
     }
 
     @Transactional
-    public Author saveAuthor(Author author) {
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "author-lists", allEntries = true),
+            @CacheEvict(cacheNames = "authors", key = "#author.id", condition = "#author.id != null"),
+            @CacheEvict(cacheNames = "authors", key = "'login-' + #author.login.id",
+                    condition = "#author.id != null && #author.login != null"),
+            @CacheEvict(cacheNames = {"books", "book-lists", "shelves", "shelf-lists"}, allEntries = true)
+    })
+    public void saveAuthor(Author author) {
         boolean isNew = author.getId() == null;
 
         author = authorRepository.save(author);
@@ -150,7 +198,5 @@ public class BookAdminService {
                         "authorFirstName", author.getFirstName(),
                         "authorLastName", author.getLastName()
                 ));
-
-        return author;
     }
 }

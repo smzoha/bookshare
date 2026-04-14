@@ -14,9 +14,14 @@ import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
+import com.zedapps.bookshare.service.login.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,15 +46,22 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookListRepository bookListRepository;
     private final ReviewRepository reviewRepository;
-    private final LoginService loginService;
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
-    private final ActivityService activityService;
 
+    private final LoginService loginService;
+    private final ActivityService activityService;
+    private final BookAdminService bookAdminService;
+    private final ShelfService shelfService;
+
+    @Transactional(readOnly = true)
     public Book getBook(Long bookId) {
-        return bookRepository.findBookById(bookId).orElseThrow(NoResultException::new);
+        return bookAdminService.getBook(bookId);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "book-lists", key = "'books-' + #page + '-' + #pageSize",
+            condition = "#query != null && #sort != null && #rating != null && #genre != null && #tag != null")
     public Page<Book> getPaginatedBooks(int page, Integer pageSize, String query, String sort, String rating, String genre, String tag) {
         Pageable pageable = PageRequest.of(page, Optional.ofNullable(pageSize).orElse(18));
 
@@ -59,9 +71,18 @@ public class BookService {
             query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
         }
 
-        return bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
+        Page<Book> books = bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
+
+        books.forEach(b -> {
+            Hibernate.initialize(b.getAuthors());
+            Hibernate.initialize(b.getGenres());
+            Hibernate.initialize(b.getTags());
+        });
+
+        return books;
     }
 
+    @Transactional(readOnly = true)
     public List<Book> getRelatedBooks(Book book) {
         List<Book> relatedBooks = bookRepository.getRelatedBooks(book.getGenres(), book.getTags());
         relatedBooks.remove(book);
@@ -69,6 +90,7 @@ public class BookService {
         return relatedBooks;
     }
 
+    @Transactional(readOnly = true)
     public Page<Review> getReviewsByBook(Book book, int pageNumber) {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
@@ -143,13 +165,17 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelves", key = "#shelfId")
+    })
     public void addToShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(bookId);
         Shelf shelf = login.getShelf(shelfId);
 
         if (shelf.isDefaultShelf()) {
-            for (Shelf s : login.getShelves()) {
+            for (Shelf s : shelfService.getShelvesForCollection(login.getEmail())) {
                 if (s.isDefaultShelf() && s.containsBook(book)) {
                     removeFromShelf(loginDetails, bookId, s.getId());
                 }
@@ -174,6 +200,10 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelves", key = "#shelfId")
+    })
     public void removeFromShelf(LoginDetails loginDetails, Long bookId, Long shelfId) {
         Login login = loginService.getLogin(loginDetails.getUsername());
         Book book = getBook(bookId);
@@ -195,6 +225,10 @@ public class BookService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "logins", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "logins", key = "#loginDetails.handle", condition = "#loginDetails.handle != null")
+    })
     public ReadingProgress saveReadingProgress(ReadingProgress readingProgress, LoginDetails loginDetails) {
         if (readingProgress.getId() != null) {
             ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())
@@ -236,7 +270,7 @@ public class BookService {
         Map<String, Shelf> defaultShelves = new HashMap<>();
         List<Shelf> otherShelves = new ArrayList<>();
 
-        for (Shelf shelf : login.getShelves()) {
+        for (Shelf shelf : shelfService.getShelvesForCollection(login.getEmail())) {
             if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
             else otherShelves.add(shelf);
         }

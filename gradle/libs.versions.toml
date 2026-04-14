@@ -9,6 +9,7 @@ google-api-client = "2.9.0"
 google-auth = "1.43.0"
 google-oauth-client-jetty = "1.39.0"
 google-api-gmail = "v1-rev20260112-2.0.0"
+caffeine = "3.2.3"
 
 [libraries]
 # Spring Boot (versions managed by Spring BOM via dependency-management plugin)
@@ -16,6 +17,7 @@ spring-boot-web = { module = "org.springframework.boot:spring-boot-starter-web" 
 spring-boot-security = { module = "org.springframework.boot:spring-boot-starter-security" }
 spring-boot-oauth2-client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
 spring-boot-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-cache = { module = "org.springframework.boot:spring-boot-starter-cache" }
 spring-boot-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 spring-boot-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
 spring-boot-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
@@ -44,6 +46,9 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 google-auth-oauth2 = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "google-auth" }
 google-oauth-client-jetty = { module = "com.google.oauth-client:google-oauth-client-jetty", version.ref = "google-oauth-client-jetty" }
 google-api-gmail = { module = "com.google.apis:google-api-services-gmail", version.ref = "google-api-gmail" }
+
+# Caffeine
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }

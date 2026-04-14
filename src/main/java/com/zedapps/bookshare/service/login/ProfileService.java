@@ -31,18 +31,22 @@ public class ProfileService {
     private final ConnectionRepository connectionRepository;
     private final ActivityService activityService;
     private final FeedService feedService;
+    private final ShelfService shelfService;
 
     public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
         Login profileLogin = loginService.getLogin(profileEmail);
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
 
         model.put("login", profileLogin);
-        model.put("totalBooks", profileLogin.getShelves()
+
+        List<Shelf> shelves = shelfService.getShelvesForCollection(profileEmail);
+
+        model.put("totalBooks", shelves
                 .stream()
                 .mapToInt(shelf -> shelf.getBooks().size())
                 .sum());
 
-        setupShelves(model, profileLogin);
+        setupShelves(model, shelves);
 
         model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
 
@@ -114,23 +118,23 @@ public class ProfileService {
                 .toList();
     }
 
-    private void setupShelves(ModelMap model, Login login) {
+    private void setupShelves(ModelMap model, List<Shelf> shelves) {
         Map<Long, String> defaultShelves = new LinkedHashMap<>();
-        Map<Long, String> shelves = new LinkedHashMap<>();
+        Map<Long, String> shelfMap = new LinkedHashMap<>();
         Shelf activeShelf = null;
 
-        for (Shelf shelf : login.getShelves()) {
+        for (Shelf shelf : shelves) {
             if (shelf.isDefaultShelf()) {
                 defaultShelves.put(shelf.getId(), shelf.getName());
                 if (activeShelf == null) activeShelf = shelf;
 
             } else {
-                shelves.put(shelf.getId(), shelf.getName());
+                shelfMap.put(shelf.getId(), shelf.getName());
             }
         }
 
         model.put("defaultShelves", defaultShelves);
-        model.put("shelves", shelves);
+        model.put("shelves", shelfMap);
         model.put("activeShelf", activeShelf);
     }
 

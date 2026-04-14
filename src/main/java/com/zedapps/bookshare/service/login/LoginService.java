@@ -14,6 +14,9 @@ import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,32 +39,42 @@ public class LoginService {
     private final ImageRepository imageRepository;
     private final ActivityService activityService;
 
+    @Transactional(readOnly = true)
     public List<Login> getLoginList() {
         return loginRepository.findAll();
     }
 
-    public List<Login> getActiveLoginList() {
-        return loginRepository.findAllByActive(true);
-    }
-
+    @Transactional(readOnly = true)
     public List<Login> getActiveLoginListByRole(Role role) {
         return loginRepository.findAllByRoleAndActive(role, true);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "logins", key = "#email")
     public Login getLogin(String email) {
         return loginRepository.findActiveLoginByEmail(email).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "logins", key = "#handle")
     public Login getLoginByHandle(String handle) {
         return loginRepository.findByHandle(handle).orElseThrow(NoResultException::new);
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "logins", key = "#login.email"),
+            @CacheEvict(cacheNames = "logins", key = "#login.handle", condition = "#login.handle != null")
+    })
     public Login saveLogin(Login login) {
         return loginRepository.save(login);
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "logins", key = "#loginDto.email"),
+            @CacheEvict(cacheNames = "logins", key = "#loginDto.handle", condition = "#loginDto.handle != null")
+    })
     public void saveLogin(@Valid LoginManageDto loginDto) {
         Login login = (loginDto.getId() != null
                 ? loginRepository.findById(loginDto.getId())

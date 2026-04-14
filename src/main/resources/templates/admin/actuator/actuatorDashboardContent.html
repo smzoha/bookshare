@@ -122,6 +122,62 @@
         </div>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm bg-bookshare-50 h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted mb-3">
+                        <i class="fa fa-database me-1"></i> <span th:text="#{label.cache.statistics}"></span>
+                    </h6>
+
+                    <div th:if="${cacheStats != null and not cacheStats.isEmpty()}">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                <tr>
+                                    <th class="text-muted fw-normal small" th:text="#{label.cache.name}"></th>
+                                    <th class="text-muted fw-normal small text-end" th:text="#{label.cache.size}"></th>
+                                    <th class="text-muted fw-normal small text-end" th:text="#{label.cache.hits}"></th>
+                                    <th class="text-muted fw-normal small text-end" th:text="#{label.cache.misses}"></th>
+                                    <th class="text-muted fw-normal small text-end" th:text="#{label.cache.puts}"></th>
+                                    <th class="text-muted fw-normal small text-end" th:text="#{label.cache.evictions}"></th>
+                                    <th class="text-muted fw-normal small" th:text="#{label.cache.hit.rate}"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="entry : ${cacheStats}">
+                                    <td class="small bg-bookshare-50 fw-semibold" th:text="${entry.name}"></td>
+                                    <td class="small bg-bookshare-50 text-end" th:text="${entry.size}"></td>
+                                    <td class="small bg-bookshare-50 text-end text-success" th:text="${entry.hits}"></td>
+                                    <td class="small bg-bookshare-50 text-end text-danger" th:text="${entry.misses}"></td>
+                                    <td class="small bg-bookshare-50 text-end" th:text="${entry.puts}"></td>
+                                    <td class="small bg-bookshare-50 text-end text-warning" th:text="${entry.evictions}"></td>
+                                    <td class="bg-bookshare-50" style="min-width: 120px;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1" style="height: 6px;">
+                                                <div class="progress-bar" role="progressbar"
+                                                     th:classappend="${entry.hitRate() < 50} ? 'bg-danger' : (${entry.hitRate() < 80} ? 'bg-warning' : 'bg-success')"
+                                                     th:style="'width: ' + ${entry.hitRate()} + '%'"
+                                                     th:attr="aria-valuenow=${entry.hitRate()}" aria-valuemin="0" aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                            <span class="small text-muted text-nowrap" th:text="${entry.hitRate()} + '%'"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div th:if="${cacheStats == null or cacheStats.isEmpty()}">
+                        <p class="text-muted small mb-0" th:text="#{msg.no.cache.stats}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4">
         <div class="col-12 col-md-6">
             <div class="card shadow-sm bg-bookshare-50 h-100">
