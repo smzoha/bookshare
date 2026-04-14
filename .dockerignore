@@ -2,6 +2,9 @@
 build/
 .gradle/
 
+# Test sources are not needed (tests are skipped in Docker build)
+src/test/
+
 # Logs
 logs/
 
