@@ -90,6 +90,8 @@ BookShare is a **modern web application** to track your books, reading progress,
 - Git
 - Docker & Docker Compose _(optional, for containerized setup)_
 
+> Should you require test seed data for running the application (preferably in a dev context), run the `src/main/resources/seed_data.sql` file.
+
 <h3 id="installation">Installation</h3>
 
 ```bash
