@@ -86,13 +86,13 @@ Spring MVC Controllers
         ▼
 Service Layer (business logic, caching, event publishing)
         │
-   ┌────┴────┐
-   │         │
-JPA/Hibernate  Activity Outbox (transactional writes)
-   │               │
-PostgreSQL    Scheduled Processor (every 15 s)
-                   │
-             Activity + FeedEntry tables
+   ┌────┴────────────┐
+   │                 │
+JPA/Hibernate     Activity Outbox (transactional writes)
+   │                 │
+PostgreSQL        Scheduled Processor (every 15 s)
+                     │
+                  Activity + FeedEntry tables
 ```
 
 **Activity & Feed pipeline:**
