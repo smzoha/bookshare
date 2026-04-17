@@ -10,6 +10,7 @@ google-auth = "1.43.0"
 google-oauth-client-jetty = "1.39.0"
 google-api-gmail = "v1-rev20260112-2.0.0"
 caffeine = "3.2.3"
+jjwt = "0.13.0"
 
 [libraries]
 # Spring Boot (versions managed by Spring BOM via dependency-management plugin)
@@ -27,6 +28,11 @@ spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test
 spring-security-extras = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
 spring-security-test = { module = "org.springframework.security:spring-security-test" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+# JJWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 # Thymeleaf
 thymeleaf-layout-dialect = { module = "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect", version.ref = "thymeleaf-layout-dialect" }

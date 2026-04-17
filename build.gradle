@@ -39,6 +39,10 @@ dependencies {
     implementation libs.spring.security.extras
     implementation libs.spring.boot.oauth2.client
 
+    implementation libs.jjwt.api
+    runtimeOnly libs.jjwt.impl
+    runtimeOnly libs.jjwt.jackson
+
     implementation libs.spring.boot.data.jpa
     implementation libs.spring.boot.validation
 
