@@ -7,7 +7,7 @@ import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.exception.MailSendException;
 import com.zedapps.bookshare.exception.TokenGenerationException;
 import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
-import com.zedapps.bookshare.service.MailService;
+import com.zedapps.bookshare.service.mail.MailService;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;

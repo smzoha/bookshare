@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.config;
 
 import com.zedapps.bookshare.enums.Role;
-import com.zedapps.bookshare.service.LoginDetailOidcService;
-import com.zedapps.bookshare.service.LoginDetailService;
+import com.zedapps.bookshare.service.auth.LoginDetailOidcService;
+import com.zedapps.bookshare.service.auth.LoginDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
