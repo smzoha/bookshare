@@ -1,11 +1,13 @@
 package com.zedapps.bookshare.config;
 
 import com.zedapps.bookshare.enums.Role;
+import com.zedapps.bookshare.filter.JwtAuthFilter;
 import com.zedapps.bookshare.service.auth.LoginDetailOidcService;
 import com.zedapps.bookshare.service.auth.LoginDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,8 +15,10 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author smzoha
@@ -28,11 +32,14 @@ public class SecurityConfig {
     private final LoginDetailService loginDetailService;
     private final LoginDetailOidcService loginDetailOidcService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain mvcFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
+                .securityMatcher("/**")
                 .authorizeHttpRequests((requests) -> {
                     requests.requestMatchers("/admin/**").hasAuthority(Role.ADMIN.name())
                             .requestMatchers("/manage/**").hasAnyAuthority(Role.ADMIN.name(), Role.MODERATOR.name())
@@ -56,6 +63,21 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("/")
                         .permitAll())
+                .build();
+    }
+
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .securityMatcher("/api/v1/**")
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((requests) ->
+                        requests.requestMatchers("/api/v1/auth/token").permitAll()
+                                .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
