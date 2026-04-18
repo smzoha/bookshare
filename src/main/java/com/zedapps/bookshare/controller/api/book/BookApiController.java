@@ -6,21 +6,17 @@ import com.zedapps.bookshare.dto.api.book.ReviewDto;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
-import com.zedapps.bookshare.enums.Status;
-import com.zedapps.bookshare.repository.book.BookRepository;
+import com.zedapps.bookshare.service.book.BookService;
 import com.zedapps.bookshare.util.Utils;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author smzoha
@@ -31,19 +27,37 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookApiController {
 
-    private final BookRepository bookRepository;
+    private final BookService bookService;
 
     @GetMapping("/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
-        Optional<Book> bookOptional = bookRepository.findBookById(id);
+        Book book;
 
-        if (bookOptional.isEmpty() || bookOptional.get().getStatus() != Status.ACTIVE) {
+        try {
+            book = bookService.getBook(id);
+        } catch (NoResultException e) {
             return ResponseEntity.notFound().build();
         }
 
-        BookDto dto = createDto(bookOptional.get());
+        BookDto dto = createDto(book);
 
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<BookDto>> getBookList(@RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(required = false) String query,
+                                                     @RequestParam(required = false) String sort,
+                                                     @RequestParam(required = false) String rating,
+                                                     @RequestParam(required = false) String genre,
+                                                     @RequestParam(required = false) String tag) {
+
+        List<BookDto> bookDtoList = bookService.getPaginatedBooks(page, null, query, sort, rating, genre, tag)
+                .stream()
+                .map(this::createDto)
+                .toList();
+
+        return ResponseEntity.ok(bookDtoList);
     }
 
     private BookDto createDto(Book book) {
