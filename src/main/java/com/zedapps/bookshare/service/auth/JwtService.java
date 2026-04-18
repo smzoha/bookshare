@@ -48,14 +48,14 @@ public class JwtService {
     public boolean isTokenValid(String token, LoginDetails loginDetails) {
         return !StringUtils.isEmpty(token)
                 && Objects.equals(getEmail(token), loginDetails.getEmail())
-                && extractClaim(token).getExpiration().before(new Date());
+                && extractClaim(token).getExpiration().after(new Date());
     }
 
     private Claims extractClaim(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
-                .parseEncryptedClaims(token)
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
