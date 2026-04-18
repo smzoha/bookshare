@@ -3,16 +3,20 @@ package com.zedapps.bookshare.service.book;
 import com.zedapps.bookshare.dto.api.book.AuthorDto;
 import com.zedapps.bookshare.dto.api.book.BookDto;
 import com.zedapps.bookshare.dto.api.book.ReviewDto;
+import com.zedapps.bookshare.dto.api.book.ReviewRequest;
+import com.zedapps.bookshare.dto.book.BookReviewDto;
+import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +53,21 @@ public class BookApiService {
                 .toList();
     }
 
+    public List<BookDto> searchBookList(String query) {
+        return bookService.getPaginatedBooks(0, 5, query, null, null, null, null)
+                .stream()
+                .map(book -> createDto(book, false))
+                .toList();
+    }
+
+    @Transactional
+    public ReviewDto saveReview(Long bookId, ReviewRequest request, LoginDetails loginDetails) {
+        BookReviewDto bookReviewDto = new BookReviewDto(bookId, request.rating(), request.content());
+        Review review = bookService.saveReview(bookReviewDto, loginDetails);
+
+        return new ReviewDto(review.getUser().getName(), review.getContent(), review.getReviewDate(), review.getRating());
+    }
+
     private BookDto createDto(Book book, boolean includeReview) {
         List<AuthorDto> authorDtoList = getAuthorDtoList(book);
         List<ReviewDto> reviewDtoList = includeReview ? getReviewDtoList(book) : Collections.emptyList();
@@ -72,8 +91,7 @@ public class BookApiService {
 
     private List<ReviewDto> getReviewDtoList(Book book) {
         return book.getReviews().stream()
-                .map(review -> new ReviewDto(review.getUser().getName(), review.getContent(),
-                        DateTimeFormatter.ofPattern("MM/dd/yyyy").format(review.getReviewDate()),
+                .map(review -> new ReviewDto(review.getUser().getName(), review.getContent(), review.getReviewDate(),
                         review.getRating()))
                 .toList();
     }
