@@ -15,4 +15,8 @@ public class Utils {
 
         return auth != null && !(auth instanceof AnonymousAuthenticationToken);
     }
+
+    public static String cleanHtml(String htmlText) {
+        return htmlText.replaceAll("<[^>]*>", "");
+    }
 }
