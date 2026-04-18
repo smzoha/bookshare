@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.service;
+package com.zedapps.bookshare.service.mail;
 
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
