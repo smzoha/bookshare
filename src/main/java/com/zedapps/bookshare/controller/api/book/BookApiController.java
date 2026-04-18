@@ -1,8 +1,6 @@
 package com.zedapps.bookshare.controller.api.book;
 
-import com.zedapps.bookshare.dto.api.book.BookDto;
-import com.zedapps.bookshare.dto.api.book.ReviewDto;
-import com.zedapps.bookshare.dto.api.book.ReviewRequest;
+import com.zedapps.bookshare.dto.api.book.*;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.util.Utils;
@@ -65,6 +63,21 @@ public class BookApiController {
         ReviewDto review = bookApiService.saveReview(id, reviewRequest, loginDetails);
 
         return ResponseEntity.ok().body(review);
+    }
+
+    @PostMapping("/{id}/progress")
+    public ResponseEntity<?> updateReadingProgress(@PathVariable Long id,
+                                                   @Valid @RequestBody ReadingProgressRequest progressRequest,
+                                                   Errors errors,
+                                                   @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(Utils.getErrorResponseDto(errors));
+        }
+
+        ReadingProgressDto progressDto = bookApiService.saveReadingProgress(id, progressRequest, loginDetails);
+
+        return ResponseEntity.ok().body(progressDto);
     }
 }
 

@@ -1,15 +1,14 @@
 package com.zedapps.bookshare.service.book;
 
-import com.zedapps.bookshare.dto.api.book.AuthorDto;
-import com.zedapps.bookshare.dto.api.book.BookDto;
-import com.zedapps.bookshare.dto.api.book.ReviewDto;
-import com.zedapps.bookshare.dto.api.book.ReviewRequest;
+import com.zedapps.bookshare.dto.api.book.*;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author smzoha
@@ -30,6 +30,7 @@ import java.util.Objects;
 public class BookApiService {
 
     private final BookService bookService;
+    private final ReadingProgressRepository readingProgressRepository;
 
     public BookDto getBookDto(Long id) {
         Book book;
@@ -68,6 +69,24 @@ public class BookApiService {
         return new ReviewDto(review.getUser().getName(), review.getContent(), review.getReviewDate(), review.getRating());
     }
 
+    @Transactional
+    public ReadingProgressDto saveReadingProgress(Long bookId, ReadingProgressRequest progressRequest, LoginDetails loginDetails) {
+        Optional<ReadingProgress> readingProgressOptional = Objects.nonNull(progressRequest.progressId())
+                ? readingProgressRepository.findById(progressRequest.progressId())
+                : Optional.empty();
+
+        ReadingProgress readingProgress = getReadingProgress(bookId, progressRequest, readingProgressOptional);
+        readingProgress = bookService.saveReadingProgress(readingProgress, loginDetails);
+
+        return new ReadingProgressDto(readingProgress.getBook().getTitle(),
+                readingProgress.getBook().getIsbn(),
+                readingProgress.getUser().getName(),
+                readingProgress.getPagesRead(),
+                readingProgress.getStartDate(),
+                readingProgress.getEndDate(),
+                readingProgress.isCompleted());
+    }
+
     private BookDto createDto(Book book, boolean includeReview) {
         List<AuthorDto> authorDtoList = getAuthorDtoList(book);
         List<ReviewDto> reviewDtoList = includeReview ? getReviewDtoList(book) : Collections.emptyList();
@@ -103,5 +122,19 @@ public class BookApiService {
                   .buildAndExpand(book.getImage().getId())
                   .toUriString()
                 : "";
+    }
+
+    private ReadingProgress getReadingProgress(Long bookId, ReadingProgressRequest progressRequest,
+                                               Optional<ReadingProgress> readingProgressOptional) {
+
+        ReadingProgress readingProgress = readingProgressOptional.orElse(new ReadingProgress());
+
+        readingProgress.setBook(bookService.getBook(bookId));
+        readingProgress.setPagesRead(progressRequest.pagesRead());
+        readingProgress.setStartDate(progressRequest.startDate());
+        readingProgress.setEndDate(progressRequest.endDate());
+        readingProgress.setCompleted(progressRequest.completed());
+
+        return readingProgress;
     }
 }
