@@ -27,6 +27,10 @@ public class ShelfController {
                               @RequestParam Long bookId,
                               @AuthenticationPrincipal LoginDetails loginDetails) {
 
+        if (shelfService.isShelfExistsForUser(name, loginDetails.getEmail())) {
+            return "redirect:/book/" + bookId;
+        }
+
         Login login = loginService.getLogin(loginDetails.getEmail());
 
         Shelf shelf = new Shelf(name, login);
