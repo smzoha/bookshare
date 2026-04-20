@@ -24,4 +24,9 @@ public class ErrorResponseDto {
         this.globalErrors = new ArrayList<>();
         this.fieldErrors = new HashMap<>();
     }
+
+    public ErrorResponseDto(List<String> globalErrors) {
+        this();
+        this.globalErrors.addAll(globalErrors);
+    }
 }

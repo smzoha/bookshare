@@ -1,6 +1,8 @@
 package com.zedapps.bookshare.controller.api.book;
 
+import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.dto.api.book.*;
+import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.util.Utils;
@@ -80,6 +82,47 @@ public class BookApiController {
         ReadingProgressDto progressDto = bookApiService.saveReadingProgress(id, progressRequest, loginDetails);
 
         return ResponseEntity.ok().body(progressDto);
+    }
+
+    @PostMapping("/{id}/shelf")
+    public ResponseEntity<?> addToShelf(@PathVariable Long id,
+                                        @RequestParam Long shelfId,
+                                        @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        if (bookApiService.isInvalidShelfRequest(null, shelfId, loginDetails)) {
+            return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
+        }
+
+        ShelfResponseDto shelfResponseDto = bookApiService.addToShelf(id, shelfId, loginDetails);
+
+        return ResponseEntity.ok().body(shelfResponseDto);
+    }
+
+    @DeleteMapping("/{id}/shelf")
+    public ResponseEntity<?> removeFromShelf(@PathVariable Long id,
+                                             @RequestParam Long shelfId,
+                                             @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        if (bookApiService.isInvalidShelfRequest(id, shelfId, loginDetails)) {
+            return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
+        }
+
+        ShelfResponseDto shelfResponseDto = bookApiService.removeFromShelf(id, shelfId, loginDetails);
+
+        return ResponseEntity.ok().body(shelfResponseDto);
+    }
+
+    @PostMapping("/review/{reviewId}/like")
+    public ResponseEntity<?> likeReview(@PathVariable Long reviewId,
+                                        @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        if (!bookApiService.isValidReviewRequest(reviewId, loginDetails)) {
+            return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
+        }
+
+        ReviewLikeResponseDto reviewDto = bookApiService.likeReview(reviewId, loginDetails);
+
+        return ResponseEntity.ok().body(reviewDto);
     }
 }
 

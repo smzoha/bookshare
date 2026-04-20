@@ -2,13 +2,17 @@ package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.api.book.*;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
+import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
+import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
+import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,8 @@ import java.util.Optional;
 public class BookApiService {
 
     private final BookService bookService;
+    private final ShelfRepository shelfRepository;
+    private final ReviewRepository reviewRepository;
     private final ReadingProgressRepository readingProgressRepository;
 
     public BookDto getBookDto(Long id, boolean showReviews) {
@@ -87,6 +93,43 @@ public class BookApiService {
                 readingProgress.isCompleted());
     }
 
+    @Transactional
+    public ShelfResponseDto addToShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
+        bookService.addToShelf(loginDetails, bookId, shelfId);
+
+        return getShelfResponseDto(shelfId, loginDetails);
+    }
+
+    @Transactional
+    public ShelfResponseDto removeFromShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
+        bookService.removeFromShelf(loginDetails, bookId, shelfId);
+
+        return getShelfResponseDto(shelfId, loginDetails);
+    }
+
+    @Transactional
+    public ReviewLikeResponseDto likeReview(Long reviewId, LoginDetails loginDetails) {
+        return bookService.updateReviewLikes(reviewId, loginDetails);
+    }
+
+    public boolean isInvalidShelfRequest(Long bookId, Long shelfId, LoginDetails loginDetails) {
+        Optional<Shelf> shelf = shelfRepository.findById(shelfId);
+
+        boolean isValid = shelf.isPresent() && Objects.equals(shelf.get().getUser().getEmail(), loginDetails.getEmail());
+
+        if (isValid && Objects.nonNull(bookId)) {
+            isValid = shelf.get().getBooks().stream().anyMatch(sb -> Objects.equals(sb.getBook().getId(), bookId));
+        }
+
+        return !isValid;
+    }
+
+    public boolean isValidReviewRequest(Long reviewId, LoginDetails loginDetails) {
+        Optional<Review> review = reviewRepository.findById(reviewId);
+
+        return review.isPresent() && Objects.equals(review.get().getUser().getEmail(), loginDetails.getEmail());
+    }
+
     private BookDto createDto(Book book, boolean includeReview) {
         List<AuthorDto> authorDtoList = getAuthorDtoList(book);
         List<ReviewDto> reviewDtoList = includeReview ? getReviewDtoList(book) : Collections.emptyList();
@@ -136,5 +179,11 @@ public class BookApiService {
         readingProgress.setCompleted(progressRequest.completed());
 
         return readingProgress;
+    }
+
+    private ShelfResponseDto getShelfResponseDto(Long shelfId, LoginDetails loginDetails) {
+        Shelf shelf = shelfRepository.findById(shelfId).get();
+
+        return new ShelfResponseDto(shelf.getName(), loginDetails.getEmail(), shelf.getBooks().size(), shelf.isDefaultShelf());
     }
 }
