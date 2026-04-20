@@ -124,10 +124,8 @@ public class BookApiService {
         return !isValid;
     }
 
-    public boolean isValidReviewRequest(Long reviewId, LoginDetails loginDetails) {
-        Optional<Review> review = reviewRepository.findById(reviewId);
-
-        return review.isPresent() && Objects.equals(review.get().getUser().getEmail(), loginDetails.getEmail());
+    public boolean isValidReviewRequest(Long reviewId) {
+        return reviewRepository.findById(reviewId).isPresent();
     }
 
     private BookDto createDto(Book book, boolean includeReview) {
@@ -182,7 +180,7 @@ public class BookApiService {
     }
 
     private ShelfResponseDto getShelfResponseDto(Long shelfId, LoginDetails loginDetails) {
-        Shelf shelf = shelfRepository.findById(shelfId).get();
+        Shelf shelf = shelfRepository.findById(shelfId).orElseThrow(NoResultException::new);
 
         return new ShelfResponseDto(shelf.getName(), loginDetails.getEmail(), shelf.getBooks().size(), shelf.isDefaultShelf());
     }

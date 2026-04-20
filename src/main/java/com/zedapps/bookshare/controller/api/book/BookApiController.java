@@ -116,7 +116,7 @@ public class BookApiController {
     public ResponseEntity<?> likeReview(@PathVariable Long reviewId,
                                         @AuthenticationPrincipal LoginDetails loginDetails) {
 
-        if (!bookApiService.isValidReviewRequest(reviewId, loginDetails)) {
+        if (!bookApiService.isValidReviewRequest(reviewId)) {
             return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
         }
 

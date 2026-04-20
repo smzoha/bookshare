@@ -1,7 +1,5 @@
 package com.zedapps.bookshare.dto.api.book;
 
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,11 +17,9 @@ public record ReadingProgressRequest(Long progressId,
                                      Long pagesRead,
 
                                      @NotNull(message = "{error.required}")
-                                     @Temporal(TemporalType.DATE)
                                      @DateTimeFormat(pattern = "yyyy-MM-dd")
                                      LocalDate startDate,
 
-                                     @Temporal(TemporalType.DATE)
                                      @DateTimeFormat(pattern = "yyyy-MM-dd")
                                      LocalDate endDate,
 
