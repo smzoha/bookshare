@@ -26,8 +26,10 @@ public class BookApiController {
     private final BookApiService bookApiService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookDto> getBook(@PathVariable Long id) {
-        BookDto bookDto = bookApiService.getBookDto(id);
+    public ResponseEntity<BookDto> getBook(@PathVariable Long id,
+                                           @RequestParam(required = false, defaultValue = "false") boolean showReviews) {
+
+        BookDto bookDto = bookApiService.getBookDto(id, showReviews);
 
         return Objects.nonNull(bookDto)
                 ? ResponseEntity.ok(bookDto)

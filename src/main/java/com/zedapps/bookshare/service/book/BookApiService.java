@@ -32,7 +32,7 @@ public class BookApiService {
     private final BookService bookService;
     private final ReadingProgressRepository readingProgressRepository;
 
-    public BookDto getBookDto(Long id) {
+    public BookDto getBookDto(Long id, boolean showReviews) {
         Book book;
 
         try {
@@ -42,7 +42,7 @@ public class BookApiService {
             return null;
         }
 
-        return createDto(book, true);
+        return createDto(book, showReviews);
     }
 
     public List<BookDto> getBookDtoList(int page, String query, String sort,
