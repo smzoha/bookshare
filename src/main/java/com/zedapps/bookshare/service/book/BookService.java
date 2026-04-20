@@ -14,7 +14,7 @@ import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
-import com.zedapps.bookshare.service.login.ShelfService;
+import com.zedapps.bookshare.service.shelf.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

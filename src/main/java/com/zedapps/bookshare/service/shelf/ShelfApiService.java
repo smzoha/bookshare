@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.service.login;
+package com.zedapps.bookshare.service.shelf;
 
 import com.zedapps.bookshare.dto.api.book.BookDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfCreateDto;
@@ -8,11 +8,13 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.book.BookApiService;
+import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -55,5 +57,9 @@ public class ShelfApiService {
         shelfService.saveShelf(shelf);
 
         return new ShelfDto(shelfCreateDto.name(), loginDetails.getEmail(), 0, false);
+    }
+
+    public boolean isShelfRequestInvalid(LoginDetails loginDetails, Shelf shelf) {
+        return !Objects.equals(shelf.getUser().getEmail(), loginDetails.getEmail());
     }
 }

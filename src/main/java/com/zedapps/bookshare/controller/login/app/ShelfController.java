@@ -4,7 +4,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.login.LoginService;
-import com.zedapps.bookshare.service.login.ShelfService;
+import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

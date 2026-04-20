@@ -8,6 +8,7 @@ import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.repository.connection.ConnectionRepository;
 import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

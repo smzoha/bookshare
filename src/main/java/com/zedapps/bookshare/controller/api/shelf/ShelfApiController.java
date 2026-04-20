@@ -1,10 +1,10 @@
-package com.zedapps.bookshare.controller.api.book;
+package com.zedapps.bookshare.controller.api.shelf;
 
 import com.zedapps.bookshare.dto.api.shelf.ShelfCreateDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.service.login.ShelfApiService;
+import com.zedapps.bookshare.service.shelf.ShelfApiService;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class ShelfApiController {
     public ResponseEntity<?> getShelf(@PathVariable Long id, @AuthenticationPrincipal LoginDetails loginDetails) {
         Shelf shelf = shelfApiService.getShelf(id);
 
-        if (!Objects.equals(shelf.getUser().getEmail(), loginDetails.getEmail())) {
+        if (shelfApiService.isShelfRequestInvalid(loginDetails, shelf)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.service.login;
+package com.zedapps.bookshare.service.shelf;
 
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.enums.ActivityType;
