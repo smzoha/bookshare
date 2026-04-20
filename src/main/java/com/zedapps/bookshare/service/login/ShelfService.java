@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.login.ShelfRepository;
@@ -41,16 +40,16 @@ public class ShelfService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(cacheNames = "shelf-lists", key = "#loginDetails.email"),
+            @CacheEvict(cacheNames = "shelf-lists", key = "#shelf.user.email"),
             @CacheEvict(cacheNames = "shelves", key = "#shelf.id", condition = "#shelf.id != null")
     })
-    public void saveShelf(Shelf shelf, LoginDetails loginDetails) {
+    public void saveShelf(Shelf shelf) {
         shelf = shelfRepository.save(shelf);
 
         activityService.saveActivityOutbox(ActivityType.SHELF_ADD,
                 shelf.getId(),
                 Map.of(
-                        "actionBy", loginDetails.getEmail(),
+                        "actionBy", shelf.getUser().getEmail(),
                         "shelfId", shelf.getId(),
                         "shelfName", shelf.getName()
                 ));

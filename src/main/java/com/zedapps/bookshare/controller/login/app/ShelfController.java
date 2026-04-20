@@ -30,7 +30,7 @@ public class ShelfController {
         Login login = loginService.getLogin(loginDetails.getEmail());
 
         Shelf shelf = new Shelf(name, login);
-        shelfService.saveShelf(shelf, loginDetails);
+        shelfService.saveShelf(shelf);
 
         return "redirect:/book/" + bookId;
     }

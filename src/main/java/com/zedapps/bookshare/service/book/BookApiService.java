@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.api.book.*;
+import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
@@ -94,14 +95,14 @@ public class BookApiService {
     }
 
     @Transactional
-    public ShelfResponseDto addToShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
+    public ShelfDto addToShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
         bookService.addToShelf(loginDetails, bookId, shelfId);
 
         return getShelfResponseDto(shelfId, loginDetails);
     }
 
     @Transactional
-    public ShelfResponseDto removeFromShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
+    public ShelfDto removeFromShelf(Long bookId, Long shelfId, LoginDetails loginDetails) {
         bookService.removeFromShelf(loginDetails, bookId, shelfId);
 
         return getShelfResponseDto(shelfId, loginDetails);
@@ -128,7 +129,7 @@ public class BookApiService {
         return reviewRepository.findById(reviewId).isPresent();
     }
 
-    private BookDto createDto(Book book, boolean includeReview) {
+    public BookDto createDto(Book book, boolean includeReview) {
         List<AuthorDto> authorDtoList = getAuthorDtoList(book);
         List<ReviewDto> reviewDtoList = includeReview ? getReviewDtoList(book) : Collections.emptyList();
 
@@ -179,9 +180,9 @@ public class BookApiService {
         return readingProgress;
     }
 
-    private ShelfResponseDto getShelfResponseDto(Long shelfId, LoginDetails loginDetails) {
+    private ShelfDto getShelfResponseDto(Long shelfId, LoginDetails loginDetails) {
         Shelf shelf = shelfRepository.findById(shelfId).orElseThrow(NoResultException::new);
 
-        return new ShelfResponseDto(shelf.getName(), loginDetails.getEmail(), shelf.getBooks().size(), shelf.isDefaultShelf());
+        return new ShelfDto(shelf.getName(), loginDetails.getEmail(), shelf.getBooks().size(), shelf.isDefaultShelf());
     }
 }
