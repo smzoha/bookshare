@@ -44,7 +44,7 @@ public class CollectionController {
 
         if (Objects.nonNull(shelfId)) {
             currentShelf = shelfService.getShelfById(shelfId);
-            assert Objects.equals(currentShelf.getUser(), login);
+            assert Objects.equals(currentShelf.getUser().getEmail(), login.getEmail());
 
         } else {
             currentShelf = userShelves.getFirst();
