@@ -11,7 +11,7 @@ import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.Errors;
 
 import java.util.List;
 import java.util.Objects;
@@ -37,11 +37,9 @@ public class ShelfApiService {
                 .toList();
     }
 
-    public Shelf getShelf(Long id) {
-        return shelfService.getShelfById(id);
-    }
+    public ShelfDetailDto getShelfDetailDto(Long shelfId) {
+        Shelf shelf = shelfService.getShelfById(shelfId);
 
-    public ShelfDetailDto getShelfDetailDto(Shelf shelf) {
         List<BookDto> bookDtoList = shelf.getBooks().stream()
                 .map(sb -> bookApiService.createDto(sb.getBook(), false))
                 .toList();
@@ -49,7 +47,6 @@ public class ShelfApiService {
         return new ShelfDetailDto(shelf.getName(), shelf.getUser().getEmail(), shelf.isDefaultShelf(), bookDtoList);
     }
 
-    @Transactional
     public ShelfDto saveShelf(ShelfCreateDto shelfCreateDto, LoginDetails loginDetails) {
         Login login = loginService.getLogin(loginDetails.getEmail());
         Shelf shelf = new Shelf(shelfCreateDto.name(), login);
@@ -59,7 +56,17 @@ public class ShelfApiService {
         return new ShelfDto(shelfCreateDto.name(), loginDetails.getEmail(), 0, false);
     }
 
-    public boolean isShelfRequestInvalid(LoginDetails loginDetails, Shelf shelf) {
+    public boolean isShelfRequestInvalid(LoginDetails loginDetails, Long shelfId) {
+        Shelf shelf = shelfService.getShelfById(shelfId);
+
         return !Objects.equals(shelf.getUser().getEmail(), loginDetails.getEmail());
+    }
+
+    public void validateShelfCreation(LoginDetails loginDetails, String name, Errors errors) {
+        boolean shelfExistsForUser = shelfService.isShelfExistsForUser(name, loginDetails.getEmail());
+
+        if (shelfExistsForUser) {
+            errors.rejectValue("name", "error.already.exists");
+        }
     }
 }

@@ -3,7 +3,6 @@ package com.zedapps.bookshare.controller.api.shelf;
 import com.zedapps.bookshare.dto.api.shelf.ShelfCreateDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.shelf.ShelfApiService;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author smzoha
@@ -35,19 +33,21 @@ public class ShelfApiController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getShelf(@PathVariable Long id, @AuthenticationPrincipal LoginDetails loginDetails) {
-        Shelf shelf = shelfApiService.getShelf(id);
-
-        if (shelfApiService.isShelfRequestInvalid(loginDetails, shelf)) {
+        if (shelfApiService.isShelfRequestInvalid(loginDetails, id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        return ResponseEntity.ok().body(shelfApiService.getShelfDetailDto(shelf));
+        return ResponseEntity.ok().body(shelfApiService.getShelfDetailDto(id));
     }
 
     @PostMapping
     public ResponseEntity<?> saveShelf(@Valid @RequestBody ShelfCreateDto shelfCreateDto,
                                        Errors errors,
                                        @AuthenticationPrincipal LoginDetails loginDetails) {
+
+        if (!errors.hasErrors()) {
+            shelfApiService.validateShelfCreation(loginDetails, shelfCreateDto.name(), errors);
+        }
 
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(Utils.getErrorResponseDto(errors));

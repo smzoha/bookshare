@@ -22,4 +22,6 @@ public interface ShelfRepository extends JpaRepository<Shelf, Long> {
 
     @EntityGraph("shelf.withBooks")
     Optional<Shelf> findById(Long id);
+
+    boolean existsShelfByNameAndUser_Email(String name, String userEmail);
 }

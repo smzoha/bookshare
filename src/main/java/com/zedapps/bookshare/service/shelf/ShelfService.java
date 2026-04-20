@@ -38,6 +38,11 @@ public class ShelfService {
         return shelfRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
+    @Transactional(readOnly = true)
+    public boolean isShelfExistsForUser(String name, String email) {
+        return shelfRepository.existsShelfByNameAndUser_Email(name, email);
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "shelf-lists", key = "#shelf.user.email"),
