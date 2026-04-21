@@ -2,6 +2,7 @@ package com.zedapps.bookshare.controller.api.book;
 
 import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.dto.api.book.*;
+import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.service.book.BookApiService;
@@ -93,9 +94,9 @@ public class BookApiController {
             return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
         }
 
-        ShelfResponseDto shelfResponseDto = bookApiService.addToShelf(id, shelfId, loginDetails);
+        ShelfDto shelfDto = bookApiService.addToShelf(id, shelfId, loginDetails);
 
-        return ResponseEntity.ok().body(shelfResponseDto);
+        return ResponseEntity.ok().body(shelfDto);
     }
 
     @DeleteMapping("/{id}/shelf")
@@ -107,9 +108,9 @@ public class BookApiController {
             return ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid")));
         }
 
-        ShelfResponseDto shelfResponseDto = bookApiService.removeFromShelf(id, shelfId, loginDetails);
+        ShelfDto shelfDto = bookApiService.removeFromShelf(id, shelfId, loginDetails);
 
-        return ResponseEntity.ok().body(shelfResponseDto);
+        return ResponseEntity.ok().body(shelfDto);
     }
 
     @PostMapping("/review/{reviewId}/like")

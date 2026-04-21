@@ -4,7 +4,7 @@ import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.login.LoginService;
-import com.zedapps.bookshare.service.login.ShelfService;
+import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -27,10 +27,14 @@ public class ShelfController {
                               @RequestParam Long bookId,
                               @AuthenticationPrincipal LoginDetails loginDetails) {
 
+        if (shelfService.isShelfExistsForUser(name, loginDetails.getEmail())) {
+            return "redirect:/book/" + bookId;
+        }
+
         Login login = loginService.getLogin(loginDetails.getEmail());
 
         Shelf shelf = new Shelf(name, login);
-        shelfService.saveShelf(shelf, loginDetails);
+        shelfService.saveShelf(shelf);
 
         return "redirect:/book/" + bookId;
     }
