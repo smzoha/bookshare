@@ -1,12 +1,15 @@
 package com.zedapps.bookshare.util;
 
 import com.zedapps.bookshare.dto.api.ErrorResponseDto;
+import com.zedapps.bookshare.entity.image.Image;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.Errors;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -18,6 +21,15 @@ public class Utils {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         return auth != null && !(auth instanceof AnonymousAuthenticationToken);
+    }
+
+    public static String getImageUrl(Image image) {
+        return Objects.nonNull(image)
+                ? ServletUriComponentsBuilder.fromCurrentContextPath()
+                  .path("/image/{id}")
+                  .buildAndExpand(image.getId())
+                  .toUriString()
+                : "";
     }
 
     public static String cleanHtml(String htmlText) {

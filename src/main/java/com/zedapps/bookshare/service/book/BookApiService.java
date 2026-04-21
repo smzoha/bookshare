@@ -19,7 +19,6 @@ import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +137,7 @@ public class BookApiService {
         List<String> genres = book.getGenres().stream().map(Genre::getName).toList();
         List<String> tags = book.getTags().stream().map(Tag::getName).toList();
 
-        String imageUrl = getImageUrl(book);
+        String imageUrl = Utils.getImageUrl(book.getImage());
 
         return new BookDto(book.getTitle(), book.getIsbn(), Utils.cleanHtml(book.getDescription()),
                 imageUrl, book.getPages(), book.getPublicationDate(), book.getAverageRating(),
@@ -157,15 +156,6 @@ public class BookApiService {
                 .map(review -> new ReviewDto(review.getUser().getName(), review.getContent(), review.getReviewDate(),
                         review.getRating()))
                 .toList();
-    }
-
-    private static String getImageUrl(Book book) {
-        return Objects.nonNull(book.getImage())
-                ? ServletUriComponentsBuilder.fromCurrentContextPath()
-                  .path("/image/{id}")
-                  .buildAndExpand(book.getImage().getId())
-                  .toUriString()
-                : "";
     }
 
     private ReadingProgress getReadingProgress(Long bookId, ReadingProgressRequest progressRequest,
