@@ -11,6 +11,7 @@ import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class ShelfApiService {
     private final LoginService loginService;
     private final BookApiService bookApiService;
 
+    @Transactional(readOnly = true)
     public List<ShelfDto> getShelfDtoList(LoginDetails loginDetails) {
         List<Shelf> shelves = shelfService.getShelvesForCollection(loginDetails.getEmail());
 
@@ -37,6 +39,7 @@ public class ShelfApiService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public ShelfDetailDto getShelfDetailDto(Long shelfId) {
         Shelf shelf = shelfService.getShelfById(shelfId);
 

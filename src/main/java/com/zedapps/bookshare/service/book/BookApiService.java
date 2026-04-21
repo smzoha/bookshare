@@ -39,6 +39,7 @@ public class BookApiService {
     private final ReviewRepository reviewRepository;
     private final ReadingProgressRepository readingProgressRepository;
 
+    @Transactional(readOnly = true)
     public BookDto getBookDto(Long id, boolean showReviews) {
         Book book;
 
@@ -52,6 +53,7 @@ public class BookApiService {
         return createDto(book, showReviews);
     }
 
+    @Transactional(readOnly = true)
     public List<BookDto> getBookDtoList(int page, String query, String sort,
                                         String rating, String genre, String tag) {
 
