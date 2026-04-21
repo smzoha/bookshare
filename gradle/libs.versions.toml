@@ -11,6 +11,7 @@ google-oauth-client-jetty = "1.39.0"
 google-api-gmail = "v1-rev20260112-2.0.0"
 caffeine = "3.2.3"
 jjwt = "0.13.0"
+springdoc = "2.8.17"
 
 [libraries]
 # Spring Boot (versions managed by Spring BOM via dependency-management plugin)
@@ -52,6 +53,9 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 google-auth-oauth2 = { module = "com.google.auth:google-auth-library-oauth2-http", version.ref = "google-auth" }
 google-oauth-client-jetty = { module = "com.google.oauth-client:google-oauth-client-jetty", version.ref = "google-oauth-client-jetty" }
 google-api-gmail = { module = "com.google.apis:google-api-services-gmail", version.ref = "google-api-gmail" }
+
+# SpringDoc
+springdoc-openapi-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
 # Caffeine
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }

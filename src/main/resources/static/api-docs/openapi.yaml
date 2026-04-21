@@ -1,0 +1,541 @@
+openapi: 3.0.3
+
+info:
+  title: BookShare API
+  description: REST API for the BookShare social reading platform
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+security:
+  - bearerAuth: []
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    AuthToken:
+      type: object
+      properties:
+        token:
+          type: string
+
+    TokenRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthorDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          nullable: true
+
+    ReviewDto:
+      type: object
+      properties:
+        reviewedBy:
+          type: string
+        comment:
+          type: string
+        reviewDate:
+          type: string
+          example: "2026-04-21 10:30 AM"
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 5
+
+    BookDto:
+      type: object
+      properties:
+        title:
+          type: string
+        isbn:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+        pages:
+          type: integer
+          format: int64
+        publicationDate:
+          type: string
+          format: date
+          example: "2024-01-15"
+        averageRating:
+          type: number
+          format: double
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorDto'
+        genres:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        reviews:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ReviewDto'
+
+    ReviewRequest:
+      type: object
+      required: [rating, content]
+      properties:
+        rating:
+          type: integer
+          minimum: 0
+          maximum: 5
+        content:
+          type: string
+          maxLength: 10000
+
+    ReadingProgressDto:
+      type: object
+      properties:
+        bookTitle:
+          type: string
+        isbn:
+          type: string
+        login:
+          type: string
+        pagesRead:
+          type: integer
+          format: int64
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        completed:
+          type: boolean
+
+    ReadingProgressRequest:
+      type: object
+      required: [pagesRead, startDate]
+      properties:
+        progressId:
+          type: integer
+          format: int64
+          nullable: true
+        pagesRead:
+          type: integer
+          format: int64
+          minimum: 0
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        completed:
+          type: boolean
+
+    ReviewLikeResponseDto:
+      type: object
+      properties:
+        reviewId:
+          type: integer
+          format: int64
+        liked:
+          type: boolean
+        likeCount:
+          type: integer
+
+    ShelfDto:
+      type: object
+      properties:
+        name:
+          type: string
+        login:
+          type: string
+        bookCount:
+          type: integer
+        defaultShelf:
+          type: boolean
+
+    ShelfDetailDto:
+      type: object
+      properties:
+        name:
+          type: string
+        login:
+          type: string
+        defaultShelf:
+          type: boolean
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookDto'
+
+    ShelfCreateDto:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 255
+
+    ErrorResponseDto:
+      type: object
+      properties:
+        globalErrors:
+          type: array
+          items:
+            type: string
+        fieldErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: array
+              items:
+                type: string
+
+paths:
+
+  /auth/token:
+    post:
+      tags: [Authentication]
+      summary: Obtain a JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+        '401':
+          description: Invalid credentials
+
+  /book/{id}:
+    get:
+      tags: [Book]
+      summary: Get a book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: showReviews
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Book found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDto'
+        '404':
+          description: Book not found
+
+  /book/list:
+    get:
+      tags: [Book]
+      summary: Get a paginated list of books
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: rating
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: genre
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookDto'
+
+  /book/search:
+    get:
+      tags: [Book]
+      summary: Search books by keyword
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookDto'
+
+  /book/{id}/review:
+    post:
+      tags: [Book]
+      summary: Submit a review for a book
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewRequest'
+      responses:
+        '200':
+          description: Review saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /book/{id}/progress:
+    post:
+      tags: [Book]
+      summary: Update reading progress for a book
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadingProgressRequest'
+      responses:
+        '200':
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingProgressDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /book/{id}/shelf:
+    post:
+      tags: [Book]
+      summary: Add a book to a shelf
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: shelfId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Book added to shelf
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelfDto'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+    delete:
+      tags: [Book]
+      summary: Remove a book from a shelf
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: shelfId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Book removed from shelf
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelfDto'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /book/review/{reviewId}/like:
+    post:
+      tags: [Book]
+      summary: Toggle like on a review
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Like toggled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewLikeResponseDto'
+        '400':
+          description: Invalid review
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /shelf:
+    get:
+      tags: [Shelf]
+      summary: Get all shelves for the authenticated user
+      responses:
+        '200':
+          description: List of shelves
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShelfDto'
+    post:
+      tags: [Shelf]
+      summary: Create a new shelf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShelfCreateDto'
+      responses:
+        '201':
+          description: Shelf created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelfDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /shelf/{id}:
+    get:
+      tags: [Shelf]
+      summary: Get shelf details including its books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Shelf detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShelfDetailDto'
+        '403':
+          description: Shelf does not belong to the authenticated user
