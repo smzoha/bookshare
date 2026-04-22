@@ -100,7 +100,7 @@ public class LoginService {
     }
 
     @Transactional
-    public void createLogin(RegistrationRequestDto registrationDto) {
+    public Login createLogin(RegistrationRequestDto registrationDto) {
         Login login = createLoginFromRegistrationDto(registrationDto);
         setupShelvesForNewLogin(login);
 
@@ -113,6 +113,8 @@ public class LoginService {
                         "loginFirstName", login.getFirstName(),
                         "loginLastName", login.getLastName()
                 ));
+
+        return login;
     }
 
     private Login createLoginFromRegistrationDto(RegistrationRequestDto registrationDto) {
