@@ -204,6 +204,60 @@ components:
           type: string
           maxLength: 255
 
+    ConnectionApiDto:
+      type: object
+      required: [handle, action]
+      properties:
+        handle:
+          type: string
+        action:
+          type: string
+          enum:
+            - SEND_FRIEND_REQ
+            - REVOKE_FRIEND_REQ
+            - ACCEPT_FRIEND_REQ
+            - DECLINE_FRIEND_REQ
+            - REMOVE_FRIEND
+
+    LoginApiDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        handle:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        profilePictureUrl:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        shelfList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShelfDto'
+        readingProgress:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadingProgressDto'
+        connectionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginApiDto'
+        reviewList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewDto'
+
     ErrorResponseDto:
       type: object
       properties:
@@ -539,3 +593,45 @@ paths:
                 $ref: '#/components/schemas/ShelfDetailDto'
         '403':
           description: Shelf does not belong to the authenticated user
+
+  /profile/{handle}:
+    get:
+      tags: [Profile]
+      summary: Get a user profile by handle
+      parameters:
+        - name: handle
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: detailed
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginApiDto'
+
+  /profile/connect:
+    post:
+      tags: [Profile]
+      summary: Perform a connection action (send, accept, revoke, decline, or remove)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionApiDto'
+      responses:
+        '200':
+          description: Action performed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionApiDto'
