@@ -204,6 +204,105 @@ components:
           type: string
           maxLength: 255
 
+    ConnectionApiDto:
+      type: object
+      required: [handle, action]
+      properties:
+        handle:
+          type: string
+        action:
+          type: string
+          enum:
+            - SEND_FRIEND_REQ
+            - REVOKE_FRIEND_REQ
+            - ACCEPT_FRIEND_REQ
+            - DECLINE_FRIEND_REQ
+            - REMOVE_FRIEND
+
+    LoginApiDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        handle:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        profilePictureUrl:
+          type: string
+          nullable: true
+        role:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        shelfList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShelfDto'
+        readingProgress:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadingProgressDto'
+        connectionList:
+          type: array
+          items:
+            $ref: '#/components/schemas/LoginApiDto'
+        reviewList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewDto'
+
+    RegistrationRequest:
+      type: object
+      required: [email, firstName, handle, password, confirmPassword]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        firstName:
+          type: string
+          maxLength: 255
+        lastName:
+          type: string
+          maxLength: 255
+        handle:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 32
+        confirmPassword:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 32
+
+    PasswordResetRequest:
+      type: object
+      required: [token, password, confirmPassword]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 32
+        confirmPassword:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 32
+
     ErrorResponseDto:
       type: object
       properties:
@@ -539,3 +638,115 @@ paths:
                 $ref: '#/components/schemas/ShelfDetailDto'
         '403':
           description: Shelf does not belong to the authenticated user
+
+  /profile/{handle}:
+    get:
+      tags: [Profile]
+      summary: Get a user profile by handle
+      parameters:
+        - name: handle
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: detailed
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginApiDto'
+
+  /login/register:
+    post:
+      tags: [Login]
+      summary: Register a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginApiDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /login/resetPassword/request:
+    post:
+      tags: [Login]
+      summary: Request a password reset token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Request processed; body contains errors if the email was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /login/resetPassword:
+    post:
+      tags: [Login]
+      summary: Reset password using a valid token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
+  /profile/connect:
+    post:
+      tags: [Profile]
+      summary: Perform a connection action (send, accept, revoke, decline, or remove)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectionApiDto'
+      responses:
+        '200':
+          description: Action performed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectionApiDto'

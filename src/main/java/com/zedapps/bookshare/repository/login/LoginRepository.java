@@ -27,7 +27,7 @@ public interface LoginRepository extends JpaRepository<Login, Long> {
     @EntityGraph("login.withCollections")
     Optional<Login> findByHandle(String handle);
 
-    List<Login> findAllByActive(boolean active);
-
     List<Login> findAllByRoleAndActive(Role role, boolean active);
+
+    boolean existsLoginByEmail(String email);
 }
