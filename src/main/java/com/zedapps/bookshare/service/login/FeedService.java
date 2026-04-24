@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -53,28 +52,7 @@ public class FeedService {
     }
 
     @Transactional(readOnly = true)
-    public void setupFeed(Login audience, int pageSize, int page, ModelMap model) {
-        Page<FeedEntry> feedEntries = getFeedEntries(audience, pageSize, page);
-
-        List<FeedDto> feedDtoList = feedEntries.stream()
-                .map(this::getFeedDto)
-                .filter(Objects::nonNull)
-                .toList();
-
-        model.put("feedDtoList", feedDtoList);
-        model.put("currentPage", page);
-        model.put("totalPages", feedEntries.getTotalPages() - 1);
-    }
-
-    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "feed", key = "#audience.id + '-' + #page + '-' + #pageSize")
-    public List<FeedDto> getFeedDtoList(Login audience, int pageSize, int page) {
-        Page<FeedEntry> feedEntries = getFeedEntries(audience, pageSize, page);
-
-        return mapToFeedDtoList(feedEntries);
-    }
-
-    @Transactional(readOnly = true)
     public Page<FeedEntry> getFeedEntries(Login audience, int pageSize, int page) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         PageRequest pageRequest = PageRequest.of(page, pageSize);
