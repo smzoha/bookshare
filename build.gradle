@@ -15,7 +15,7 @@ description = 'bookshare'
 
 /* Generate Build Version */
 def buildDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-version = "1.0-${buildDate}"
+version = "2.0-${buildDate}"
 
 java {
     toolchain {
