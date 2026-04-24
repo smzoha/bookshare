@@ -64,6 +64,11 @@ BookShare is a social reading platform where users can track books, log reading 
 - Review and approve author-submitted book requests
 - System metrics dashboard: live JVM heap, CPU, thread and disk metrics, Caffeine cache statistics, health component status
 
+**REST API**
+- Full JWT-authenticated REST API under `/api/v1` for mobile and external clients
+- Covers books, shelves, feed, profiles, author applications, and account management
+- OpenAPI 3.0 specification served at `/api-docs/openapi.yaml`
+
 **General**
 - Server-side rendering with Thymeleaf; AJAX-powered fragments for feeds, shelves, and search
 - Internationalization (i18n): English, French, German, Spanish, Bengali
@@ -75,24 +80,25 @@ BookShare is a social reading platform where users can track books, log reading 
 
 ## Architecture Overview
 
-BookShare is a monolithic Spring Boot MVC application with a server-rendered Thymeleaf frontend. AJAX is used selectively to update page fragments without full reloads (book grid, activity feed, shelf tabs, profile connection state).
+BookShare is a monolithic Spring Boot application with a server-rendered Thymeleaf frontend and a parallel stateless REST API. AJAX is used selectively in the MVC layer to update page fragments without full reloads (book grid, activity feed, shelf tabs, profile connection state).
 
 ```
-Browser (Thymeleaf + Bootstrap)
-        │
-        ▼
-Spring MVC Controllers
-        │
-        ▼
-Service Layer (business logic, caching, event publishing)
-        │
-   ┌────┴────────────┐
-   │                 │
-JPA/Hibernate     Activity Outbox (transactional writes)
-   │                 │
-PostgreSQL        Scheduled Processor (every 15 s)
-                     │
-                  Activity + FeedEntry tables
+Browser (Thymeleaf + Bootstrap)     Mobile / API clients
+        │                                   │
+        ▼                                   ▼
+Spring MVC Controllers          REST API Controllers (/api/v1/**)
+        │                        JWT filter + stateless auth
+        └───────────┬────────────────────────┘
+                    ▼
+        Service Layer (business logic, caching, event publishing)
+                    │
+           ┌────────┴────────────┐
+           │                     │
+     JPA/Hibernate     Activity Outbox (transactional writes)
+           │                     │
+      PostgreSQL        Scheduled Processor (every 15 s)
+                                 │
+                      Activity + FeedEntry tables
 ```
 
 **Activity & Feed pipeline:**
@@ -121,7 +127,7 @@ Cache statistics are visible on the admin Actuator dashboard.
 | Layer | Technology |
 |---|---|
 | Backend | Java 25, Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
-| Security | Spring Security, Spring Security OAuth2 Client (Google OIDC) |
+| Security | Spring Security, Spring Security OAuth2 Client (Google OIDC), JJWT 0.13 (JWT for REST API) |
 | Frontend | Thymeleaf + Layout Dialect, Bootstrap 5, jQuery 3.7.1, FontAwesome |
 | Rich UI | TinyMCE (description editor), FilePond (image upload), Select2 (multi-select), DataTables |
 | Database | PostgreSQL 17, Flyway (migrations V1–V20) |
@@ -182,6 +188,10 @@ Edit `.env`:
 DATABASE_NAME=bookshare
 DATABASE_USER=your_db_user
 DATABASE_PASSWORD=your_db_password
+
+# REST API — JWT signing key (Base64-encoded) and token expiry
+APP_JWT_SECRET=your_base64_encoded_secret
+APP_JWT_EXPIRY_MS=1800000
 ```
 
 ```bash
@@ -263,6 +273,27 @@ GOOGLE_REFRESH_TOKEN=your_refresh_token
 ```
 
 > The Google Login flow is handled automatically by Spring Security OAuth2. The manual token exchange above is only needed for the Gmail sending credential.
+
+### REST API
+
+The API base URL is `/api/v1`. It uses stateless JWT authentication — no cookies or sessions.
+
+**Getting a token:**
+```http
+POST /api/v1/auth/token
+Content-Type: application/json
+
+{"email": "user@example.com", "password": "yourpassword"}
+```
+
+The response body contains `{"token": "<JWT>"}`. Include it in subsequent requests:
+```
+Authorization: Bearer <token>
+```
+
+Tokens expire after 30 minutes by default (`APP_JWT_EXPIRY_MS`).
+
+The full OpenAPI 3.0 specification is available at `/api-docs/openapi.yaml` once the application is running. When running locally with the dev profile, Swagger UI is also available at `/swagger-ui/index.html`. It is disabled in production.
 
 ---
 

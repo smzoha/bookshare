@@ -23,6 +23,8 @@ src/main/java/com/zedapps/bookshare/
 ├── AppRunner.java               # @SpringBootApplication, @EnableScheduling, BCryptPasswordEncoder bean
 ├── async/                       # Async listeners and scheduled jobs
 │   ├── ActivityOutboxProcessor  # @Scheduled: processes outbox every 15s, cleanup at midnight
+│   ├── ActivityEventListener    # @EventListener(@Async): handles ActivityEvent, persists Activity records
+│   ├── AuthEventListener        # @EventListener: handles Spring Security login/logout events
 │   └── FeedEntryListener        # @EventListener: fans out FeedEntry rows to connections
 ├── config/
 │   ├── AsyncConfig              # activityPublishExecutor: core=2, max=5, queue=1000
@@ -30,7 +32,17 @@ src/main/java/com/zedapps/bookshare/
 │   ├── LocaleConfig             # CookieLocaleResolver (cookie name: lang, 30-day TTL)
 │   └── SecurityConfig           # HTTP security rules, form login, OAuth2 OIDC
 ├── controller/
+│   ├── HomeController                      # /, /feed, /admin (MVC)
 │   ├── admin/ActuatorDashboardController   # /admin/actuator/dashboard
+│   ├── api/                                # REST API — all under /api/v1
+│   │   ├── ApiExceptionHandler             # @RestControllerAdvice for api package
+│   │   ├── HomeApiController               # /api/v1/home/featured, /api/v1/home/feed
+│   │   ├── auth/ApiAuthController          # /api/v1/auth/token (JWT issuance)
+│   │   ├── book/BookApiController          # /api/v1/book/**
+│   │   ├── login/AuthorApiController       # /api/v1/author/apply
+│   │   ├── login/LoginApiController        # /api/v1/login/register, /resetPassword/**
+│   │   ├── login/ProfileApiController      # /api/v1/profile/**
+│   │   └── shelf/ShelfApiController        # /api/v1/shelf/**
 │   ├── book/
 │   │   ├── admin/BookAdminController       # /admin/book
 │   │   ├── admin/AuthorAdminController     # /admin/author
@@ -44,7 +56,6 @@ src/main/java/com/zedapps/bookshare/
 │   └── login/
 │       ├── admin/LoginAdminController      # /admin/user
 │       └── app/
-│           ├── HomeController              # /, /feed, /admin
 │           ├── LoginController             # /login, /register
 │           ├── PasswordResetController     # /resetPasswordRequest, /resetPassword
 │           ├── ProfileController           # /profile/**
@@ -75,20 +86,34 @@ src/main/java/com/zedapps/bookshare/
 │       └── ShelvedBook          # table: shelved_book
 ├── enums/                       # ActivityStatus, ActivityType, AuthProvider, Role, Status
 ├── exception/                   # Custom exceptions
-├── filter/RequestLogFilter      # Logs all HTTP requests to request.log
+├── filter/
+│   ├── JwtAuthFilter            # Validates Bearer token for /api/v1/** (OncePerRequestFilter)
+│   └── RequestLogFilter         # Logs all HTTP requests to request.log
 ├── repository/                  # Spring Data JPA repositories (one per entity)
 ├── service/
 │   ├── activity/ActivityService
-│   ├── book/BookService
-│   ├── book/BookAdminService
-│   ├── login/FeedService
-│   ├── login/LoginService
-│   ├── login/PasswordResetService
-│   ├── login/ProfileService
-│   ├── login/ShelfService
-│   ├── LoginDetailService       # UserDetailsService implementation
-│   ├── LoginDetailOidcService   # OAuth2UserService for Google OIDC
-│   └── MailService              # Gmail API email sending (@Async)
+│   ├── auth/
+│   │   ├── JwtService           # JWT generation and validation (JJWT)
+│   │   ├── LoginDetailService   # UserDetailsService implementation
+│   │   └── LoginDetailOidcService # OAuth2UserService for Google OIDC
+│   ├── book/
+│   │   ├── BookAdminService     # CRUD + caching for books, authors, genres, tags
+│   │   ├── BookApiService       # API-specific book reads, review/shelf/progress writes
+│   │   └── BookService          # User-facing reads (paginated lists, related books)
+│   ├── image/ImageService
+│   ├── login/
+│   │   ├── AuthorRequestService # Author application validation + save (shared MVC/API)
+│   │   ├── FeedApiService       # Feed reads shaped for API responses
+│   │   ├── FeedService          # Feed reads for MVC
+│   │   ├── LoginApiService      # Registration and password-reset logic for API
+│   │   ├── LoginService         # Core user load/save; canonical getLogin(email)
+│   │   ├── PasswordResetService
+│   │   ├── ProfileApiService    # Profile read + connection actions for API
+│   │   └── ProfileService       # Profile read + connection actions for MVC
+│   ├── mail/MailService         # Gmail API email sending (@Async)
+│   └── shelf/
+│       ├── ShelfApiService      # Shelf reads/writes for API
+│       └── ShelfService         # Shelf reads/writes for MVC
 ├── util/                        # Utility helpers
 └── validator/                   # Custom Spring validators
 
@@ -157,7 +182,9 @@ A book can only be in one default shelf at a time (enforced in `BookService.addT
 
 ## Security Rules
 
-Defined in `SecurityConfig` — match these when adding new routes.
+`SecurityConfig` defines two filter chains. Match these when adding new routes.
+
+### MVC filter chain (`/**`, Order 2) — session-based
 
 | URL Pattern | Access |
 |---|---|
@@ -172,22 +199,82 @@ Defined in `SecurityConfig` — match these when adding new routes.
 | `/actuator/**` | ADMIN only |
 | Everything else | Public |
 
-CSRF is disabled. Sessions use standard Spring Security session management. Logout at `/logout` clears `JSESSIONID`.
+### API filter chain (`/api/v1/**`, Order 1) — stateless JWT
+
+| URL Pattern | Access |
+|---|---|
+| `/api/v1/auth/token` | Public |
+| `/api/v1/login/**` | Public |
+| `/api/v1/home/featured` | Public |
+| `/api/v1/author/apply` | USER role only |
+| Everything else | Authenticated (valid JWT required) |
+
+CSRF is disabled on both chains. The MVC chain uses standard Spring Security sessions; logout at `/logout` clears `JSESSIONID`. The API chain is stateless — no session is created.
 
 The authenticated user principal is always a `LoginDetails` object (implements `UserDetails`, `OidcUser`, `OAuth2User`). Retrieve it in controllers with `@AuthenticationPrincipal LoginDetails loginDetails`.
 
 ---
 
+## REST API
+
+The REST API lives under `/api/v1` and is intended for mobile or external clients. It is completely stateless — no sessions, no cookies.
+
+### Authentication
+
+1. Client posts `{email, password}` to `POST /api/v1/auth/token`.
+2. Server returns `{token: "<JWT>"}`. The token embeds the user's email (subject) and role as claims.
+3. Client includes the token in every subsequent request: `Authorization: Bearer <token>`.
+4. `JwtAuthFilter` intercepts `/api/v1/**` requests, validates the token via `JwtService`, and sets the `SecurityContext`.
+
+Token expiry is configured by `app.jwt.expiry.ms` (default 1 800 000 ms = 30 minutes).
+
+### Exception handling
+
+`ApiExceptionHandler` (`@RestControllerAdvice` scoped to `controller.api`) converts exceptions to `ErrorResponseDto` JSON:
+
+| Exception | Status |
+|---|---|
+| `NoResultException` | 404 |
+| `HttpMessageNotReadableException` | 400 |
+| `AccessDeniedException` | 403 |
+| `AuthenticationException` | 401 |
+| Any other `Exception` | 500 |
+
+### OpenAPI spec
+
+The hand-maintained spec lives at `src/main/resources/static/api-docs/openapi.yaml` and is served as a static file at `/api-docs/openapi.yaml`.
+
+- **Dev profile:** Swagger UI is enabled (`springdoc.swagger-ui.enabled=true` in `application-dev.properties`) and configured to load the custom spec (`springdoc.swagger-ui.url=/api-docs/openapi.yaml`). Browse it at `/swagger-ui/index.html` while the app is running locally.
+- **Production:** Swagger UI is disabled (`springdoc.swagger-ui.enabled=false` in `application.properties`); only the raw YAML is served.
+
+Update the spec whenever you add or change an API endpoint.
+
+### API endpoint summary
+
+| Controller | Base path | Key endpoints |
+|---|---|---|
+| `ApiAuthController` | `/api/v1/auth` | `POST /token` |
+| `BookApiController` | `/api/v1/book` | `GET /list`, `GET /{id}`, `GET /search`, `POST /{id}/review`, `POST /{id}/progress`, `POST|DELETE /{id}/shelf`, `POST /review/{id}/like` |
+| `ShelfApiController` | `/api/v1/shelf` | `GET /`, `GET /{id}`, `POST /` |
+| `HomeApiController` | `/api/v1/home` | `GET /featured` (public), `GET /feed` |
+| `LoginApiController` | `/api/v1/login` | `POST /register`, `POST /resetPassword/request`, `POST /resetPassword` |
+| `ProfileApiController` | `/api/v1/profile` | `GET /{handle}`, `POST /connect` |
+| `AuthorApiController` | `/api/v1/author` | `POST /apply` |
+
+---
+
 ## Activity System
 
-**All significant user actions must fire an outbox event.** Never write directly to `activity` — always go through `ActivityService.saveActivityOutbox()`.
+Significant user actions must record an activity. There are two paths depending on context:
 
-### How it works
+**Path A — Outbox (MVC controllers):** call `activityService.saveActivityOutbox(type, referenceId, payload)` within the same DB transaction as the main write.
+1. `ActivityOutboxProcessor` runs every 15 seconds, picks up PENDING rows (top 100), persists `Activity` records, and marks rows COMPLETED or FAILED.
+2. For non-internal activity types (listed in `FEED_ACTIVITIES`), `ActivityService.saveActivity()` publishes an `ActivityFeedDto` Spring event.
+3. `FeedEntryListener` handles that event and inserts one `FeedEntry` per connection.
 
-1. Service calls `activityService.saveActivityOutbox(type, referenceId, payload)` within the same DB transaction as the main write.
-2. `ActivityOutboxProcessor.processOutbox()` runs every 15 seconds, picks up PENDING rows (top 100), creates `Activity` records, and marks outbox rows COMPLETED or FAILED.
-3. For non-internal activity types (listed in `FEED_ACTIVITIES`), `ActivityService.saveActivity()` publishes an `ActivityFeedDto` Spring event.
-4. `FeedEntryListener` handles the event, loads the actor's connections, and inserts one `FeedEntry` per connection member.
+**Path B — Direct Spring event (API services):** publish an `ActivityEvent` bean via `ApplicationEventPublisher`. `ActivityEventListener` handles it `@Async` and calls `activityService.saveActivity()` directly, bypassing the outbox. Use this path in API services where the outbox transaction pattern is impractical.
+
+> `AuthEventListener` separately handles Spring Security `AuthenticationSuccessEvent` and `LogoutSuccessEvent` (MVC logins only — JWT auth does not fire these events).
 
 ### Activity Types (enum `ActivityType`)
 Key types and when to use them:
@@ -418,6 +505,8 @@ PostgreSQL in Docker is on host port **5433** (to avoid conflicts with a local i
 | `GOOGLE_CLIENT_ID` | .env / secret-dev.properties | OAuth2 client ID |
 | `GOOGLE_CLIENT_SECRET` | .env / secret-dev.properties | OAuth2 client secret |
 | `GOOGLE_REFRESH_TOKEN` | .env / secret-dev.properties | Gmail API refresh token |
+| `APP_JWT_SECRET` | .env / secret-dev.properties | Base64-encoded HMAC-SHA key for JWT signing |
+| `APP_JWT_EXPIRY_MS` | .env / secret-dev.properties | JWT validity window in milliseconds (default 1 800 000 = 30 min) |
 
 Local Spring Boot reads DB config from `application-dev.properties` and secrets from `secret-dev.properties` (not committed — see `secret-dev.properties.example`).
 
