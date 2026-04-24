@@ -15,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDateTime;
@@ -52,11 +52,9 @@ public class FeedService {
         msa = new MessageSourceAccessor(messageSource);
     }
 
+    @Transactional(readOnly = true)
     public void setupFeed(Login audience, int pageSize, int page, ModelMap model) {
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
-
-        Page<FeedEntry> feedEntries = feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
+        Page<FeedEntry> feedEntries = getFeedEntries(audience, pageSize, page);
 
         List<FeedDto> feedDtoList = feedEntries.stream()
                 .map(this::getFeedDto)
@@ -71,11 +69,20 @@ public class FeedService {
     @Transactional(readOnly = true)
     @Cacheable(cacheNames = "feed", key = "#audience.id + '-' + #page + '-' + #pageSize")
     public List<FeedDto> getFeedDtoList(Login audience, int pageSize, int page) {
+        Page<FeedEntry> feedEntries = getFeedEntries(audience, pageSize, page);
+
+        return mapToFeedDtoList(feedEntries);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FeedEntry> getFeedEntries(Login audience, int pageSize, int page) {
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(30);
         PageRequest pageRequest = PageRequest.of(page, pageSize);
 
-        Page<FeedEntry> feedEntries = feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
+        return feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
+    }
 
+    public List<FeedDto> mapToFeedDtoList(Page<FeedEntry> feedEntries) {
         return feedEntries.stream()
                 .map(this::getFeedDto)
                 .filter(Objects::nonNull)

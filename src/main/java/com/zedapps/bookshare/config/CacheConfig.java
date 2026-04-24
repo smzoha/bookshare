@@ -32,6 +32,7 @@ public class CacheConfig {
                 build("shelves", 1000, Duration.ofMinutes(10)),
                 build("logins", 500, Duration.ofMinutes(30)),
                 build("feed", 1000, Duration.ofSeconds(60)),
+                build("feedApi", 1000, Duration.ofSeconds(60)),
 
                 // Lists
                 build("book-lists", 500, Duration.ofMinutes(30)),
