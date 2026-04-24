@@ -2,6 +2,7 @@ package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.feed.FeedDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
@@ -11,6 +12,7 @@ import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -57,7 +59,8 @@ public class ProfileService {
 
         setupConnectionRefData(model, profileLogin, authLogin);
 
-        List<FeedDto> feedDtoList = feedService.getFeedDtoList(profileLogin, 5, 0);
+        Page<FeedEntry> feedEntries = feedService.getFeedEntries(profileLogin, 5, 0);
+        List<FeedDto> feedDtoList = feedService.mapToFeedDtoList(feedEntries);
         model.put("feedDtoList", feedDtoList);
     }
 
