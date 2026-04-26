@@ -1,8 +1,7 @@
-package com.zedapps.bookshare.repository;
+package com.zedapps.bookshare.repository.book;
 
 import com.zedapps.bookshare.entity.book.AuthorRequest;
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.repository.book.AuthorRequestRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.Test;

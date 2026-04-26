@@ -1,7 +1,6 @@
-package com.zedapps.bookshare.repository;
+package com.zedapps.bookshare.repository.book;
 
 import com.zedapps.bookshare.entity.book.Tag;
-import com.zedapps.bookshare.repository.book.TagRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

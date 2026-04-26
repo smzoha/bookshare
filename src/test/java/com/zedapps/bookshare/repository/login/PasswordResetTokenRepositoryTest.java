@@ -1,7 +1,6 @@
-package com.zedapps.bookshare.repository;
+package com.zedapps.bookshare.repository.login;
 
 import com.zedapps.bookshare.entity.login.PasswordResetToken;
-import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
