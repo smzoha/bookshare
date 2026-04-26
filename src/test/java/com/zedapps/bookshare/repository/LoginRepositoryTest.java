@@ -1,9 +1,9 @@
 package com.zedapps.bookshare.repository;
 
 import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.enums.AuthProvider;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,22 +120,9 @@ public class LoginRepositoryTest {
     }
 
     private void saveLoginsForTest() {
-        Login activeLogin = getLogin(ACTIVE_EMAIL, ACTIVE_HANDLE, true);
-        Login inactiveLogin = getLogin(INACTIVE_EMAIL, "inactive", false);
+        Login activeLogin = TestUtils.getLogin(ACTIVE_EMAIL, ACTIVE_HANDLE, true);
+        Login inactiveLogin = TestUtils.getLogin(INACTIVE_EMAIL, "inactive", false);
 
         loginRepository.saveAllAndFlush(List.of(activeLogin, inactiveLogin));
-    }
-
-    private static Login getLogin(String email, String handle, boolean active) {
-        Login login = new Login();
-        login.setEmail(email);
-        login.setHandle(handle);
-        login.setRole(Role.USER);
-        login.setFirstName("Test");
-        login.setLastName("User");
-        login.setActive(active);
-        login.setAuthProvider(AuthProvider.LOCAL);
-
-        return login;
     }
 }
