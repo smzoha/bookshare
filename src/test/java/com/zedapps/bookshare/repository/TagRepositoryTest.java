@@ -48,6 +48,6 @@ public class TagRepositoryTest {
         Tag tag = new Tag();
         tag.setName("Test Tag");
 
-        tagRepository.save(tag);
+        tagRepository.saveAndFlush(tag);
     }
 }

@@ -57,6 +57,6 @@ public class AuthorRequestRepositoryTest {
         AuthorRequest authorRequest = new AuthorRequest();
         authorRequest.setLogin(login);
 
-        authorRequestRepository.save(authorRequest);
+        authorRequestRepository.saveAndFlush(authorRequest);
     }
 }

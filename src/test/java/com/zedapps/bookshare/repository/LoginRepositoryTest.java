@@ -28,10 +28,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class LoginRepositoryTest {
 
-    private final String ACTIVE_EMAIL = "active@test.com";
-    private final String ACTIVE_HANDLE = "active";
-    private final String INACTIVE_EMAIL = "inactive@test.com";
-    private final String INVALID_EMAIL = "invalid@invalid.invalid";
+    private static final String ACTIVE_EMAIL = "active@test.com";
+    private static final String ACTIVE_HANDLE = "active";
+    private static final String INACTIVE_EMAIL = "inactive@test.com";
+    private static final String INVALID_EMAIL = "invalid@invalid.invalid";
 
     @Container
     @ServiceConnection

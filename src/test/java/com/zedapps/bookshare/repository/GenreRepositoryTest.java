@@ -48,6 +48,6 @@ public class GenreRepositoryTest {
         Genre genre = new Genre();
         genre.setName("Test Genre");
 
-        genreRepository.save(genre);
+        genreRepository.saveAndFlush(genre);
     }
 }

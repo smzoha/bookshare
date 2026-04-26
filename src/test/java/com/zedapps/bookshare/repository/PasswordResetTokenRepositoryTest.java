@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PasswordRestTokenRepositoryTest {
+public class PasswordResetTokenRepositoryTest {
 
     @Container
     @ServiceConnection
@@ -59,6 +59,6 @@ public class PasswordRestTokenRepositoryTest {
         token.setGeneratedAt(LocalDateTime.now());
         token.setExpiryTimestamp(LocalDateTime.now().plusMinutes(10));
 
-        passwordResetTokenRepository.save(token);
+        passwordResetTokenRepository.saveAndFlush(token);
     }
 }
