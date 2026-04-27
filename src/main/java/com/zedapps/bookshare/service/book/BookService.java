@@ -2,18 +2,17 @@ package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
-import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.BookRepository;
-import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
+import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.shelf.ShelfService;
 import jakarta.persistence.NoResultException;
@@ -29,12 +28,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
 import java.util.*;
-
-import static com.zedapps.bookshare.entity.login.Shelf.*;
 
 /**
  * @author smzoha
@@ -94,30 +90,6 @@ public class BookService {
     @Transactional(readOnly = true)
     public Page<Review> getReviewsByBook(Book book, int pageNumber) {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
-    }
-
-    @Transactional(readOnly = true)
-    public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model,
-                                   boolean addNewReview, boolean addNewProgress) {
-
-        Book book = getBook(bookId);
-        assert book.getStatus() == Status.ACTIVE : "Book is not in active status";
-
-        model.put("book", book);
-
-        if (Objects.nonNull(loginDetails)) {
-            Login login = loginService.getLogin(loginDetails.getEmail());
-
-            setupShelfReferenceData(login, model, book);
-            model.put("readingProgresses", login.getReadingProgresses(book.getId()));
-        }
-
-        model.put("tmpShelf", new Shelf());
-        if (addNewProgress) model.put("tmpProgress", new ReadingProgress());
-        if (addNewReview) model.put("reviewDto", new BookReviewDto());
-
-        model.put("reviews", getReviewsByBook(book, 0));
-        model.put("relatedBooks", getRelatedBooks(book, book.getGenres(), book.getTags()));
     }
 
     @Transactional
@@ -266,43 +238,6 @@ public class BookService {
                 ));
 
         return readingProgress;
-    }
-
-    private void setupShelfReferenceData(Login login, ModelMap model, Book book) {
-        Map<String, Shelf> defaultShelves = new HashMap<>();
-        List<Shelf> otherShelves = new ArrayList<>();
-
-        for (Shelf shelf : shelfService.getShelvesForCollection(login.getEmail())) {
-            if (shelf.isDefaultShelf()) defaultShelves.put(shelf.getName(), shelf);
-            else otherShelves.add(shelf);
-        }
-
-        Shelf defaultShelf = getDefaultShelf(book, defaultShelves);
-
-        model.put("defaultShelves", defaultShelves.values());
-        model.put("defaultShelf", defaultShelf);
-
-        model.put("allShelves", otherShelves);
-        model.put("shelvesTruncated", otherShelves.size() > 5);
-
-        model.put("shelves", otherShelves.stream()
-                .sorted(Comparator.comparing((Shelf s) -> s.containsBook(book)).reversed())
-                .limit(5)
-                .toList());
-    }
-
-    private Shelf getDefaultShelf(Book book, Map<String, Shelf> defaultShelves) {
-        if (defaultShelves.containsKey(SHELF_READ) && defaultShelves.get(SHELF_READ).containsBook(book)) {
-            return defaultShelves.get(SHELF_READ);
-
-        } else if (defaultShelves.containsKey(SHELF_CURRENTLY_READING)
-                && defaultShelves.get(SHELF_CURRENTLY_READING).containsBook(book)) {
-
-            return defaultShelves.get(SHELF_CURRENTLY_READING);
-
-        } else {
-            return defaultShelves.get(SHELF_WANT_TO_READ);
-        }
     }
 
     private Review createReviewFromDto(BookReviewDto reviewDto, Book book, Login login) {

@@ -3,15 +3,16 @@ package com.zedapps.bookshare.controller.book.app;
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.helper.BookHelper;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.book.BookService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -39,6 +40,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BookController {
 
+    private final BookHelper bookHelper;
     private final BookService bookService;
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
@@ -111,7 +113,7 @@ public class BookController {
                               @PathVariable Long id,
                               ModelMap model) {
 
-        bookService.setupReferenceData(loginDetails, id, model, true, true);
+        bookHelper.setupReferenceData(loginDetails, id, model, true, true);
 
         if (loginDetails != null && (Boolean) model.getOrDefault("publishEvent", true)) {
             publisher.publishEvent(ActivityEvent.builder()
@@ -150,7 +152,7 @@ public class BookController {
                             RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors()) {
-            bookService.setupReferenceData(loginDetails, reviewDto.getBookId(), model, false, true);
+            bookHelper.setupReferenceData(loginDetails, reviewDto.getBookId(), model, false, true);
             return "app/book/book";
         }
 
@@ -191,7 +193,7 @@ public class BookController {
                                         RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors()) {
-            bookService.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model, true, false);
+            bookHelper.setupReferenceData(loginDetails, readingProgress.getBook().getId(), model, true, false);
             model.put("showReadingProgressModal", true);
 
             return "app/book/book";
