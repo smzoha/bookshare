@@ -7,7 +7,6 @@ import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Status;
-import com.zedapps.bookshare.repository.book.BookListRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
@@ -44,7 +43,6 @@ import static com.zedapps.bookshare.entity.login.Shelf.*;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final BookListRepository bookListRepository;
     private final ReviewRepository reviewRepository;
     private final ShelvedBookRepository shelvedBookRepository;
     private final ReadingProgressRepository readingProgressRepository;
@@ -71,7 +69,7 @@ public class BookService {
             query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
         }
 
-        Page<Book> books = bookListRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
+        Page<Book> books = bookRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
 
         books.forEach(b -> {
             Hibernate.initialize(b.getAuthors());
