@@ -29,6 +29,7 @@ src/main/java/com/zedapps/bookshare/
 ├── config/
 │   ├── AsyncConfig              # activityPublishExecutor: core=2, max=5, queue=1000
 │   ├── CacheConfig              # Caffeine cache definitions (see cache table below)
+│   ├── GmailConfig              # Gmail API client bean (OAuth2 credentials + service instance)
 │   ├── LocaleConfig             # CookieLocaleResolver (cookie name: lang, 30-day TTL)
 │   └── SecurityConfig           # HTTP security rules, form login, OAuth2 OIDC
 ├── controller/
@@ -291,10 +292,10 @@ Key types and when to use them:
 | `BOOK_UPDATE_READING_PROGRESS` | Progress update |
 | `BOOK_REQUEST_SAVE` | Author book submission |
 | `SHELF_ADD` | New custom shelf |
-| `SEND_FRIEND_REQ` / `REVOKE_FRIEND_REQ` | Friend request actions |
-| `ACCEPT_FRIEND_REQ` / `DECLINE_FRIEND_REQ` | Friend request response |
+| `FRIEND_REQ_SENT` / `REVOKE_FRIEND_REQ` | Friend request sent / revoked |
+| `DECLINE_FRIEND_REQ` | Friend request declined |
 | `REMOVE_FRIEND` | Connection removal |
-| `ADD_FRIEND` | Post-acceptance (triggers feed) |
+| `ADD_FRIEND` | Friend request accepted — creates the connection (triggers feed) |
 | `RESET_PASSWORD_REQUEST` / `RESET_PASSWORD` | Password reset flow |
 
 `FEED_ACTIVITIES` (non-internal, fan out to connections): `BOOK_ADD_REVIEW`, `BOOK_LIKE_REVIEW`, `BOOK_UPDATE_READING_PROGRESS`, `ADD_FRIEND`.
