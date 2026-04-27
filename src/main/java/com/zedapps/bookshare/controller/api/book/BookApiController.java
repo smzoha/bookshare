@@ -4,7 +4,7 @@ import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.dto.api.book.*;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.validation.Valid;

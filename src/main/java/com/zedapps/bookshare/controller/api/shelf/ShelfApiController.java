@@ -2,7 +2,7 @@ package com.zedapps.bookshare.controller.api.shelf;
 
 import com.zedapps.bookshare.dto.api.shelf.ShelfCreateDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.shelf.ShelfApiService;
 import com.zedapps.bookshare.util.Utils;
 import jakarta.validation.Valid;

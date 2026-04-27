@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.controller.book.admin;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.AuthorRequest;
 import com.zedapps.bookshare.entity.login.Login;

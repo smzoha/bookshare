@@ -2,7 +2,7 @@ package com.zedapps.bookshare.controller.api.auth;
 
 import com.zedapps.bookshare.dto.api.auth.AuthToken;
 import com.zedapps.bookshare.dto.api.auth.TokenRequest;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.auth.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

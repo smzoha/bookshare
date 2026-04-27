@@ -1,6 +1,6 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;

@@ -4,7 +4,7 @@ import com.zedapps.bookshare.dto.api.book.BookDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfCreateDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDetailDto;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.service.book.BookApiService;

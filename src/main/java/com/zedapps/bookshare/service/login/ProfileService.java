@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.service.login;
 
 import com.zedapps.bookshare.dto.feed.FeedDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
