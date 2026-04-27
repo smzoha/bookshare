@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.controller.api.login;
 
+import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.dto.api.login.LoginApiDto;
 import com.zedapps.bookshare.dto.login.PasswordResetDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,13 +48,19 @@ public class LoginApiController {
     public ResponseEntity<?> resetPasswordRequest(@RequestBody Map<String, String> request) {
         String email = request.get("email");
 
-        return loginApiService.saveResetPasswordToken(email);
+        boolean result = loginApiService.saveResetPasswordToken(email);
+
+        return result ? ResponseEntity.ok().build()
+                : ResponseEntity.ok().body(new ErrorResponseDto(List.of("error.invalid.email")));
     }
 
     @PostMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordResetDto passwordResetDto,
                                            Errors errors) {
 
-        return loginApiService.resetPassword(passwordResetDto, errors);
+        boolean result = loginApiService.resetPassword(passwordResetDto, errors);
+
+        return result ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().body(Utils.getErrorResponseDto(errors));
     }
 }

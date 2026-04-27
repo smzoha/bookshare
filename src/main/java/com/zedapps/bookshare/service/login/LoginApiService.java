@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.dto.api.login.LoginApiDto;
 import com.zedapps.bookshare.dto.login.PasswordResetDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
@@ -10,12 +9,9 @@ import com.zedapps.bookshare.util.Utils;
 import com.zedapps.bookshare.validator.LoginDtoValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-
-import java.util.List;
 
 /**
  * @author smzoha
@@ -41,26 +37,27 @@ public class LoginApiService {
     }
 
     @Transactional
-    public ResponseEntity<?> saveResetPasswordToken(String email) {
+    public boolean saveResetPasswordToken(String email) {
         if (!loginRepository.existsLoginByEmail(email)) {
-            return ResponseEntity.ok().body(new ErrorResponseDto(List.of("error.invalid.email")));
+            return false;
         }
 
         passwordResetService.savePasswordResetToken(email);
 
-        return ResponseEntity.ok().build();
+        return true;
     }
 
-    public ResponseEntity<?> resetPassword(PasswordResetDto passwordResetDto, Errors errors) {
+    @Transactional
+    public boolean resetPassword(PasswordResetDto passwordResetDto, Errors errors) {
         passwordResetService.validatePasswordResetDto(passwordResetDto, errors);
 
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(Utils.getErrorResponseDto(errors));
+            return false;
         }
 
         passwordResetService.resetPassword(passwordResetDto);
 
-        return ResponseEntity.ok().build();
+        return true;
     }
 
     public void validateRegistration(RegistrationRequestDto registrationRequestDto, Errors errors) {
