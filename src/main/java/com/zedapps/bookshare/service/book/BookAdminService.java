@@ -10,7 +10,7 @@ import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
-import com.zedapps.bookshare.repository.login.AuthorRepository;
+import com.zedapps.bookshare.repository.book.AuthorRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;

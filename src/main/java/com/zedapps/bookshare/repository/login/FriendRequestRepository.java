@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.repository.connection;
+package com.zedapps.bookshare.repository.login;
 
 import com.zedapps.bookshare.entity.login.FriendRequest;
 import com.zedapps.bookshare.entity.login.Login;

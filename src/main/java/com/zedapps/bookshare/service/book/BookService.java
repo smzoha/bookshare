@@ -10,7 +10,7 @@ import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.BookRepository;
-import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelvedBookRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;

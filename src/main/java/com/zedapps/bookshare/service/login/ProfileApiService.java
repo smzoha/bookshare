@@ -9,7 +9,7 @@ import com.zedapps.bookshare.entity.login.Connection;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.repository.connection.ConnectionRepository;
+import com.zedapps.bookshare.repository.login.ConnectionRepository;
 import com.zedapps.bookshare.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

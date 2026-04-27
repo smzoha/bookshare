@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.repository.book;
+package com.zedapps.bookshare.repository.login;
 
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Review;

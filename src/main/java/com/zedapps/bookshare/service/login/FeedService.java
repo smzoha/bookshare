@@ -6,7 +6,7 @@ import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
-import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.repository.feed.FeedEntryRepository;
 import com.zedapps.bookshare.service.book.BookService;
 import jakarta.annotation.PostConstruct;

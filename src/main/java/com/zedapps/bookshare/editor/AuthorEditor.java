@@ -1,7 +1,7 @@
 package com.zedapps.bookshare.editor;
 
 import com.zedapps.bookshare.entity.book.Author;
-import com.zedapps.bookshare.repository.login.AuthorRepository;
+import com.zedapps.bookshare.repository.book.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.beans.PropertyEditorSupport;

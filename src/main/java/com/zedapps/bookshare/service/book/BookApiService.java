@@ -11,7 +11,7 @@ import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.repository.book.ReviewRepository;
+import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ShelfRepository;
 import com.zedapps.bookshare.util.Utils;
