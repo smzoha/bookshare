@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.filter;
 
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.auth.JwtService;
 import com.zedapps.bookshare.service.auth.LoginDetailService;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

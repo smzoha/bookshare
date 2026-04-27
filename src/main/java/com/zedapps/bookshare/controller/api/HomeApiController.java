@@ -2,9 +2,9 @@ package com.zedapps.bookshare.controller.api;
 
 import com.zedapps.bookshare.dto.api.book.BookDto;
 import com.zedapps.bookshare.dto.api.feed.FeedApiResponse;
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.book.BookRepository;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.service.login.FeedApiService;
 import com.zedapps.bookshare.service.login.LoginService;

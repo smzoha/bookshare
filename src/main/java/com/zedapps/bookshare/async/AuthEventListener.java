@@ -1,9 +1,9 @@
 package com.zedapps.bookshare.async;
 
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;

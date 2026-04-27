@@ -27,11 +27,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public class MailService {
 
-    private final Gmail gmail;
-
-    @Value("${spring.mail.username}")
-    private String mailAddress;
-
     private static final String PASSWORD_RESET_MAIL_BODY = """
             Howdy Partner,%n\
             %n\
@@ -48,6 +43,11 @@ public class MailService {
             %n\
             — BookShare Team%n\
             """;
+
+    private final Gmail gmail;
+
+    @Value("${spring.mail.username}")
+    private String mailAddress;
 
     @Async
     public void sendPasswordResetEmail(String email, String token) throws MessagingException, IOException {

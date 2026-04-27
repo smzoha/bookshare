@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.controller.book.app;
 
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.editor.AuthorEditor;
 import com.zedapps.bookshare.editor.GenreEditor;
 import com.zedapps.bookshare.editor.ImageEditor;
@@ -14,11 +13,12 @@ import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.enums.Status;
+import com.zedapps.bookshare.repository.book.AuthorRepository;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.image.ImageRepository;
-import com.zedapps.bookshare.repository.book.AuthorRepository;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import jakarta.validation.Valid;

@@ -1,10 +1,10 @@
 package com.zedapps.bookshare.service.image;
 
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

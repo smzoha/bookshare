@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.dto.login.LoginManageDto;
 import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
@@ -10,6 +9,7 @@ import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
