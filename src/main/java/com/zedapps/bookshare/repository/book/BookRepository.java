@@ -3,7 +3,6 @@ package com.zedapps.bookshare.repository.book;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -41,7 +40,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             LEFT JOIN b.tags t
             WHERE g IN (:genres) OR t IN (:tags)
             """)
-    @Cacheable(cacheNames = "book-lists", key = "'related-' + #genres.hashCode() + '-' + #tags.hashCode()")
     List<Book> getRelatedBooks(Set<Genre> genres, Set<Tag> tags);
 
     @Query("""

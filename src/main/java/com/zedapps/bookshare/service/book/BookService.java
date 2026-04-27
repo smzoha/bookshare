@@ -4,6 +4,8 @@ import com.zedapps.bookshare.dto.book.BookReviewDto;
 import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Book;
+import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Status;
@@ -81,8 +83,9 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<Book> getRelatedBooks(Book book) {
-        List<Book> relatedBooks = bookRepository.getRelatedBooks(book.getGenres(), book.getTags());
+    @Cacheable(cacheNames = "book-lists", key = "'related-' + #genres.hashCode() + '-' + #tags.hashCode()")
+    public List<Book> getRelatedBooks(Book book, Set<Genre> genres, Set<Tag> tags) {
+        List<Book> relatedBooks = bookRepository.getRelatedBooks(genres, tags);
         relatedBooks.remove(book);
 
         return relatedBooks;
@@ -93,6 +96,7 @@ public class BookService {
         return reviewRepository.findReviewsByBookOrderByReviewDateDesc(book, PageRequest.of(pageNumber, 5));
     }
 
+    @Transactional(readOnly = true)
     public void setupReferenceData(LoginDetails loginDetails, Long bookId, ModelMap model,
                                    boolean addNewReview, boolean addNewProgress) {
 
@@ -113,7 +117,7 @@ public class BookService {
         if (addNewReview) model.put("reviewDto", new BookReviewDto());
 
         model.put("reviews", getReviewsByBook(book, 0));
-        model.put("relatedBooks", getRelatedBooks(book));
+        model.put("relatedBooks", getRelatedBooks(book, book.getGenres(), book.getTags()));
     }
 
     @Transactional
