@@ -1,23 +1,23 @@
 package com.zedapps.bookshare.service.login;
 
-import com.zedapps.bookshare.dto.feed.FeedDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
-import com.zedapps.bookshare.entity.feed.FeedEntry;
-import com.zedapps.bookshare.entity.login.*;
+import com.zedapps.bookshare.entity.login.Connection;
+import com.zedapps.bookshare.entity.login.FriendRequest;
+import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.ReadingProgress;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
-import com.zedapps.bookshare.repository.connection.ConnectionRepository;
-import com.zedapps.bookshare.repository.connection.FriendRequestRepository;
+import com.zedapps.bookshare.repository.login.ConnectionRepository;
+import com.zedapps.bookshare.repository.login.FriendRequestRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
-import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -29,55 +29,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final LoginService loginService;
     private final FriendRequestRepository friendRequestRepository;
     private final ConnectionRepository connectionRepository;
     private final ActivityService activityService;
-    private final FeedService feedService;
-    private final ShelfService shelfService;
 
-    public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
-        Login profileLogin = loginService.getLogin(profileEmail);
-        Login authLogin = loginService.getLogin(loginDetails.getEmail());
-
-        model.put("login", profileLogin);
-
-        List<Shelf> shelves = shelfService.getShelvesForCollection(profileEmail);
-
-        model.put("totalBooks", shelves
-                .stream()
-                .mapToInt(shelf -> shelf.getBooks().size())
-                .sum());
-
-        setupShelves(model, shelves);
-
-        model.put("readingProgressList", getDistinctReadingProgressList(profileLogin));
-
-        List<Connection> connections = connectionRepository.findConnectionsByPerson1(profileLogin);
-        model.put("connectionsCount", connections.size());
-        model.put("connections", connections);
-
-        setupConnectionRefData(model, profileLogin, authLogin);
-
-        Page<FeedEntry> feedEntries = feedService.getFeedEntries(profileLogin, 5, 0);
-        List<FeedDto> feedDtoList = feedService.mapToFeedDtoList(feedEntries);
-        model.put("feedDtoList", feedDtoList);
+    @Transactional(readOnly = true)
+    public List<Connection> getConnectionsByPerson(Login person1) {
+        return connectionRepository.findConnectionsByPerson1(person1);
     }
 
-    public void setupConnectionRefData(ModelMap model, Login profileLogin, Login authLogin) {
-        boolean friendReqSent = friendRequestRepository.findFriendRequest(profileLogin, authLogin).isPresent();
-        boolean friendReqReceived = friendRequestRepository.findFriendRequest(authLogin, profileLogin).isPresent();
-
-        List<Connection> connections = connectionRepository.findConnectionsByPerson1(authLogin);
-        boolean isFriends = connections.stream().anyMatch(conn -> conn.getPerson2().equals(profileLogin));
-
-        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
-
-        model.put("friendReqReceived", friendReqReceived);
-        model.put("friendReqSent", friendReqSent);
-
-        model.put("isFriends", isFriends);
-        model.put("showFriendReqBtn", !friendReqSent && !friendReqReceived && !isFriends);
+    @Transactional(readOnly = true)
+    public Optional<FriendRequest> getFriendRequest(Login person1, Login person2) {
+        return friendRequestRepository.findFriendRequest(person1, person2);
     }
 
     @Transactional
@@ -120,26 +83,6 @@ public class ProfileService {
                         .thenComparing(rp -> rp.getBook().getTitle()))
                 .limit(5)
                 .toList();
-    }
-
-    private void setupShelves(ModelMap model, List<Shelf> shelves) {
-        Map<Long, String> defaultShelves = new LinkedHashMap<>();
-        Map<Long, String> shelfMap = new LinkedHashMap<>();
-        Shelf activeShelf = null;
-
-        for (Shelf shelf : shelves) {
-            if (shelf.isDefaultShelf()) {
-                defaultShelves.put(shelf.getId(), shelf.getName());
-                if (activeShelf == null) activeShelf = shelf;
-
-            } else {
-                shelfMap.put(shelf.getId(), shelf.getName());
-            }
-        }
-
-        model.put("defaultShelves", defaultShelves);
-        model.put("shelves", shelfMap);
-        model.put("activeShelf", activeShelf);
     }
 
     private void saveFriendRequest(Login authLogin, Login profileLogin) {

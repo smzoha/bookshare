@@ -1,12 +1,12 @@
 package com.zedapps.bookshare.controller;
 
 import com.zedapps.bookshare.dto.feed.FeedDto;
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.FeedService;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.login.ProfileService;

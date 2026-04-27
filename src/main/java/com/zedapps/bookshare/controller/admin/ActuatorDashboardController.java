@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.controller.admin;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import io.micrometer.core.instrument.FunctionCounter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;

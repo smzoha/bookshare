@@ -7,8 +7,8 @@ import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.exception.MailSendException;
 import com.zedapps.bookshare.exception.TokenGenerationException;
 import com.zedapps.bookshare.repository.login.PasswordResetTokenRepository;
-import com.zedapps.bookshare.service.mail.MailService;
 import com.zedapps.bookshare.service.activity.ActivityService;
+import com.zedapps.bookshare.service.mail.MailService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +34,13 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PasswordResetService {
 
+    private static final long EXPIRY_OFFSET_MINS = 10;
+
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final ActivityService activityService;
     private final MailService mailService;
     private final LoginService loginService;
     private final PasswordEncoder passwordEncoder;
-
-    private static final long EXPIRY_OFFSET_MINS = 10;
 
     public void savePasswordResetToken(String email) {
         String token = UUID.randomUUID().toString();

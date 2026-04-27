@@ -1,4 +1,4 @@
-package com.zedapps.bookshare.dto.login;
+package com.zedapps.bookshare.service.auth;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,8 +1,8 @@
 package com.zedapps.bookshare.controller.login.app;
 
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.shelf.ShelfService;
 import lombok.RequiredArgsConstructor;

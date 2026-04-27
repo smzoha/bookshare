@@ -1,6 +1,5 @@
 package com.zedapps.bookshare.service.auth;
 
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

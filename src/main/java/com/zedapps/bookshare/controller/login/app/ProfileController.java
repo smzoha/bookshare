@@ -1,10 +1,11 @@
 package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
-import com.zedapps.bookshare.dto.login.LoginDetails;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
+import com.zedapps.bookshare.helper.ProfileHelper;
+import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.login.ProfileService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class ProfileController {
     private final List<ConnectionAction> FRIEND_ACCEPT_OR_REMOVE_ACTIONS = List.of(ConnectionAction.ACCEPT_FRIEND_REQ,
             ConnectionAction.REMOVE_FRIEND);
 
+    private final ProfileHelper profileHelper;
     private final ProfileService profileService;
     private final LoginService loginService;
     private final ApplicationEventPublisher publisher;
@@ -46,7 +48,7 @@ public class ProfileController {
 
         Login login = loginService.getLoginByHandle(handle);
 
-        profileService.setupReferenceData(login.getEmail(), loginDetails, model);
+        profileHelper.setupReferenceData(login.getEmail(), loginDetails, model);
 
         publisher.publishEvent(ActivityEvent.builder()
                 .loginEmail(loginDetails.getEmail())
@@ -99,13 +101,13 @@ public class ProfileController {
         profileService.performConnectionAction(authLogin, profileLogin, action);
 
         if (FRIEND_ACCEPT_OR_REMOVE_ACTIONS.contains(action)) {
-            profileService.setupReferenceData(profileLogin.getEmail(), loginDetails, model);
+            profileHelper.setupReferenceData(profileLogin.getEmail(), loginDetails, model);
 
             return "app/profile/profile";
 
         } else {
             model.put("login", profileLogin);
-            profileService.setupConnectionRefData(model, profileLogin, authLogin);
+            profileHelper.setupConnectionRefData(model, profileLogin, authLogin);
 
             return "app/profile/profileInfoFragment :: profileInfoFragment";
         }
