@@ -64,6 +64,9 @@ src/main/java/com/zedapps/bookshare/
 │           └── CollectionController        # /collection
 ├── dto/                         # Data Transfer Objects (read these before touching forms)
 ├── editor/                      # PropertyEditors for form binding (Author, Genre, Tag, Image)
+├── helper/
+│   ├── BookHelper               # Populates ModelMap for book detail page (calls BookService + ShelfService)
+│   └── ProfileHelper            # Populates ModelMap for profile page and connection fragment (calls ProfileService)
 ├── entity/
 │   ├── activity/
 │   │   ├── Activity             # table: activity
@@ -95,6 +98,7 @@ src/main/java/com/zedapps/bookshare/
 │   ├── activity/ActivityService
 │   ├── auth/
 │   │   ├── JwtService           # JWT generation and validation (JJWT)
+│   │   ├── LoginDetails         # Unified security principal (UserDetails + OidcUser + OAuth2User)
 │   │   ├── LoginDetailService   # UserDetailsService implementation
 │   │   └── LoginDetailOidcService # OAuth2UserService for Google OIDC
 │   ├── book/
@@ -435,7 +439,7 @@ Several pages use AJAX fragment replacement. The controller checks `request.getH
 - **AJAX detection:** Check `"XMLHttpRequest".equals(request.getHeader("X-Requested-With"))` to decide whether to return a full page or just a fragment.
 - **JSON endpoints:** Annotate with `@ResponseBody` and return a DTO. No `ResponseEntity` wrappers unless needed for status codes.
 - **Redirects after POST:** Always `return "redirect:/..."` to follow PRG (Post-Redirect-Get) pattern.
-- **Model population:** Service methods like `bookService.setupReferenceData(...)` and `profileService.setupReferenceData(...)` handle bulk model population — use them rather than calling multiple services in the controller.
+- **Model population:** Helper classes (`BookHelper`, `ProfileHelper`) handle bulk `ModelMap` population for complex pages — use them rather than calling multiple services in the controller. Helpers live in `helper/` and are the only layer that accepts `ModelMap` as a parameter.
 
 ---
 
