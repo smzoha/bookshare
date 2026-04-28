@@ -49,10 +49,11 @@ public class TestUtils {
         return author;
     }
 
-    public static Shelf getShelf(Login login) {
+    public static Shelf getShelf(Login login, String name, boolean defaultShelf) {
         Shelf shelf = new Shelf();
         shelf.setUser(login);
-        shelf.setName("Test Shelf");
+        shelf.setName(name);
+        shelf.setDefaultShelf(defaultShelf);
 
         return shelf;
     }

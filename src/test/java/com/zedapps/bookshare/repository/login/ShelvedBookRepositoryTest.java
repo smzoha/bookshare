@@ -61,7 +61,7 @@ public class ShelvedBookRepositoryTest {
     @BeforeEach
     void setup() {
         login = TestUtils.getLogin("user@test.com", "user", true);
-        shelf = TestUtils.getShelf(login);
+        shelf = TestUtils.getShelf(login, "Test Shelf", false);
 
         Author author = TestUtils.getAuthor("Test", "Author");
 
