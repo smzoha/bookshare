@@ -1,14 +1,14 @@
 package com.zedapps.bookshare.util;
 
+import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.ShelvedBook;
-import com.zedapps.bookshare.enums.AuthProvider;
-import com.zedapps.bookshare.enums.Role;
-import com.zedapps.bookshare.enums.Status;
+import com.zedapps.bookshare.enums.*;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -65,5 +65,15 @@ public class TestUtils {
         shelvedBook.setShelf(shelf);
 
         return shelvedBook;
+    }
+
+    public static ActivityOutbox getActivityOutboxItem(ActivityStatus status) {
+        return ActivityOutbox.builder()
+                .eventType(ActivityType.LOGIN)
+                .referenceId(1L)
+                .referenceEntity("LOGIN")
+                .payload(Collections.emptyMap())
+                .status(status)
+                .build();
     }
 }
