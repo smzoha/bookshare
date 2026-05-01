@@ -1,5 +1,6 @@
 package com.zedapps.bookshare.util;
 
+import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
@@ -74,6 +75,15 @@ public class TestUtils {
                 .referenceEntity("LOGIN")
                 .payload(Collections.emptyMap())
                 .status(status)
+                .build();
+    }
+
+    public static Activity getActivity(ActivityType activityType) {
+        return Activity.builder()
+                .eventType(activityType)
+                .referenceId(1L)
+                .referenceEntity(activityType.getReferenceEntity())
+                .metadata(Collections.emptyMap())
                 .build();
     }
 }
