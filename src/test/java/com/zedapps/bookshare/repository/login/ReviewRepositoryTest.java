@@ -56,7 +56,7 @@ public class ReviewRepositoryTest {
     private Book reviewedBook;
 
     @BeforeAll
-    void setUp() throws InterruptedException {
+    void setup() throws InterruptedException {
         Author author = TestUtils.getAuthor("Test", "Author");
         authorRepository.saveAndFlush(author);
 
@@ -69,13 +69,9 @@ public class ReviewRepositoryTest {
         bookRepository.saveAllAndFlush(List.of(book, reviewedBook));
 
         for (int i = 0; i < 5; i++) {
-            Review review = new Review();
-            review.setBook(reviewedBook);
-            review.setUser(login);
-            review.setRating(5);
-            review.setContent("Review Content");
-
+            Review review = TestUtils.getReview(reviewedBook, login, 5);
             reviewRepository.saveAndFlush(review);
+
             Thread.sleep(100);
         }
     }
