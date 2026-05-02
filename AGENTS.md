@@ -496,6 +496,61 @@ PostgreSQL in Docker is on host port **5433** (to avoid conflicts with a local i
 
 ---
 
+## Testing
+
+### Stack
+
+| Dependency | Role |
+|---|---|
+| `spring-boot-starter-test` | JUnit 5, AssertJ, Mockito, Spring Test |
+| `spring-boot-testcontainers` | `@ServiceConnection` auto-wiring |
+| `testcontainers:postgresql` 1.21.4 | Real PostgreSQL instance per test class |
+| `spring-security-test` | Security test utilities |
+
+### Repository Tests (`@DataJpaTest`)
+
+```java
+@DataJpaTest
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+public class FooRepositoryTest {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine");
+
+    @BeforeEach
+    void setup() { ... }
+
+    @Test               // each test runs in its own @Transactional scope and is rolled back after
+    void methodName_condition_expectedResult() { ... }
+}
+```
+
+- `@AutoConfigureTestDatabase(replace = NONE)` — keeps the Testcontainers datasource instead of substituting an in-memory DB.
+- `@BeforeEach` runs before every test.
+- For cases where a single setup is required for all the cases, use `@BeforeAll`. To ensure that the setup runs without any static context, use `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`.
+- `@BeforeAll` runs outside any test transaction. `saveAndFlush` / `saveAllAndFlush` commits the fixture; it persists for the lifetime of the test class.
+- Each `@Test` is wrapped in a `@Transactional` rollback — in-test writes are reverted, `@BeforeAll` data is unaffected.
+- Extra data needed by a single test (and that must not bleed into siblings) should be saved inside the test method itself — it rolls back with the test's own transaction.
+
+### TestUtils
+
+`com.zedapps.bookshare.util.TestUtils` builds unsaved entity instances. Prefer these over inline construction; add new factory methods here when a new test class needs them.
+
+| Method | Returns | Notes |
+|---|---|---|
+| `getLogin(email, handle, active)` | `Login` | `Role.USER`, `AuthProvider.LOCAL`, firstName="Test", lastName="User" |
+| `getAuthor(firstName, lastName)` | `Author` | |
+| `getBook(title, isbn, author, status)` | `Book` | pages=100; single author |
+| `getReview(book, login, rating)` | `Review` | content="Review Content" |
+| `getShelf(login, name, defaultShelf)` | `Shelf` | |
+| `getShelvedBook(book, login, shelf)` | `ShelvedBook` | |
+| `getActivityOutboxItem(status)` | `ActivityOutbox` | LOGIN event, referenceId=1 |
+| `getActivity(activityType)` | `Activity` | referenceId=1, no login |
+
+---
+
 ## Environment Variables Reference
 
 | Variable | Where used | Description |
