@@ -142,7 +142,7 @@ public class Book {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", image=" + image.getId() +
+                ", image=" + (image != null ? image.getId() : "") +
                 '}';
     }
 
