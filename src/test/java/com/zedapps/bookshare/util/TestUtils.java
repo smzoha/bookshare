@@ -1,14 +1,16 @@
 package com.zedapps.bookshare.util;
 
+import com.zedapps.bookshare.entity.activity.Activity;
+import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.ShelvedBook;
-import com.zedapps.bookshare.enums.AuthProvider;
-import com.zedapps.bookshare.enums.Role;
-import com.zedapps.bookshare.enums.Status;
+import com.zedapps.bookshare.enums.*;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -49,6 +51,16 @@ public class TestUtils {
         return author;
     }
 
+    public static Review getReview(Book reviewedBook, Login login, int rating) {
+        Review review = new Review();
+        review.setBook(reviewedBook);
+        review.setUser(login);
+        review.setRating(rating);
+        review.setContent("Review Content");
+
+        return review;
+    }
+
     public static Shelf getShelf(Login login, String name, boolean defaultShelf) {
         Shelf shelf = new Shelf();
         shelf.setUser(login);
@@ -65,5 +77,24 @@ public class TestUtils {
         shelvedBook.setShelf(shelf);
 
         return shelvedBook;
+    }
+
+    public static ActivityOutbox getActivityOutboxItem(ActivityStatus status) {
+        return ActivityOutbox.builder()
+                .eventType(ActivityType.LOGIN)
+                .referenceId(1L)
+                .referenceEntity("LOGIN")
+                .payload(Collections.emptyMap())
+                .status(status)
+                .build();
+    }
+
+    public static Activity getActivity(ActivityType activityType) {
+        return Activity.builder()
+                .eventType(activityType)
+                .referenceId(1L)
+                .referenceEntity(activityType.getReferenceEntity())
+                .metadata(Collections.emptyMap())
+                .build();
     }
 }

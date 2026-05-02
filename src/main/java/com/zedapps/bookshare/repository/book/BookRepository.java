@@ -34,7 +34,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @EntityGraph("book.withAssociations")
     @Query("""
-            SELECT b
+            SELECT DISTINCT b
             FROM Book b
             LEFT JOIN b.genres g
             LEFT JOIN b.tags t
