@@ -95,6 +95,7 @@ public class TestUtils {
                 .referenceId(1L)
                 .referenceEntity(activityType.getReferenceEntity())
                 .metadata(Collections.emptyMap())
+                .internal(!ActivityType.FEED_ACTIVITIES.contains(activityType))
                 .build();
     }
 }
