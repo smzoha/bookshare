@@ -9,9 +9,18 @@ import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.ShelvedBook;
 import com.zedapps.bookshare.enums.*;
+import com.zedapps.bookshare.service.auth.LoginDetails;
+import org.mockito.Mockito;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 /**
  * @author smzoha
@@ -97,5 +106,24 @@ public class TestUtils {
                 .metadata(Collections.emptyMap())
                 .internal(!ActivityType.FEED_ACTIVITIES.contains(activityType))
                 .build();
+    }
+
+    public static LoginDetails getLoginDetails(String email, String handle, boolean active) {
+        Login login = getLogin(email, handle, active);
+
+        return new LoginDetails(login.getEmail(),
+                login.getFirstName(),
+                login.getLastName(),
+                login.getHandle(),
+                List.of(new SimpleGrantedAuthority(login.getRole().name())),
+                null,
+                null);
+    }
+
+    public static void setupSecurityContext(LoginDetails loginDetails) {
+        Authentication authentication = mock(Authentication.class);
+        lenient().when(authentication.getPrincipal()).thenReturn(loginDetails);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
