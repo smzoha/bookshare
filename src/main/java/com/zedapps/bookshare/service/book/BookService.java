@@ -63,9 +63,9 @@ public class BookService {
 
         String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
 
-        if (StringUtils.isNotBlank(query)) {
-            query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
-        }
+        query = StringUtils.isNotBlank(query)
+                ? "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%"
+                : null;
 
         Page<Book> books = bookRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
 
