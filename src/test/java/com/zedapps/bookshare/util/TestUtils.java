@@ -10,7 +10,6 @@ import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.entity.login.ShelvedBook;
 import com.zedapps.bookshare.enums.*;
 import com.zedapps.bookshare.service.auth.LoginDetails;
-import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +26,34 @@ import static org.mockito.Mockito.mock;
  * @since 26/4/26
  **/
 public class TestUtils {
+
+    public static final List<String> TEST_ISBN_DATA = List.of(
+            "0134685997",
+            "9780134685991",
+            "0201633612",
+            "9780201633610",
+            "0132350882",
+            "9780132350884",
+            "0596009208",
+            "9780596009205",
+            "0134494164",
+            "9780134494166",
+            "0743273567",
+            "9780743273565",
+            "0451524934",
+            "9780451524935",
+            "0345391802",
+            "9780345391803",
+            "0060850523",
+            "9780060850524",
+            "0395489326",
+            "9780395489321",
+            "0140449116",
+            "9780140449112",
+            "0553103547",
+            "9780553103540",
+            "0544003415"
+    );
 
     public static Login getLogin(String email, String handle, boolean active) {
         Login login = new Login();
