@@ -4,6 +4,8 @@ import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
+import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.entity.login.Shelf;
@@ -14,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -79,12 +82,43 @@ public class TestUtils {
         return book;
     }
 
+    public static List<Book> getBooks(Author author, Set<Genre> genres, Set<Tag> tags) {
+        List<Book> books = new ArrayList<>();
+
+        for (int i = 1; i <= TEST_ISBN_DATA.size(); i++) {
+            String isbn = TEST_ISBN_DATA.get(i - 1);
+
+            Book book = TestUtils.getBook("Book " + i, isbn, author, Status.ACTIVE);
+            book.setId((long) i);
+            book.setGenres(genres);
+            book.setTags(tags);
+
+            books.add(book);
+        }
+
+        return books;
+    }
+
     public static Author getAuthor(String firstName, String lastName) {
         Author author = new Author();
         author.setFirstName(firstName);
         author.setLastName(lastName);
 
         return author;
+    }
+
+    public static Genre getGenre(String label) {
+        Genre genre = new Genre();
+        genre.setName(label);
+
+        return genre;
+    }
+
+    public static Tag getTag(String label) {
+        Tag tag = new Tag();
+        tag.setName(label);
+
+        return tag;
     }
 
     public static Review getReview(Book reviewedBook, Login login, int rating) {

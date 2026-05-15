@@ -79,13 +79,11 @@ public class BookAdminServiceTest {
         author.setId(1L);
         author.setLogin(login);
 
-        genre = new Genre();
+        genre = TestUtils.getGenre("Genre 1");
         genre.setId(1L);
-        genre.setName("Genre 1");
 
-        tag = new Tag();
+        tag = TestUtils.getTag("Tag 1");
         tag.setId(1L);
-        tag.setName("Tag 1");
 
         book = TestUtils.getBook("Book 1", "9780743273565", author, Status.ACTIVE);
         book.setId(1L);
@@ -145,9 +143,8 @@ public class BookAdminServiceTest {
 
     @Test
     void getGenreList_returnsSortedByName() {
-        Genre genre2 = new Genre();
+        Genre genre2 = TestUtils.getGenre("Alpha Genre");
         genre2.setId(2L);
-        genre2.setName("Alpha Genre");
 
         when(genreRepository.findAll()).thenReturn(List.of(genre, genre2));
 
@@ -192,9 +189,8 @@ public class BookAdminServiceTest {
 
     @Test
     void getTagList_returnsSortedByName() {
-        Tag tag2 = new Tag();
+        Tag tag2 = TestUtils.getTag("Alpha Tag");
         tag2.setId(2L);
-        tag2.setName("Alpha Tag");
 
         when(tagRepository.findAll()).thenReturn(List.of(tag, tag2));
 
@@ -323,8 +319,7 @@ public class BookAdminServiceTest {
 
     @Test
     void saveGenre_newGenre_firesGenreAddOutbox() {
-        Genre newGenre = new Genre();
-        newGenre.setName("Genre 1");
+        Genre newGenre = TestUtils.getGenre("Genre 1");
 
         bookAdminService.saveGenre(newGenre);
 
@@ -342,8 +337,7 @@ public class BookAdminServiceTest {
 
     @Test
     void saveGenre_newGenre_includesCorrectPayloadFields() {
-        Genre newGenre = new Genre();
-        newGenre.setName("Genre 1");
+        Genre newGenre = TestUtils.getGenre("Genre 1");
         bookAdminService.saveGenre(newGenre);
 
         verify(activityService).saveActivityOutbox(eq(ActivityType.GENRE_ADD),
@@ -358,8 +352,7 @@ public class BookAdminServiceTest {
 
     @Test
     void saveTag_newTag_firesTagAddOutbox() {
-        Tag newTag = new Tag();
-        newTag.setName("Tag 1");
+        Tag newTag = TestUtils.getTag("Tag 1");
 
         bookAdminService.saveTag(newTag);
 
@@ -377,8 +370,7 @@ public class BookAdminServiceTest {
 
     @Test
     void saveTag_newTag_includesCorrectPayloadFields() {
-        Tag newTag = new Tag();
-        newTag.setName("Tag 1");
+        Tag newTag = TestUtils.getTag("Tag 1");
         bookAdminService.saveTag(newTag);
 
         verify(activityService).saveActivityOutbox(eq(ActivityType.TAG_ADD),

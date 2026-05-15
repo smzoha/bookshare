@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.repository.book;
 
 import com.zedapps.bookshare.entity.book.Genre;
+import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -44,8 +45,7 @@ public class GenreRepositoryTest {
     }
 
     private void setupGenres() {
-        Genre genre = new Genre();
-        genre.setName("Test Genre");
+        Genre genre = TestUtils.getGenre("Test Genre");
 
         genreRepository.saveAndFlush(genre);
     }

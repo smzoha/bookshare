@@ -8,7 +8,6 @@ import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
 import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.ActivityType;
-import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.login.ReadingProgressRepository;
 import com.zedapps.bookshare.repository.login.ReviewRepository;
@@ -37,7 +36,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.zedapps.bookshare.util.TestUtils.TEST_ISBN_DATA;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -419,28 +417,15 @@ public class BookServiceTest {
     }
 
     private void setupBooks(Author author) {
-        books = new ArrayList<>();
-
-        for (int i = 1; i <= TEST_ISBN_DATA.size(); i++) {
-            String isbn = TEST_ISBN_DATA.get(i - 1);
-
-            Book book = TestUtils.getBook("Book " + i, isbn, author, Status.ACTIVE);
-            book.setId((long) i);
-            book.setGenres(Set.of(genre));
-            book.setTags(Set.of(tag));
-
-            books.add(book);
-        }
+        books = TestUtils.getBooks(author, Set.of(genre), Set.of(tag));
     }
 
     private void setupGenreTag() {
-        genre = new Genre();
+        genre = TestUtils.getGenre("Genre");
         genre.setId(1L);
-        genre.setName("Genre");
 
-        tag = new Tag();
+        tag = TestUtils.getTag("Tag");
         tag.setId(1L);
-        tag.setName("Tag");
     }
 
     private void setupShelves() {
