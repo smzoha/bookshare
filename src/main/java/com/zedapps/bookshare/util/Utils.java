@@ -2,6 +2,8 @@ package com.zedapps.bookshare.util;
 
 import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.entity.image.Image;
+import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.Shelf;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,6 +33,19 @@ public class Utils {
                   .buildAndExpand(image.getId())
                   .toUriString()
                 : "";
+    }
+
+    public static List<Shelf> getDefaultShelves(Login login) {
+        return Shelf.DEFAULT_SHELF_NAMES.stream()
+                .map(shelfName -> {
+                    Shelf shelf = new Shelf();
+                    shelf.setName(shelfName);
+                    shelf.setUser(login);
+                    shelf.setDefaultShelf(true);
+
+                    return shelf;
+
+                }).toList();
     }
 
     public static String cleanHtml(String htmlText) {

@@ -10,6 +10,7 @@ import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.auth.LoginDetails;
+import com.zedapps.bookshare.util.Utils;
 import jakarta.persistence.NoResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -152,13 +153,7 @@ public class LoginService {
     }
 
     private void setupShelvesForNewLogin(Login login) {
-        Shelf.DEFAULT_SHELF_NAMES.forEach(shelfName -> {
-            Shelf shelf = new Shelf();
-            shelf.setName(shelfName);
-            shelf.setUser(login);
-            shelf.setDefaultShelf(true);
-
-            login.getShelves().add(shelf);
-        });
+        List<Shelf> defaultShelves = Utils.getDefaultShelves(login);
+        login.getShelves().addAll(defaultShelves);
     }
 }

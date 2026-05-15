@@ -4,6 +4,7 @@ import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.AuthProvider;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.repository.login.LoginRepository;
+import com.zedapps.bookshare.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -49,11 +50,12 @@ public class LoginDetailOidcService implements OAuth2UserService<OidcUserRequest
             login.setEmail(email);
             login.setFirstName(firstName);
             login.setLastName(lastName);
-            login.setHandle(firstName + "." + lastName + "." + UUID.randomUUID().toString().substring(0, 4));
+            login.setHandle(email.split("@")[0] + "." + UUID.randomUUID().toString().substring(0, 4));
             login.setRole(Role.USER);
             login.setAuthProvider(AuthProvider.GOOGLE);
             login.setProviderId(providerId);
             login.setActive(true);
+            login.getShelves().addAll(Utils.getDefaultShelves(login));
 
             login = loginRepository.save(login);
         }
