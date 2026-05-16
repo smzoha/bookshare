@@ -1,5 +1,7 @@
 package com.zedapps.bookshare.util;
 
+import com.zedapps.bookshare.dto.login.LoginManageDto;
+import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.activity.Activity;
 import com.zedapps.bookshare.entity.activity.ActivityOutbox;
 import com.zedapps.bookshare.entity.book.Author;
@@ -186,5 +188,30 @@ public class TestUtils {
         lenient().when(authentication.getPrincipal()).thenReturn(loginDetails);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public static RegistrationRequestDto getRegistrationRequestDto(Login login) {
+        RegistrationRequestDto registrationRequestDto = new RegistrationRequestDto();
+        registrationRequestDto.setEmail(login.getEmail());
+        registrationRequestDto.setHandle(login.getHandle());
+        registrationRequestDto.setFirstName(login.getFirstName());
+        registrationRequestDto.setLastName(login.getLastName());
+        registrationRequestDto.setPassword("plain-password");
+        registrationRequestDto.setConfirmPassword("plain-password");
+
+        return registrationRequestDto;
+    }
+
+    public static LoginManageDto getLoginManageDto(Login login) {
+        LoginManageDto loginManageDto = new LoginManageDto();
+        loginManageDto.setEmail(login.getEmail());
+        loginManageDto.setHandle(login.getHandle());
+        loginManageDto.setFirstName(login.getFirstName());
+        loginManageDto.setLastName(login.getLastName());
+        loginManageDto.setPassword("plain-password");
+        loginManageDto.setRole(login.getRole());
+        loginManageDto.setActive(login.isActive());
+
+        return loginManageDto;
     }
 }
