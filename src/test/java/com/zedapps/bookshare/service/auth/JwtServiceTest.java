@@ -15,6 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JwtServiceTest {
 
     private static final String SECRET = "a-very-long-test-secret-key-for-jwt";
-    private static final String ENCODED_SECRET = Base64.getEncoder().encodeToString(SECRET.getBytes());
+    private static final String ENCODED_SECRET = Base64.getEncoder().encodeToString(SECRET.getBytes(StandardCharsets.UTF_8));
 
     @InjectMocks
     private JwtService jwtService;

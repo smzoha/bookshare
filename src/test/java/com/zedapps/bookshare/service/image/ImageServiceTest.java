@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,7 +51,7 @@ public class ImageServiceTest {
         image = new Image();
         image.setId(1L);
         image.setFileName("test.txt");
-        image.setContent("This is a test text".getBytes());
+        image.setContent("This is a test text".getBytes(StandardCharsets.UTF_8));
         image.setContentType("text/plain");
 
         LoginDetails loginDetails = TestUtils.getLoginDetails("test@test.com", "test", true);

@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -72,7 +73,7 @@ public class MailServiceTest {
         verify(gmailMessages).send(eq("me"), messageCaptor.capture());
         verify(gmailSend).execute();
 
-        String rawContent = new String(Base64.getDecoder().decode(messageCaptor.getValue().getRaw()));
+        String rawContent = new String(Base64.getDecoder().decode(messageCaptor.getValue().getRaw()), StandardCharsets.UTF_8);
         assertThat(rawContent).contains("Howdy Partner");
         assertThat(rawContent).contains("BookShare Team");
         assertThat(rawContent).contains("[BookShare] Password Reset Request");
