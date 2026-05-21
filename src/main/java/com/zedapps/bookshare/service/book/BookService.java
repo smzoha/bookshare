@@ -63,9 +63,9 @@ public class BookService {
 
         String[] sortComponents = StringUtils.isNotEmpty(sort) ? sort.split(",") : new String[2];
 
-        if (StringUtils.isNotBlank(query)) {
-            query = "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%";
-        }
+        query = StringUtils.isNotBlank(query)
+                ? "%" + query.toLowerCase(LocaleContextHolder.getLocale()).trim() + "%"
+                : null;
 
         Page<Book> books = bookRepository.getPaginatedBooks(pageable, query, rating, genre, tag, sortComponents[0], sortComponents[1]);
 
@@ -135,7 +135,7 @@ public class BookService {
                         "reviewId", review.getId()
                 ));
 
-        return new ReviewLikeResponseDto(reviewId, false, review.getUserLikes().size());
+        return new ReviewLikeResponseDto(reviewId, liked, review.getUserLikes().size());
     }
 
     @Transactional
@@ -161,7 +161,7 @@ public class BookService {
         shelvedBook.setShelf(shelf);
         shelvedBook.setBook(book);
 
-        shelvedBookRepository.save(shelvedBook);
+        shelvedBook = shelvedBookRepository.save(shelvedBook);
 
         activityService.saveActivityOutbox(ActivityType.BOOK_ADD_TO_SHELF,
                 shelf.getId(),

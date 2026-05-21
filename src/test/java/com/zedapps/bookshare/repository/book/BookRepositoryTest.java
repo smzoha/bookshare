@@ -283,21 +283,15 @@ public class BookRepositoryTest {
     }
 
     private void setupGenres() {
-        horrorGenre = new Genre();
-        horrorGenre.setName("Horror");
-
-        actionGenre = new Genre();
-        actionGenre.setName("Action");
+        horrorGenre = TestUtils.getGenre("Horror");
+        actionGenre = TestUtils.getGenre("Action");
 
         genreRepository.saveAllAndFlush(List.of(horrorGenre, actionGenre));
     }
 
     private void setupTags() {
-        historicalTag = new Tag();
-        historicalTag.setName("Historical");
-
-        oceanTag = new Tag();
-        oceanTag.setName("Ocean");
+        historicalTag = TestUtils.getTag("Historical");
+        oceanTag = TestUtils.getTag("Ocean");
 
         tagRepository.saveAllAndFlush(List.of(historicalTag, oceanTag));
     }

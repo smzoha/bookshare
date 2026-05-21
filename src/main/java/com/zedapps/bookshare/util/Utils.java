@@ -4,6 +4,7 @@ import com.zedapps.bookshare.dto.api.ErrorResponseDto;
 import com.zedapps.bookshare.entity.image.Image;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,6 +50,10 @@ public class Utils {
     }
 
     public static String cleanHtml(String htmlText) {
+        if (StringUtils.isEmpty(htmlText)) {
+            return htmlText;
+        }
+
         return htmlText.replaceAll("<[^>]*>", "");
     }
 

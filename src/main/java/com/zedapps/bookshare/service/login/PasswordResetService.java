@@ -81,7 +81,11 @@ public class PasswordResetService {
     }
 
     public void validatePasswordResetDto(PasswordResetDto resetDto, Errors errors) {
-        validateToken(resetDto.getToken());
+        try {
+            validateToken(resetDto.getToken());
+        } catch (TokenGenerationException | NoResultException | IllegalArgumentException e) {
+            errors.reject("error.invalid");
+        }
 
         if (!Objects.equals(resetDto.getPassword(), resetDto.getConfirmPassword())) {
             errors.rejectValue("password", "error.password.do.not.match");

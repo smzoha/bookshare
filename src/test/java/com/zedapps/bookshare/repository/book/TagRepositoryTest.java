@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.repository.book;
 
 import com.zedapps.bookshare.entity.book.Tag;
+import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -44,8 +45,7 @@ public class TagRepositoryTest {
     }
 
     private void setupTags() {
-        Tag tag = new Tag();
-        tag.setName("Test Tag");
+        Tag tag = TestUtils.getTag("Test Tag");
 
         tagRepository.saveAndFlush(tag);
     }
