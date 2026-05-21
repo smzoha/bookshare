@@ -5,6 +5,7 @@ import com.zedapps.bookshare.entity.login.Review;
 import com.zedapps.bookshare.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -84,12 +86,21 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Getter(AccessLevel.NONE)
     @ManyToMany
     @JoinTable(
             name = "book_authors",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     private Set<Author> authors = new LinkedHashSet<>();
+
+    public Set<Author> getAuthors() {
+        return Collections.unmodifiableSet(authors);
+    }
+
+    public void addAuthor(Author author) {
+        authors.add(author);
+    }
 
     @ManyToMany
     @JoinTable(

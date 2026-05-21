@@ -120,9 +120,9 @@ public class BookService {
         boolean liked = !review.getUserLikes().contains(login);
 
         if (liked) {
-            review.getUserLikes().add(login);
+            review.addLike(login);
         } else {
-            review.getUserLikes().remove(login);
+            review.removeLike(login);
         }
 
         review = reviewRepository.save(review);

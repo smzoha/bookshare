@@ -95,7 +95,7 @@ public class BookRequestController {
         assert login.getRole() == Role.AUTHOR && author != null : "User is not an author!";
 
         Book book = new Book();
-        book.getAuthors().add(author);
+        book.addAuthor(author);
 
         model.put("book", book);
 

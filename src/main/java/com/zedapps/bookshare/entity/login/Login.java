@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -106,9 +109,18 @@ public class Login {
     @OneToMany(mappedBy = "user")
     private Set<Review> reviews = new LinkedHashSet<>();
 
+    @Getter(AccessLevel.NONE)
     @OrderBy("defaultShelf DESC, name")
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Set<Shelf> shelves = new LinkedHashSet<>();
+
+    public Set<Shelf> getShelves() {
+        return Collections.unmodifiableSet(shelves);
+    }
+
+    public void addShelves(Collection<Shelf> newShelves) {
+        shelves.addAll(newShelves);
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("startDate, endDate")

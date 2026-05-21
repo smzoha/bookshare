@@ -10,6 +10,7 @@ import com.zedapps.bookshare.repository.feed.FeedEntryRepository;
 import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.service.book.BookService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,7 @@ public class FeedService {
         return feedEntryRepository.getPagedFeedEntries(audience, cutoffDate, pageRequest);
     }
 
+    @Transactional(readOnly = true)
     public List<FeedDto> mapToFeedDtoList(Page<FeedEntry> feedEntries) {
         return feedEntries.stream()
                 .map(this::getFeedDto)
@@ -114,7 +116,7 @@ public class FeedService {
 
         if (activity.getEventType().isReviewActivity()) {
             long reviewId = Long.parseLong(getPropertyFromMetadata(activityMetadata, "reviewId"));
-            Review review = reviewRepository.getReferenceById(reviewId);
+            Review review = reviewRepository.findById(reviewId).orElseThrow(NoResultException::new);
 
             truncDetails = StringUtils.abbreviate(review.getContent(), 50) + " (" + review.getRating() + "/5)";
         }

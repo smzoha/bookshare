@@ -55,9 +55,9 @@ public class ActivityService {
         try {
             activityOutboxRepository.save(activityOutbox);
 
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             log.error("Error publishing activity to outbox: {}, {}", activityOutbox.getEventType().name(),
-                    activityOutbox.getPayload().getOrDefault("actionBy", ""));
+                    activityOutbox.getPayload().getOrDefault("actionBy", ""), e);
         }
     }
 

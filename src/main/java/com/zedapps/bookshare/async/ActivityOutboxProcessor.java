@@ -9,6 +9,8 @@ import com.zedapps.bookshare.service.activity.ActivityService;
 import com.zedapps.bookshare.service.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import jakarta.persistence.NoResultException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,8 +65,12 @@ public class ActivityOutboxProcessor {
                 processedActivityList.add(activity);
                 activityOutbox.setStatus(ActivityStatus.COMPLETED);
 
-            } catch (Exception e) {
-                log.error("Error processing outbox activity: id={}", activityOutbox.getId(), e);
+            } catch (NoResultException | IllegalArgumentException e) {
+                log.error("Permanent failure processing outbox activity: id={}, marking as FAILED", activityOutbox.getId(), e);
+                activityOutbox.setStatus(ActivityStatus.FAILED);
+
+            } catch (DataAccessException e) {
+                log.error("Transient failure processing outbox activity: id={}", activityOutbox.getId(), e);
 
                 if (activityOutbox.getRetryCount() >= 3) {
                     log.error("Retry count exceeded. Marking Outbox Activity as Failed: id={}", activityOutbox.getId());

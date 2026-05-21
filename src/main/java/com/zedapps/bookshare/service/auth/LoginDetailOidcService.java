@@ -55,7 +55,7 @@ public class LoginDetailOidcService implements OAuth2UserService<OidcUserRequest
             login.setAuthProvider(AuthProvider.GOOGLE);
             login.setProviderId(providerId);
             login.setActive(true);
-            login.getShelves().addAll(Utils.getDefaultShelves(login));
+            login.addShelves(Utils.getDefaultShelves(login));
 
             login = loginRepository.save(login);
         }

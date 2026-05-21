@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -54,11 +56,24 @@ public class Review {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @Getter(AccessLevel.NONE)
     @ManyToMany
     @JoinTable(name = "review_likes",
             joinColumns = @JoinColumn(name = "review_id"),
             inverseJoinColumns = @JoinColumn(name = "login_id"))
     private Set<Login> userLikes = new LinkedHashSet<>();
+
+    public Set<Login> getUserLikes() {
+        return Collections.unmodifiableSet(userLikes);
+    }
+
+    public void addLike(Login login) {
+        userLikes.add(login);
+    }
+
+    public void removeLike(Login login) {
+        userLikes.remove(login);
+    }
 
     @Override
     public boolean equals(Object o) {

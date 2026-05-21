@@ -160,6 +160,6 @@ public class LoginService {
 
     private void setupShelvesForNewLogin(Login login) {
         List<Shelf> defaultShelves = Utils.getDefaultShelves(login);
-        login.getShelves().addAll(defaultShelves);
+        login.addShelves(defaultShelves);
     }
 }
