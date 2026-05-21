@@ -70,7 +70,7 @@ public class Activity {
     public String toString() {
         return "Activity{" +
                 "id=" + id +
-                ", login=" + login.getEmail() +
+                ", login=" + (login != null ? login.getEmail() : "") +
                 ", eventType=" + eventType +
                 ", referenceEntity='" + referenceEntity + '\'' +
                 ", referenceId=" + referenceId +

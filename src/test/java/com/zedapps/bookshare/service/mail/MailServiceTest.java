@@ -57,6 +57,7 @@ public class MailServiceTest {
     @BeforeEach
     void setup() throws IOException {
         ReflectionTestUtils.setField(mailService, "mailAddress", EMAIL);
+        ReflectionTestUtils.setField(mailService, "appBaseUrl", "http://localhost:6001");
 
         lenient().when(gmail.users()).thenReturn(gmailUsers);
         lenient().when(gmailUsers.messages()).thenReturn(gmailMessages);

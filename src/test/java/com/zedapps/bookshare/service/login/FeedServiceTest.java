@@ -123,7 +123,7 @@ public class FeedServiceTest {
         Activity activity = getBookReviewActivity(ActivityType.BOOK_ADD_REVIEW, review);
         FeedEntry feedEntry = new FeedEntry(1L, login, activity, LocalDateTime.now().minusDays(1));
 
-        when(reviewRepository.getReferenceById(review.getId())).thenReturn(review);
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
 
         List<FeedDto> feedDtos = feedService.mapToFeedDtoList(new PageImpl<>(List.of(feedEntry),
                 PageRequest.of(0, 10), 1));
@@ -144,7 +144,7 @@ public class FeedServiceTest {
         Activity activity = getBookReviewActivity(ActivityType.BOOK_ADD_REVIEW, review);
         FeedEntry feedEntry = new FeedEntry(1L, login, activity, LocalDateTime.now().minusDays(1));
 
-        when(reviewRepository.getReferenceById(review.getId())).thenReturn(review);
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
 
         List<FeedDto> feedDtos = feedService.mapToFeedDtoList(new PageImpl<>(List.of(feedEntry),
                 PageRequest.of(0, 10), 1));
@@ -164,7 +164,7 @@ public class FeedServiceTest {
         Activity activity = getBookReviewActivity(ActivityType.BOOK_LIKE_REVIEW, review);
         FeedEntry feedEntry = new FeedEntry(1L, login, activity, LocalDateTime.now().minusDays(1));
 
-        when(reviewRepository.getReferenceById(review.getId())).thenReturn(review);
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
         when(msa.getMessage(eq("feed.activity.book.like.review"),
                 any(String[].class), any(Locale.class)))
                 .thenReturn(String.format("Liked By %s", login.getName()));

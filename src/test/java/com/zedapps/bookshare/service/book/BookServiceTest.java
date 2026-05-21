@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
@@ -265,7 +266,7 @@ public class BookServiceTest {
     void updateReviewLikes_loginAlreadyInLikes_removesLikeAndFiresRemoveLikeOutbox() {
         when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
 
-        review.getUserLikes().add(login);
+        review.addLike(login);
 
         ReviewLikeResponseDto reviewLikeResponseDto = bookService.updateReviewLikes(1L, loginDetails);
 
@@ -381,17 +382,16 @@ public class BookServiceTest {
     }
 
     @Test
-    void saveReadingProgress_existingIdWithMismatchedUser_throwsAssertionError() {
+    void saveReadingProgress_existingIdWithMismatchedUser_throwsAccessDeniedException() {
         Book book = books.getFirst();
 
         Login otherLogin = TestUtils.getLogin("test2@test.com", "test2", true);
         ReadingProgress readingProgress = new ReadingProgress(1L, otherLogin, book, 2L, LocalDate.now(),
                 null, false, LocalDateTime.now());
 
-
         when(readingProgressRepository.findById(anyLong())).thenReturn(Optional.of(readingProgress));
 
-        assertThrows(AssertionError.class, () -> bookService.saveReadingProgress(readingProgress, loginDetails));
+        assertThrows(AccessDeniedException.class, () -> bookService.saveReadingProgress(readingProgress, loginDetails));
     }
 
     @Test

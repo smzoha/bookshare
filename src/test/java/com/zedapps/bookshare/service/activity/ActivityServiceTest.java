@@ -9,7 +9,7 @@ import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.repository.activity.ActivityOutboxRepository;
 import com.zedapps.bookshare.repository.activity.ActivityRepository;
 import com.zedapps.bookshare.util.TestUtils;
-import org.hibernate.dialect.lock.OptimisticEntityLockException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,7 +100,7 @@ public class ActivityServiceTest {
 
     @Test
     void saveActivityOutbox_repositoryThrowsException_doesNotPropagate() {
-        when(activityOutboxRepository.save(any())).thenThrow(OptimisticEntityLockException.class);
+        when(activityOutboxRepository.save(any())).thenThrow(DataIntegrityViolationException.class);
 
         assertDoesNotThrow(() -> activityService.saveActivityOutbox(ActivityType.FRIEND_REQ_SENT,
                 1L, Map.of()));

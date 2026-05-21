@@ -17,6 +17,7 @@ import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.shelf.ShelfService;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.springframework.cache.annotation.CacheEvict;
@@ -119,9 +120,9 @@ public class BookService {
         boolean liked = !review.getUserLikes().contains(login);
 
         if (liked) {
-            review.getUserLikes().add(login);
+            review.addLike(login);
         } else {
-            review.getUserLikes().remove(login);
+            review.removeLike(login);
         }
 
         review = reviewRepository.save(review);
@@ -208,7 +209,9 @@ public class BookService {
             ReadingProgress persistedReadingProgress = readingProgressRepository.findById(readingProgress.getId())
                     .orElseThrow(NoResultException::new);
 
-            assert Objects.equals(persistedReadingProgress.getUser().getEmail(), loginDetails.getEmail());
+            if (!Objects.equals(persistedReadingProgress.getUser().getEmail(), loginDetails.getEmail())) {
+                throw new AccessDeniedException("Reading progress does not belong to the authenticated user");
+            }
         }
 
         readingProgress.setUser(loginService.getLogin(loginDetails.getEmail()));
