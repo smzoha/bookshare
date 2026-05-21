@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author smzoha
@@ -44,9 +45,10 @@ public class ActivityOutboxProcessor {
         for (ActivityOutbox activityOutbox : unprocessedActivityOutboxItems) {
             try {
                 Login login = null;
+                Object actionBy = activityOutbox.getPayload().get("actionBy");
 
-                if (activityOutbox.getPayload().containsKey("actionBy")) {
-                    login = loginService.getLogin(activityOutbox.getPayload().get("actionBy").toString());
+                if (Objects.nonNull(actionBy)) {
+                    login = loginService.getLogin(actionBy.toString());
                 }
 
                 Activity activity = Activity.builder()

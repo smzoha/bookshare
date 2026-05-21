@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,7 +90,12 @@ public class LoginService {
 
         login = saveLogin(login);
 
-        LoginDetails loginDetails = (LoginDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !(authentication.getPrincipal() instanceof LoginDetails loginDetails)) {
+            throw new IllegalStateException("Authenticated admin session required to perform this action");
+        }
+
         activityService.saveActivityOutbox(loginDto.getId() != null ? ActivityType.USER_UPDATE : ActivityType.USER_ADD,
                 login.getId(),
                 Map.of(

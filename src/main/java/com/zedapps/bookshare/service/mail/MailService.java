@@ -49,9 +49,12 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String mailAddress;
 
+    @Value("${app.base.url}")
+    private String appBaseUrl;
+
     @Async
     public void sendPasswordResetEmail(String email, String token) throws MessagingException, IOException {
-        String passwordResetUrl = UriComponentsBuilder.fromUriString("http://localhost:6001/resetPassword")
+        String passwordResetUrl = UriComponentsBuilder.fromUriString(appBaseUrl + "/resetPassword")
                 .queryParam("token", token)
                 .build()
                 .toUriString();

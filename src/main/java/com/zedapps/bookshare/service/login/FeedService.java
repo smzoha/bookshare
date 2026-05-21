@@ -78,18 +78,18 @@ public class FeedService {
                 return getFeedDtoForBook(activity, msa.getMessage("feed.activity.book.add.review", locale));
 
             case BOOK_LIKE_REVIEW:
-                Login reviewer = loginService.getLogin(activityMetadata.get("reviewedBy").toString());
+                Login reviewer = loginService.getLogin(getPropertyFromMetadata(activityMetadata, "reviewedBy"));
 
                 return getFeedDtoForBook(activity, msa.getMessage("feed.activity.book.like.review",
                         new String[]{reviewer.getName()}, locale));
 
             case BOOK_UPDATE_READING_PROGRESS:
                 return getFeedDtoForBook(activity, msa.getMessage("feed.activity.update.reading.progress",
-                        new String[]{activityMetadata.get("pagesRead").toString(),
-                                activityMetadata.get("totalPages").toString()}, locale));
+                        new String[]{getPropertyFromMetadata(activityMetadata, "pagesRead"),
+                                getPropertyFromMetadata(activityMetadata, "totalPages")}, locale));
 
             case ADD_FRIEND:
-                Login friend = loginService.getLogin(activityMetadata.get("requestFromEmail").toString());
+                Login friend = loginService.getLogin(getPropertyFromMetadata(activityMetadata, "requestFromEmail"));
 
                 return new FeedDto(activity.getEventType().name(),
                         activity.getLogin(),
@@ -108,12 +108,12 @@ public class FeedService {
 
     private FeedDto getFeedDtoForBook(Activity activity, String message) {
         Map<String, Object> activityMetadata = activity.getMetadata();
-        Book book = bookService.getBook(Long.parseLong(activityMetadata.get("bookId").toString()));
+        Book book = bookService.getBook(Long.parseLong(getPropertyFromMetadata(activityMetadata, "bookId")));
 
         String truncDetails = null;
 
         if (activity.getEventType().isReviewActivity()) {
-            long reviewId = Long.parseLong(activityMetadata.get("reviewId").toString());
+            long reviewId = Long.parseLong(getPropertyFromMetadata(activityMetadata, "reviewId"));
             Review review = reviewRepository.getReferenceById(reviewId);
 
             truncDetails = StringUtils.abbreviate(review.getContent(), 50) + " (" + review.getRating() + "/5)";
@@ -127,6 +127,16 @@ public class FeedService {
                         "value", book.getTitle()),
                 getTimeElapsed(activity.getCreatedAt())
         );
+    }
+
+    private String getPropertyFromMetadata(Map<String, Object> metadata, String key) {
+        Object value = metadata.get(key);
+
+        if (value == null) {
+            throw new IllegalStateException("Missing required activity metadata key: " + key);
+        }
+
+        return value.toString();
     }
 
     private String getTimeElapsed(LocalDateTime createdAt) {
