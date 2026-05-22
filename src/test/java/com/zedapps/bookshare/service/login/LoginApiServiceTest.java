@@ -46,7 +46,7 @@ public class LoginApiServiceTest {
     private Login login;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
     }
 

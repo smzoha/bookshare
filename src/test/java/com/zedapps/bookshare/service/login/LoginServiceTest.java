@@ -56,7 +56,7 @@ public class LoginServiceTest {
     private Login login;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
         login.setShelves(new HashSet<>(Utils.getDefaultShelves(login)));
@@ -69,7 +69,7 @@ public class LoginServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         SecurityContextHolder.clearContext();
     }
 

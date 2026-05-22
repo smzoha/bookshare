@@ -47,7 +47,7 @@ public class ImageServiceTest {
     private ArgumentCaptor<Map<String, Object>> activityOutboxPayloadCaptor;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         image = new Image();
         image.setId(1L);
         image.setFileName("test.txt");
@@ -61,7 +61,7 @@ public class ImageServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         SecurityContextHolder.clearContext();
     }
 

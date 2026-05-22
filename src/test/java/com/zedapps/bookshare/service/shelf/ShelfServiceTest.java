@@ -42,7 +42,7 @@ public class ShelfServiceTest {
     private Shelf shelf1;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
 

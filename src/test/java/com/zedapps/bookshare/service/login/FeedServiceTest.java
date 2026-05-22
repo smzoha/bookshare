@@ -69,7 +69,7 @@ public class FeedServiceTest {
     private List<FeedEntry> feedEntries;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         msa = new MessageSourceAccessor(messageSource);
         lenient().when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn("Test Message");
         ReflectionTestUtils.setField(feedService, "msa", msa);

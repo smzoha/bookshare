@@ -60,7 +60,7 @@ public class LoginDetailOidcServiceTest {
     private Login inactiveLogin;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         ReflectionTestUtils.setField(loginDetailOidcService, "oidcUserService", oidcUserService);
 
         activeLogin = TestUtils.getLogin("test@test.com", "test", true);

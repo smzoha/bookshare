@@ -67,7 +67,7 @@ public class ProfileServiceTest {
     private ListAppender<ILoggingEvent> logAppender;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login1 = TestUtils.getLogin("login1@test.com", "login1", true);
         login1.setId(1L);
 
@@ -100,7 +100,7 @@ public class ProfileServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         Logger logger = (Logger) LoggerFactory.getLogger(ProfileService.class);
         logger.detachAppender(logAppender);
     }

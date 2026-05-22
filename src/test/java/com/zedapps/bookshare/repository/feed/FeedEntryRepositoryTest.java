@@ -60,7 +60,7 @@ public class FeedEntryRepositoryTest {
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         audience1 = TestUtils.getLogin("user1@test.com", "user1", true);
         audience2 = TestUtils.getLogin("user2@test.com", "user2", true);
         audience3 = TestUtils.getLogin("user3@test.com", "user3", true);

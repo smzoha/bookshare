@@ -53,7 +53,7 @@ public class ActivityServiceTest {
     private List<ActivityOutbox> processedActivityOutboxList;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
 
         unprocessedActivityOutboxList = new ArrayList<>();
