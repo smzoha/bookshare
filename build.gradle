@@ -92,6 +92,7 @@ processResources {
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '-Dapi.version=1.40'
 }
 
 spotbugs {
