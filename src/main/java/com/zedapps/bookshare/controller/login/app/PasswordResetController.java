@@ -36,8 +36,7 @@ public class PasswordResetController {
     }
 
     @PostMapping("/resetPasswordRequest")
-    public String submitResetPasswordRequest(@AuthenticationPrincipal LoginDetails loginDetails,
-                                             @RequestParam String email,
+    public String submitResetPasswordRequest(@RequestParam String email,
                                              RedirectAttributes redirectAttributes,
                                              ModelMap model) {
 
