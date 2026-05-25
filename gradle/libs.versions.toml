@@ -12,7 +12,7 @@ google-api-gmail = "v1-rev20260112-2.0.0"
 caffeine = "3.2.3"
 jjwt = "0.13.0"
 springdoc = "2.8.17"
-testcontainer = "1.21.4"
+testcontainer = "2.0.5"
 
 [libraries]
 # Spring Boot (versions managed by Spring BOM via dependency-management plugin)
@@ -31,8 +31,8 @@ spring-boot-testcontainer = { module = "org.springframework.boot:spring-boot-tes
 spring-security-extras = { module = "org.thymeleaf.extras:thymeleaf-extras-springsecurity6" }
 spring-security-test = { module = "org.springframework.security:spring-security-test" }
 
-testcontainer-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainer" }
-testcontainer-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainer" }
+testcontainer-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainer" }
+testcontainer-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainer" }
 
 # JJWT
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
