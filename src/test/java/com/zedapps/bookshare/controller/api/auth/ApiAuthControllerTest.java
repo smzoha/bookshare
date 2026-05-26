@@ -1,23 +1,17 @@
 package com.zedapps.bookshare.controller.api.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zedapps.bookshare.config.SecurityConfig;
 import com.zedapps.bookshare.controller.AbstractWebMvcTest;
 import com.zedapps.bookshare.dto.api.auth.TokenRequest;
-import com.zedapps.bookshare.service.auth.JwtService;
-import com.zedapps.bookshare.service.auth.LoginDetailOidcService;
-import com.zedapps.bookshare.service.auth.LoginDetailService;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 26/5/26
  **/
 @WebMvcTest(ApiAuthController.class)
-@Import(SecurityConfig.class)
 public class ApiAuthControllerTest extends AbstractWebMvcTest {
 
     @Autowired

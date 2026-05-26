@@ -1,11 +1,8 @@
 package com.zedapps.bookshare.controller.api;
 
-import com.zedapps.bookshare.config.SecurityConfig;
+import com.zedapps.bookshare.controller.AbstractWebMvcTest;
 import com.zedapps.bookshare.controller.api.login.LoginApiController;
 import com.zedapps.bookshare.repository.book.BookRepository;
-import com.zedapps.bookshare.service.auth.JwtService;
-import com.zedapps.bookshare.service.auth.LoginDetailOidcService;
-import com.zedapps.bookshare.service.auth.LoginDetailService;
 import com.zedapps.bookshare.service.book.BookApiService;
 import com.zedapps.bookshare.service.login.FeedApiService;
 import com.zedapps.bookshare.service.login.LoginApiService;
@@ -14,11 +11,9 @@ import jakarta.persistence.NoResultException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,8 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 25/5/26
  **/
 @WebMvcTest({HomeApiController.class, LoginApiController.class})
-@Import(SecurityConfig.class)
-public class ApiExceptionHandlerTest {
+public class ApiExceptionHandlerTest extends AbstractWebMvcTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,18 +47,6 @@ public class ApiExceptionHandlerTest {
 
     @MockitoBean
     private LoginApiService loginApiService;
-
-    @MockitoBean
-    private LoginDetailService loginDetailService;
-
-    @MockitoBean
-    private LoginDetailOidcService loginDetailOidcService;
-
-    @MockitoBean
-    private PasswordEncoder passwordEncoder;
-
-    @MockitoBean
-    private JwtService jwtService;
 
     @Test
     void handleNoResult_noResultException_returns404WithErrorCode() throws Exception {

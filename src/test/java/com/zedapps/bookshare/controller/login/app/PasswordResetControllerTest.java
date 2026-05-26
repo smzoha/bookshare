@@ -1,21 +1,16 @@
 package com.zedapps.bookshare.controller.login.app;
 
-import com.zedapps.bookshare.config.SecurityConfig;
+import com.zedapps.bookshare.controller.AbstractWebMvcTest;
 import com.zedapps.bookshare.dto.login.PasswordResetDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.repository.login.LoginRepository;
 import com.zedapps.bookshare.security.WithMockLoginDetails;
-import com.zedapps.bookshare.service.auth.JwtService;
-import com.zedapps.bookshare.service.auth.LoginDetailOidcService;
-import com.zedapps.bookshare.service.auth.LoginDetailService;
 import com.zedapps.bookshare.service.login.PasswordResetService;
 import com.zedapps.bookshare.util.TestUtils;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,8 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 23/5/26
  **/
 @WebMvcTest(PasswordResetController.class)
-@Import(SecurityConfig.class)
-public class PasswordResetControllerTest {
+public class PasswordResetControllerTest extends AbstractWebMvcTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,18 +43,6 @@ public class PasswordResetControllerTest {
 
     @MockitoBean
     private LoginRepository loginRepository;
-
-    @MockitoBean
-    private LoginDetailService loginDetailService;
-
-    @MockitoBean
-    private LoginDetailOidcService loginDetailOidcService;
-
-    @MockitoBean
-    private PasswordEncoder passwordEncoder;
-
-    @MockitoBean
-    private JwtService jwtService;
 
     @Test
     @WithMockLoginDetails
