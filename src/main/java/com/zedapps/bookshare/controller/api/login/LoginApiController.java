@@ -51,7 +51,7 @@ public class LoginApiController {
         boolean result = loginApiService.saveResetPasswordToken(email);
 
         return result ? ResponseEntity.ok().build()
-                : ResponseEntity.ok().body(new ErrorResponseDto(List.of("error.invalid.email")));
+                : ResponseEntity.badRequest().body(new ErrorResponseDto(List.of("error.invalid.email")));
     }
 
     @PostMapping("/resetPassword")
