@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 26/5/26
  **/
 @WebMvcTest(ShelfApiController.class)
-@WithMockLoginDetails(email = "test@test.com")
+@WithMockLoginDetails
 public class ShelfApiControllerTest extends AbstractWebMvcTest {
 
     @Autowired

@@ -68,7 +68,7 @@ public class HomeApiControllerTest extends AbstractWebMvcTest {
     }
 
     @Test
-    @WithMockLoginDetails(email = "test@test.com")
+    @WithMockLoginDetails
     void getFeed_authenticatedUser_returns200WithFeedApiResponse() throws Exception {
         Login login = TestUtils.getLogin("test@test.com", "test", true);
         FeedApiResponse feedApiResponse = new FeedApiResponse(List.of(), 0, 1);
@@ -84,7 +84,7 @@ public class HomeApiControllerTest extends AbstractWebMvcTest {
     }
 
     @Test
-    @WithMockLoginDetails(email = "test@test.com")
+    @WithMockLoginDetails
     void getFeed_defaultPage_usesPageZero() throws Exception {
         Login login = TestUtils.getLogin("test@test.com", "test", true);
 
@@ -98,7 +98,7 @@ public class HomeApiControllerTest extends AbstractWebMvcTest {
     }
 
     @Test
-    @WithMockLoginDetails(email = "test@test.com")
+    @WithMockLoginDetails
     void getFeed_customPage_usesProvidedPage() throws Exception {
         Login login = TestUtils.getLogin("test@test.com", "test", true);
 

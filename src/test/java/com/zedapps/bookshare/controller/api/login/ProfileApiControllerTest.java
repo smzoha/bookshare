@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 30/5/26
  **/
 @WebMvcTest(ProfileApiController.class)
-@WithMockLoginDetails(email = "test@test.com")
+@WithMockLoginDetails
 public class ProfileApiControllerTest extends AbstractWebMvcTest {
 
     @Autowired

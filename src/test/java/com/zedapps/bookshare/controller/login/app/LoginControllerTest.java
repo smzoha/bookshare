@@ -54,7 +54,7 @@ public class LoginControllerTest extends AbstractWebMvcTest {
     }
 
     @Test
-    @WithMockLoginDetails(email = "test@test.com")
+    @WithMockLoginDetails
     void showLoginPage_alreadyAuthenticated_redirectsToHome() throws Exception {
         try (MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class)) {
             utils.when(Utils::isAuthenticated).thenReturn(true);

@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 26/5/26
  **/
 @WebMvcTest(BookApiController.class)
-@WithMockLoginDetails(email = "test@test.com")
+@WithMockLoginDetails
 public class BookApiControllerTest extends AbstractWebMvcTest {
 
     @Autowired

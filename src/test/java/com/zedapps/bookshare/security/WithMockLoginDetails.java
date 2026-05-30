@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 @WithSecurityContext(factory = WithMockLoginDetailsSecurityContextFactory.class)
 public @interface WithMockLoginDetails {
 
-    String email() default "user@test.com";
+    String email() default "test@test.com";
 
     String handle() default "test";
 
