@@ -14,7 +14,6 @@ import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.enums.Status;
 import com.zedapps.bookshare.repository.book.AuthorRepository;
-import com.zedapps.bookshare.repository.book.BookRepository;
 import com.zedapps.bookshare.repository.book.GenreRepository;
 import com.zedapps.bookshare.repository.book.TagRepository;
 import com.zedapps.bookshare.repository.image.ImageRepository;
@@ -46,7 +45,6 @@ public class BookRequestController {
     private final GenreRepository genreRepository;
     private final TagRepository tagRepository;
     private final ImageRepository imageRepository;
-    private final BookRepository bookRepository;
     private final BookAdminService bookAdminService;
 
     @ModelAttribute("statusList")
