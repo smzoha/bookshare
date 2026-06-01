@@ -84,7 +84,6 @@ public class LoginAdminController {
 
     @PostMapping("/save")
     public String saveUser(@Valid @ModelAttribute("user") LoginManageDto loginDto, Errors errors,
-                           @AuthenticationPrincipal LoginDetails loginDetails,
                            ModelMap model) {
 
         loginDtoValidator.validate(loginDto, errors);

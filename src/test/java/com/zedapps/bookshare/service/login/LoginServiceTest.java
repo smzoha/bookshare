@@ -56,7 +56,7 @@ public class LoginServiceTest {
     private Login login;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
         login.setShelves(new HashSet<>(Utils.getDefaultShelves(login)));
