@@ -53,7 +53,7 @@ public class AuthorRequestServiceTest {
     private AuthorRequest authorRequest;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
 

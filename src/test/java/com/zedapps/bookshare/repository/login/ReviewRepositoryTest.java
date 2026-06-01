@@ -56,7 +56,7 @@ public class ReviewRepositoryTest {
     private Book reviewedBook;
 
     @BeforeAll
-    void setup() throws InterruptedException {
+    void setUp() throws InterruptedException {
         Author author = TestUtils.getAuthor("Test", "Author");
         authorRepository.saveAndFlush(author);
 

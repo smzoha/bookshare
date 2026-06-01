@@ -66,7 +66,7 @@ public class BookApiServiceTest {
     private LoginDetails loginDetails;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
 
@@ -96,7 +96,7 @@ public class BookApiServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         SecurityContextHolder.clearContext();
     }
 

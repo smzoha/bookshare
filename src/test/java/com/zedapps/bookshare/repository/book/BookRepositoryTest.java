@@ -77,7 +77,7 @@ public class BookRepositoryTest {
     private Author author1;
 
     @BeforeAll
-    void setup() {
+    void setUp() {
         author1 = TestUtils.getAuthor("Test", "Author");
         Author author2 = TestUtils.getAuthor("Zest", "Author");
         authorRepository.saveAllAndFlush(List.of(author1, author2));

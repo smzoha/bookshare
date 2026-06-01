@@ -64,7 +64,7 @@ public class PasswordResetServiceTest {
     private PasswordResetDto passwordResetDto;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
 

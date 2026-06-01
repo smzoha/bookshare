@@ -71,7 +71,7 @@ public class BookAdminServiceTest {
     private Tag tag;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
 
@@ -111,7 +111,7 @@ public class BookAdminServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         SecurityContextHolder.clearContext();
     }
 

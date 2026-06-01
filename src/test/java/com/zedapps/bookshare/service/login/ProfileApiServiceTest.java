@@ -58,7 +58,7 @@ public class ProfileApiServiceTest {
     private Image image;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         login.setId(1L);
         login.setShelves(Collections.emptySet());

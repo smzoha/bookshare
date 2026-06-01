@@ -40,7 +40,7 @@ public class ShelfRepositoryTest {
     private List<Shelf> shelfList;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         Login login = TestUtils.getLogin("user@test.com", "user", true);
 
         loginRepository.saveAndFlush(login);

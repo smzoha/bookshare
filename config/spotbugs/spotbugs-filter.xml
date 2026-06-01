@@ -8,4 +8,8 @@
     <Match>
         <Bug pattern="URF_UNREAD_FIELD"/>
     </Match>
+    <Match>
+        <Package name="~com\.zedapps\.bookshare\.controller.*"/>
+        <Class name="~.*Test"/>
+    </Match>
 </FindBugsFilter>

@@ -38,7 +38,7 @@ public class JwtServiceTest {
     private LoginDetails loginDetails;
 
     @BeforeEach
-    public void setup() {
+    void setUp() {
         ReflectionTestUtils.setField(jwtService, "secretKey", ENCODED_SECRET);
         ReflectionTestUtils.setField(jwtService, "expiry", 180000L);
 

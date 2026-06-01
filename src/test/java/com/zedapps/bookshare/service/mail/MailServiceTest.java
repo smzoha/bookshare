@@ -55,7 +55,7 @@ public class MailServiceTest {
     private Gmail.Users.Messages.Send gmailSend;
 
     @BeforeEach
-    void setup() throws IOException {
+    void setUp() throws IOException {
         ReflectionTestUtils.setField(mailService, "mailAddress", EMAIL);
         ReflectionTestUtils.setField(mailService, "appBaseUrl", "http://localhost:6001");
 

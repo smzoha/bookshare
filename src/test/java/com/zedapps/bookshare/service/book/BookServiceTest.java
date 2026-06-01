@@ -92,7 +92,7 @@ public class BookServiceTest {
     private LoginDetails loginDetails;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         login = TestUtils.getLogin("test@test.com", "test", true);
         loginDetails = TestUtils.getLoginDetails("test@test.com", "test", true);
         TestUtils.setupSecurityContext(loginDetails);
@@ -122,7 +122,7 @@ public class BookServiceTest {
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
         SecurityContextHolder.clearContext();
     }
 

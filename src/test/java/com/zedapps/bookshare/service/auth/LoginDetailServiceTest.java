@@ -34,7 +34,7 @@ public class LoginDetailServiceTest {
     private Login activeLogin;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         activeLogin = TestUtils.getLogin("test@test.com", "test", true);
         activeLogin.setPassword("very-good-password");
     }
