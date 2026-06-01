@@ -1,6 +1,7 @@
 package com.zedapps.bookshare.entity.book;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class Genre {
     @SequenceGenerator(name = "genre_seq", sequenceName = "genre_seq", allocationSize = 1)
     private Long id;
 
+    @NotBlank(message = "{error.blank}")
     @Size(max = 255, message = "{error.max.length.exceeded}")
     private String name;
 
