@@ -54,7 +54,7 @@ public class LoginDtoValidator implements Validator {
         Optional<Login> login = loginRepository.findByEmail(loginDto.getEmail());
 
         boolean emailExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
-                ? login.isPresent() && !Objects.equals(loginDto.getEmail(), login.get().getEmail())
+                ? login.isPresent() && !Objects.equals(((LoginManageDto) loginDto).getId(), login.get().getId())
                 : login.isPresent();
 
         if (emailExists) {
@@ -66,7 +66,7 @@ public class LoginDtoValidator implements Validator {
         Optional<Login> login = loginRepository.findByHandle(loginDto.getHandle());
 
         boolean handleExists = loginDto instanceof LoginManageDto && ((LoginManageDto) loginDto).getId() != null
-                ? login.isPresent() && !Objects.equals(loginDto.getHandle(), login.get().getHandle())
+                ? login.isPresent() && !Objects.equals(((LoginManageDto) loginDto).getId(), login.get().getId())
                 : login.isPresent();
 
         if (handleExists) {
