@@ -21,6 +21,7 @@ BookShare is a social reading platform where users can track books, log reading 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Local Setup](#local-setup)
+  - [Running Tests](#running-tests)
   - [Running with Docker](#running-with-docker)
   - [Seed Data](#seed-data)
   - [Gmail API & Google OAuth2](#gmail-api--google-oauth2-setup)
@@ -135,6 +136,7 @@ Cache statistics are visible on the admin Actuator dashboard.
 | Email | Spring Mail + Gmail API (Google OAuth2 UserCredentials) |
 | Observability | Spring Boot Actuator, Micrometer |
 | Build & QA | Gradle (version catalog), Lombok, SpotBugs |
+| Testing | JUnit 5, AssertJ, Mockito, Testcontainers (PostgreSQL 17) |
 | Infrastructure | Docker (multi-stage build, eclipse-temurin:25-jre-alpine), Docker Compose |
 
 ---
@@ -173,6 +175,20 @@ Start the application:
 Access at: **http://localhost:6001**
 
 Flyway runs all migrations automatically on startup. No manual schema setup is required.
+
+### Running Tests
+
+```bash
+./gradlew test
+```
+
+Repository-layer tests use Testcontainers to spin up a real PostgreSQL 17 instance — Docker must be running. All other tests (service, controller, helper, filter, validator, utility) use Mockito and run without any infrastructure.
+
+To run a specific test class:
+
+```bash
+./gradlew test --tests "com.zedapps.bookshare.service.book.BookServiceTest"
+```
 
 ### Running with Docker
 
@@ -345,6 +361,7 @@ Home page → "Apply to be an Author" → request saved → admin reviews at `/a
 - New i18n strings belong in all five locale files under `src/main/resources/locale/`
 - Keep controller methods thin — business logic lives in the service layer
 - Cache eviction must be added alongside any writes that affect cached data
+- Run `./gradlew test` before submitting a PR; repository-layer tests require Docker (Testcontainers) — all other tests use Mockito and run without it
 
 ---
 

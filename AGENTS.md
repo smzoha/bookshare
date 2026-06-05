@@ -507,32 +507,283 @@ PostgreSQL in Docker is on host port **5433** (to avoid conflicts with a local i
 | `testcontainers:postgresql` 1.21.4 | Real PostgreSQL instance per test class |
 | `spring-security-test` | Security test utilities |
 
+### Layer Overview
+
+| Component | Tool | Key assertion |
+|---|---|---|
+| Repository | `@DataJpaTest` + Testcontainers | Query correctness against real DB |
+| Service | Mockito (`@ExtendWith(MockitoExtension.class)`) | Business logic, delegation, outbox firing |
+| MVC controller | `@WebMvcTest` + MockMvc | View name, model attributes, redirects |
+| REST controller | `@WebMvcTest` + MockMvc | Status codes, JSON response body |
+| Helper | Mockito + real `ModelMap` | Model key presence and values |
+| Validator | Mockito + `BeanPropertyBindingResult` | Error codes on specific fields |
+| Filter | Mockito + direct `doFilterInternal` call | SecurityContext state, chain invocation, log output |
+| Static util | Plain JUnit 5 | Return values; manual security context setup |
+
+Naming convention: `methodName_condition_expectedResult()`.
+
+---
+
 ### Repository Tests (`@DataJpaTest`)
+
+Repository tests verify actual JPA queries, JPQL, pagination, sorting, and filtering against a real PostgreSQL engine. Mocking the database here defeats the purpose — the goal is to prove the SQL is correct.
 
 ```java
 @DataJpaTest
 @Testcontainers
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class FooRepositoryTest {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class BookRepositoryTest {
 
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17-alpine");
-
-    @BeforeEach
-    void setup() { ... }
-
-    @Test               // each test runs in its own @Transactional scope and is rolled back after
-    void methodName_condition_expectedResult() { ... }
 }
 ```
 
+- Use `@DataJpaTest` (not `@SpringBootTest`) to keep the slice focused — only the JPA layer loads.
 - `@AutoConfigureTestDatabase(replace = NONE)` — keeps the Testcontainers datasource instead of substituting an in-memory DB.
-- `@BeforeEach` runs before every test.
-- For cases where a single setup is required for all the cases, use `@BeforeAll`. To ensure that the setup runs without any static context, use `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`.
-- `@BeforeAll` runs outside any test transaction. `saveAndFlush` / `saveAllAndFlush` commits the fixture; it persists for the lifetime of the test class.
-- Each `@Test` is wrapped in a `@Transactional` rollback — in-test writes are reverted, `@BeforeAll` data is unaffected.
-- Extra data needed by a single test (and that must not bleed into siblings) should be saved inside the test method itself — it rolls back with the test's own transaction.
+- Use `@BeforeAll` with `@TestInstance(PER_CLASS)` when a single fixture setup is sufficient for all tests in the class; the method can be non-static under `PER_CLASS`.
+- `@BeforeAll` runs outside any test transaction. `saveAndFlush` / `saveAllAndFlush` commits the fixture data; it persists for the lifetime of the test class.
+- Each `@Test` is wrapped in a `@Transactional` rollback — in-test writes are reverted after each test; `@BeforeAll` data is unaffected.
+- Extra data needed by a single test (that must not bleed into siblings) should be saved inside the test method itself — it rolls back with the test's own transaction.
+
+---
+
+### Service Tests — Mockito
+
+Services hold business logic. Repositories are proven by the layer below, so mock them here.
+
+```java
+@ExtendWith(MockitoExtension.class)
+class BookServiceTest {
+
+    @InjectMocks
+    private BookService bookService;
+
+    @Mock
+    private BookRepository bookRepository;
+}
+```
+
+Key cases to cover per service:
+
+- **Happy path** — the expected return value with valid input.
+- **Not-found branches** — `NoResultException`, `NoSuchElementException`, etc.
+- **Activity outbox firing** — verify `activityService.saveActivityOutbox(...)` is called with the correct `ActivityType` and payload fields.
+- **Guard conditions** — test both branches of any early-return or access-check logic.
+
+---
+
+### Controller Tests — `@WebMvcTest` + MockMvc
+
+`@WebMvcTest(XController.class)` loads only the web layer. All service and helper dependencies become `@MockBean`.
+
+#### MVC Controllers
+
+```java
+@WebMvcTest(BookController.class)
+class BookControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockBean
+    BookService bookService;
+}
+```
+
+What to assert per endpoint:
+
+- **View name**: `.andExpect(view().name("app/book/bookList"))`
+- **Model attributes**: `.andExpect(model().attributeExists("bookPage"))`
+- **Redirects (PRG)**: `.andExpect(redirectedUrlPattern("/book/*"))`
+- **Validation failures**: POST with a bad body should return the same view (not redirect) and carry model errors: `.andExpect(model().hasErrors())`
+- **AJAX fragment routing**: send `X-Requested-With: XMLHttpRequest` header and assert `.andExpect(view().name("app/book/bookGridFragment :: bookGrid"))`
+- **`@ResponseBody` endpoints on MVC controllers** (e.g. `/book/addShelf`): treat like REST — assert status and JSON body.
+
+#### REST Controllers
+
+```java
+@WebMvcTest(BookApiController.class)
+class BookApiControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @MockBean
+    BookApiService bookApiService;
+}
+```
+
+Focus on:
+
+- **Status codes**: `.andExpect(status().isOk())`, `.andExpect(status().isBadRequest())`
+- **JSON response body**: `.andExpect(jsonPath("$.id").value(1L))`
+- **Validation error format**: POST with a bad `@RequestBody` and assert the `ErrorResponseDto` structure.
+- **Guard conditions**: test both the valid and invalid branch where the controller returns early.
+
+#### Handling `@AuthenticationPrincipal LoginDetails`
+
+`@WithMockUser` only provides a basic `UserDetails`, not `LoginDetails`. Use the custom test annotation `@WithMockLoginDetails` backed by `WithMockLoginDetailsSecurityContextFactory`, which wraps `TestUtils`:
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@WithSecurityContext(factory = WithMockLoginDetailsSecurityContextFactory.class)
+public @interface WithMockLoginDetails {
+    String email() default "test@test.com";
+}
+```
+
+```java
+public class WithMockLoginDetailsSecurityContextFactory
+        implements WithSecurityContextFactory<WithMockLoginDetails> {
+
+    @Override
+    public SecurityContext createSecurityContext(WithMockLoginDetails annotation) {
+        LoginDetails loginDetails = TestUtils.getLoginDetails(annotation.email(), "test", true);
+        TestUtils.setupSecurityContext(loginDetails);
+        return SecurityContextHolder.getContext();
+    }
+}
+```
+
+Both classes live in `src/test/java/.../util/`. Annotate test methods or the class with `@WithMockLoginDetails`.
+
+---
+
+### Helper Tests — Mockito + real `ModelMap`
+
+Helpers are Spring `@Component` beans with service dependencies. Mock the services; pass a real `ModelMap` instance and assert on its contents after the call.
+
+```java
+@ExtendWith(MockitoExtension.class)
+class BookHelperTest {
+
+    @InjectMocks
+    BookHelper bookHelper;
+
+    @Mock
+    BookService bookService;
+
+    @Test
+    void setupReferenceData_unauthenticatedUser_skipsUserSpecificData() {
+        ModelMap model = new ModelMap();
+        bookHelper.setupReferenceData(null, 1L, model, true, true);
+
+        assertFalse(model.containsKey("readingProgresses"));
+    }
+}
+```
+
+- Use `lenient().when(...)` in `@BeforeEach` for stubs that are only consumed by a subset of tests (avoids `UnnecessaryStubbingException` — see **Mockito Footguns** below).
+- When the helper puts a `Map<K, V>` in the model, use AssertJ `asInstanceOf(map(K.class, V.class))` for type-safe key assertions without unchecked casts:
+
+```java
+assertThat(model.get("defaultShelves")).asInstanceOf(map(Long.class, String.class))
+        .containsKey(defaultShelf.getId())
+        .doesNotContainKey(customShelf.getId());
+```
+
+---
+
+### Validator Tests — Mockito + `BeanPropertyBindingResult`
+
+Spring validators implement `Validator`. The `Errors` object is passed by the caller, not injected — use `BeanPropertyBindingResult` directly; no mocking needed for it.
+
+```java
+@ExtendWith(MockitoExtension.class)
+class LoginDtoValidatorTest {
+
+    @InjectMocks
+    LoginDtoValidator validator;
+
+    @Mock
+    LoginRepository loginRepository;
+
+    @Test
+    void validate_newUserEmailAlreadyTaken_rejectsEmailField() {
+        LoginManageDto dto = new LoginManageDto();
+        dto.setEmail("existing@test.com");
+
+        when(loginRepository.findByEmail("existing@test.com"))
+                .thenReturn(Optional.of(new Login()));
+
+        Errors errors = new BeanPropertyBindingResult(dto, "loginManageDto");
+        validator.validate(dto, errors);
+
+        assertTrue(errors.hasFieldErrors("email"));
+        assertEquals("error.email.exists", errors.getFieldError("email").getCode());
+    }
+}
+```
+
+---
+
+### Filter Tests — Mockito
+
+`OncePerRequestFilter.doFilterInternal` is `protected` but callable directly from a same-package test class. No `MockMvc` or `@SpringBootTest` needed.
+
+```java
+@ExtendWith(MockitoExtension.class)
+class JwtAuthFilterTest {
+
+    @Mock JwtService jwtService;
+    @Mock HttpServletRequest request;
+    @Mock HttpServletResponse response;
+    @Mock FilterChain filterChain;
+
+    @InjectMocks JwtAuthFilter jwtAuthFilter;
+
+    @AfterEach
+    void clearSecurityContext() { SecurityContextHolder.clearContext(); }
+}
+```
+
+- Always clear `SecurityContextHolder` in `@AfterEach` if the filter writes to it; otherwise authentication state leaks across tests.
+- Stub `doThrow` **before** calling `doFilterInternal` — a stub registered after the call has no effect on the already-completed invocation. Wrap the call in `assertThrows` when the filter re-throws (e.g. when only a `finally` block runs with no `catch`).
+- To capture log output, attach a Logback `ListAppender` to the named logger in `@BeforeEach` and detach it in `@AfterEach`:
+
+```java
+Logger logger = (Logger) LoggerFactory.getLogger("REQUEST-LOG");
+ListAppender<ILoggingEvent> appender = new ListAppender<>();
+appender.start();
+logger.addAppender(appender);
+```
+
+Then assert on `appender.list` using `logEvent.getLevel()` and `logEvent.getFormattedMessage()`.
+
+- For generic mocks of parameterised types (e.g. `Page<FeedEntry>`), declare them as class-level `@Mock` fields to avoid raw-type unchecked cast warnings:
+
+```java
+@Mock
+Page<FeedEntry> feedPage;
+```
+
+---
+
+### Utility Tests — Plain JUnit 5
+
+`Utils` is a static utility class. No Spring context is needed.
+
+- **`cleanHtml`**, **`getDefaultShelves`**, **`getErrorResponseDto`**: straightforward input/output. Build `Errors` instances with `BeanPropertyBindingResult` for the last one.
+- **`isAuthenticated`**: call `TestUtils.setupSecurityContext(loginDetails)` before asserting `true`; clear with `SecurityContextHolder.clearContext()` in `@AfterEach`.
+- **`getImageUrl`**: calls `ServletUriComponentsBuilder.fromCurrentContextPath()`, which requires a request context. Set one up in `@BeforeEach` and tear it down in `@AfterEach`:
+
+```java
+@BeforeEach
+void setupRequestContext() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+}
+
+@AfterEach
+void clearRequestContext() {
+    RequestContextHolder.resetRequestAttributes();
+}
+```
+
+---
 
 ### TestUtils
 
@@ -548,6 +799,15 @@ public class FooRepositoryTest {
 | `getShelvedBook(book, login, shelf)` | `ShelvedBook` | |
 | `getActivityOutboxItem(status)` | `ActivityOutbox` | LOGIN event, referenceId=1 |
 | `getActivity(activityType)` | `Activity` | referenceId=1, no login |
+
+---
+
+### Mockito Footguns
+
+- **Never combine `@TestInstance(PER_CLASS)` with `@InjectMocks`** — Mockito only resets an `@InjectMocks` field when it is `null`. With `PER_CLASS`, the same instance is reused across tests, silently carrying stale mock references. Use the default `PER_METHOD` lifecycle.
+- **Mutable list mocks** — if the service under test calls `List.remove()` or any mutating method on a list returned by a stub, return `new ArrayList<>(items)` from the stub rather than the original live list; otherwise sibling tests see the mutated state.
+- **`UnnecessaryStubbingException` from `@BeforeEach`** — Mockito STRICT_STUBS throws if a stub registered in `@BeforeEach` is not consumed by a particular test. Wrap shared stubs that are only exercised by a subset of tests in `lenient().when(...)`. This is the normal pattern for helper tests where `@BeforeEach` sets up all service stubs but individual tests only trigger certain code paths.
+- **`PotentialStubbingProblem` with argument-order mismatch** — when a non-lenient stub is registered for `foo(a, b)` but the production code first calls `foo(b, a)` (same method, different argument order), Mockito detects the registered stub was unmatched for that invocation and throws before the test body runs. Fix by adding an explicit stub for the first-call argument variant, or use `lenient()` if the first call's return value does not matter to the test.
 
 ---
 
