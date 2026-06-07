@@ -11,6 +11,7 @@ import com.zedapps.bookshare.security.WithMockLoginDetails;
 import com.zedapps.bookshare.service.book.BookAdminService;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.util.TestUtils;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -191,5 +193,30 @@ public class AuthorAdminControllerTest extends AbstractWebMvcTest {
         assertEquals(Role.AUTHOR, loginCaptor.getValue().getRole());
 
         verify(authorRequestRepository).delete(authorRequest);
+    }
+
+    @Test
+    void processAuthorRequest_requestNotFound_throwsServletException() {
+        when(authorRequestRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ServletException.class,
+                () -> mockMvc.perform(post("/admin/author/request/process")
+                        .param("id", "1")));
+    }
+
+    @Test
+    void getAuthor_authorWithoutLoginLink_metadataUsesEmptyAffectedAuthorLogin() throws Exception {
+        author.setLogin(null);
+        when(bookAdminService.getAuthor(author.getId())).thenReturn(author);
+
+        mockMvc.perform(get("/admin/author/" + author.getId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("author"))
+                .andExpect(view().name("admin/author/authorForm"));
+
+        verify(bookAdminService).getAuthor(author.getId());
+
+        ActivityEvent event = applicationEvents.stream(ActivityEvent.class).findFirst().orElseThrow();
+        assertEquals("", event.metadata().get("affectedAuthorLogin"));
     }
 }
