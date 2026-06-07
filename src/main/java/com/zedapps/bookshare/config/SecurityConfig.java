@@ -51,6 +51,7 @@ public class SecurityConfig {
                             .requestMatchers("/author/apply").hasAuthority(Role.USER.name())
                             .requestMatchers("/author/bookRequest").hasAuthority(Role.AUTHOR.name())
                             .requestMatchers("/actuator/**").hasAuthority(Role.ADMIN.name())
+                            .requestMatchers("/feed").authenticated()
                             .anyRequest().permitAll();
                 })
                 .formLogin((form) -> form.loginPage("/login")
