@@ -25,7 +25,11 @@ public class TagEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        Tag tag = tagRepository.findById(Long.parseLong(text)).orElse(null);
-        setValue(tag);
+        if (text == null || text.trim().isEmpty()) {
+            setValue(null);
+        } else {
+            Tag tag = tagRepository.findById(Long.parseLong(text)).orElse(null);
+            setValue(tag);
+        }
     }
 }

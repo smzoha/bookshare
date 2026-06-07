@@ -1,7 +1,9 @@
 package com.zedapps.bookshare.service.book;
 
 import com.zedapps.bookshare.dto.api.book.*;
+import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.dto.book.BookReviewDto;
+import com.zedapps.bookshare.dto.book.ReviewLikeResponseDto;
 import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
@@ -21,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
@@ -308,5 +311,78 @@ public class BookApiServiceTest {
         assertEquals(rpRequest.pagesRead(), progressDto.pagesRead());
         assertEquals(rpRequest.completed(), progressDto.completed());
         assertEquals(rpRequest.startDate(), progressDto.startDate());
+    }
+
+    @Test
+    void getBookDtoList_delegatesToBookServiceAndMapsToDtoList() {
+        when(bookService.getPaginatedBooks(eq(0), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(new PageImpl<>(books));
+
+        List<BookDto> bookDtoList = bookApiService.getBookDtoList(0, null, null, null, null, null);
+
+        Book firstBook = books.getFirst();
+        BookDto firstBookDto = bookDtoList.getFirst();
+
+        assertEquals(books.size(), bookDtoList.size());
+        assertEquals(firstBook.getTitle(), firstBookDto.title());
+        assertEquals(firstBook.getIsbn(), firstBookDto.isbn());
+
+        verify(bookService).getPaginatedBooks(eq(0), isNull(), isNull(), isNull(), isNull(), isNull(), isNull());
+    }
+
+    @Test
+    void searchBookList_delegatesWithFirstPageAndPageSizeFiveAndMapsResults() {
+        Book book = books.getFirst();
+
+        when(bookService.getPaginatedBooks(anyInt(), anyInt(), eq(book.getTitle()), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(new PageImpl<>(List.of(book)));
+
+        List<BookDto> searchedBookDtoList = bookApiService.searchBookList(book.getTitle());
+
+        assertEquals(1, searchedBookDtoList.size());
+        assertEquals(book.getTitle(), searchedBookDtoList.getFirst().title());
+        assertEquals(book.getIsbn(), searchedBookDtoList.getFirst().isbn());
+
+        verify(bookService).getPaginatedBooks(eq(0), eq(5), eq(book.getTitle()), isNull(), isNull(), isNull(), isNull());
+    }
+
+    @Test
+    void addToShelf_delegatesToBookServiceAndReturnsShelfDto() {
+        Book book = books.getFirst();
+        when(shelfRepository.findById(shelf.getId())).thenReturn(Optional.of(shelf));
+
+        ShelfDto shelfDto = bookApiService.addToShelf(book.getId(), shelf.getId(), loginDetails);
+
+        assertEquals(shelf.getName(), shelfDto.name());
+        assertEquals(loginDetails.getEmail(), shelfDto.login());
+
+        verify(bookService).addToShelf(loginDetails, book.getId(), shelf.getId());
+        verify(shelfRepository).findById(shelf.getId());
+    }
+
+    @Test
+    void removeFromShelf_delegatesToBookServiceAndReturnsShelfDto() {
+        Book book = books.getFirst();
+        when(shelfRepository.findById(shelf.getId())).thenReturn(Optional.of(shelf));
+
+        ShelfDto shelfDto = bookApiService.removeFromShelf(book.getId(), shelf.getId(), loginDetails);
+
+        assertEquals(shelf.getName(), shelfDto.name());
+        assertEquals(loginDetails.getEmail(), shelfDto.login());
+
+        verify(bookService).removeFromShelf(loginDetails, book.getId(), shelf.getId());
+        verify(shelfRepository).findById(shelf.getId());
+    }
+
+    @Test
+    void likeReview_delegatesToBookServiceAndReturnsResult() {
+        when(bookService.updateReviewLikes(review.getId(), loginDetails))
+                .thenReturn(new ReviewLikeResponseDto(review.getId(), true, 1));
+
+        ReviewLikeResponseDto reviewLikeResponseDto = bookApiService.likeReview(review.getId(), loginDetails);
+
+        assertEquals(reviewLikeResponseDto.getReviewId(), review.getId());
+
+        verify(bookService).updateReviewLikes(review.getId(), loginDetails);
     }
 }

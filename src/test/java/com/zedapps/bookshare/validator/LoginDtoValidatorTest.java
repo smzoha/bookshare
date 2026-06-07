@@ -183,6 +183,24 @@ class LoginDtoValidatorTest {
     }
 
     @Test
+    void validate_manageDtoNewUserPasswordBlank_rejectsPasswordField() {
+        when(loginRepository.findByEmail(login.getEmail())).thenReturn(Optional.empty());
+        when(loginRepository.findByHandle(login.getHandle())).thenReturn(Optional.empty());
+
+        LoginManageDto loginManageDto = new LoginManageDto();
+        loginManageDto.setEmail(login.getEmail());
+        loginManageDto.setHandle(login.getHandle());
+        loginManageDto.setPassword("");
+
+        errors = new BeanPropertyBindingResult(loginManageDto, "loginManageDto");
+        loginDtoValidator.validate(loginManageDto, errors);
+
+        assertThat(errors.hasFieldErrors()).isTrue();
+        assertThat(errors.hasFieldErrors("password")).isTrue();
+        assertThat(Objects.requireNonNull(errors.getFieldError("password")).getCode()).isEqualTo("error.blank");
+    }
+
+    @Test
     void validate_manageDtoNewUserPasswordTooShort_rejectsPasswordField() {
         when(loginRepository.findByEmail(login.getEmail())).thenReturn(Optional.empty());
         when(loginRepository.findByHandle(login.getHandle())).thenReturn(Optional.empty());

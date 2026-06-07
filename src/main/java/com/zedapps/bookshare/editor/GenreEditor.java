@@ -25,7 +25,11 @@ public class GenreEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        Genre genre = genreRepository.findById(Long.parseLong(text)).orElse(null);
-        setValue(genre);
+        if (text == null || text.trim().isEmpty()) {
+            setValue(null);
+        } else {
+            Genre genre = genreRepository.findById(Long.parseLong(text)).orElse(null);
+            setValue(genre);
+        }
     }
 }

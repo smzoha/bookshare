@@ -25,7 +25,11 @@ public class AuthorEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        Author author = authorRepository.findById(Long.parseLong(text)).orElse(null);
-        setValue(author);
+        if (text == null || text.trim().isEmpty()) {
+            setValue(null);
+        } else {
+            Author author = authorRepository.findById(Long.parseLong(text)).orElse(null);
+            setValue(author);
+        }
     }
 }
