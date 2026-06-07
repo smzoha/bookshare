@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
 
 plugins {
     id 'java'
+    id 'jacoco'
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.spotbugs)
@@ -93,6 +94,7 @@ processResources {
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs '-Dapi.version=1.40', '-ea'
+    finalizedBy jacocoTestReport
 }
 
 spotbugs {
@@ -109,4 +111,51 @@ tasks.withType(SpotBugsTask).configureEach {
         html.required.set(true)
         xml.required.set(false)
     }
+}
+
+def excludedDirectories = [
+        '**/AppRunner.class',
+        '**/config/**',
+        '**/entity/**',
+        '**/dto/**',
+        '**/controller/admin/ActuatorDashboardController.class'
+]
+
+def filteredClassDirectories = sourceSets.main.output.asFileTree.matching {
+    exclude(excludedDirectories)
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
+    }
+
+    classDirectories.setFrom(filteredClassDirectories)
+}
+
+jacocoTestCoverageVerification {
+    classDirectories.setFrom(filteredClassDirectories)
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+check {
+    dependsOn jacocoTestCoverageVerification
 }
