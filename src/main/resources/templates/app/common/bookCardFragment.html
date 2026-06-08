@@ -4,10 +4,13 @@
 <div th:fragment="bookCard(book)">
     <div class="card bg-bookshare-50 border-0 shadow-sm h-100 p-2">
         <a th:href="@{/book/{id}(id=${book.id})}">
-            <img th:src="@{/img/book-placeholder.png}" th:if="${book.image == null}" class="book-cover mx-auto"
-                 alt="Book Cover">
-            <img th:src="@{/image/{id}(id=${book.image.id})}" th:if="${book.image != null}" class="book-cover mx-auto"
-                 alt="Book Cover">
+            <th:block th:if="${book.image == null}">
+                <img th:src="@{/img/book-placeholder.png}" class="book-cover mx-auto" alt="Book Cover">
+            </th:block>
+
+            <th:block th:if="${book.image != null}">
+                <img th:src="@{/image/{id}(id=${book.image.id})}" class="book-cover mx-auto" alt="Book Cover">
+            </th:block>
         </a>
 
         <div class="mt-2 text-center">
