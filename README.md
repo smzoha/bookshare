@@ -18,6 +18,7 @@ BookShare is a social reading platform where users can track books, log reading 
 - [Features](#features)
 - [Architecture Overview](#architecture-overview)
 - [Technology Stack](#technology-stack)
+- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Local Setup](#local-setup)
@@ -138,6 +139,26 @@ Cache statistics are visible on the admin Actuator dashboard.
 | Build & QA | Gradle (version catalog), Lombok, SpotBugs |
 | Testing | JUnit 5, AssertJ, Mockito, Testcontainers (PostgreSQL 17) |
 | Infrastructure | Docker (multi-stage build, eclipse-temurin:25-jre-alpine), Docker Compose |
+
+---
+
+## Screenshots
+
+**Homepage** — recently-read shelf, reading progress, friends' activity feed, and featured books
+
+<img src="screenshots/homepage.png" alt="Homepage" width="700">
+
+**Book Catalog** — browse and filter books by name, rating, genre, and tag
+
+<img src="screenshots/book-list.png" alt="Book list" width="700">
+
+**Profile** — shelves, reading progress, connections, and activity for a user
+
+<img src="screenshots/profile.png" alt="Profile" width="700">
+
+**Collection** — personal shelf view with per-book reading progress
+
+<img src="screenshots/collection.png" alt="Collection" width="700">
 
 ---
 
