@@ -20,7 +20,7 @@ public class BookReviewDto {
     private Long bookId;
 
     @NotNull(message = "{error.required}")
-    @Min(value = 0, message = "{error.min.value}")
+    @Min(value = 1, message = "{error.min.value}")
     @Max(value = 5, message = "{error.max.value}")
     private Integer rating;
 
