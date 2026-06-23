@@ -30,7 +30,7 @@
                         <div class="small text-secondary mb-1" th:if="${challengeBookCount > 0}">
                             <span th:text="#{label.goal.params(${booksReadCount}, ${challengeBookCount})}"></span>
                         </div>
-                        <div class="progress" style="height: 0.5rem;">
+                        <div class="progress" style="height: 0.5rem;" th:if="${challengeBookCount > 0}">
                             <div class="progress-bar bg-warning"
                                  th:style="|width: ${(booksReadCount * 100) / challengeBookCount}%|"></div>
                         </div>
@@ -169,7 +169,8 @@
                             </th:block>
 
                             <div class="progress flex-grow-1" style="height: 0.55rem;">
-                                <div class="progress-bar bg-warning" th:style="|width: ${(ratingEntry.value * 100) / reviewCount}%|"></div>
+                                <div class="progress-bar bg-warning"
+                                     th:style="|width: ${reviewCount > 0 ? (ratingEntry.value * 100) / reviewCount : 0}%|"></div>
                             </div>
 
                             <span class="text-secondary text-end" style="min-width: 22px;" th:text="${ratingEntry.value}"></span>

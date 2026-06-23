@@ -15,6 +15,7 @@ import org.springframework.ui.ModelMap;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -88,11 +89,15 @@ public class ReadingStatsHelper {
             averageFinishTime += ChronoUnit.DAYS.between(readingProgress.getStartDate(), readingProgress.getEndDate());
         }
 
+        boolean currentYear = Objects.equals(year, LocalDate.now().getYear());
+
         model.put("booksReadCount", books.size());
         model.put("readCount", readingProgresses.size());
         model.put("totalPagesRead", totalPagesRead);
-        model.put("avgPagesPerDay", Math.ceilDiv(totalPagesRead, LocalDateTime.now().getDayOfYear()));
-        model.put("averageFinishTime", Math.ceilDiv(averageFinishTime, readingProgresses.size()));
+
+        model.put("averageFinishTime", readingProgresses.isEmpty() ? 0 : Math.ceilDiv(averageFinishTime, readingProgresses.size()));
+        model.put("avgPagesPerDay", Math.ceilDiv(totalPagesRead, currentYear ? LocalDateTime.now().getDayOfYear()
+                : Year.of(year).length()));
 
         model.put("booksReadMap", booksReadMap);
 
@@ -117,7 +122,7 @@ public class ReadingStatsHelper {
         }
 
         model.put("reviewCount", reviewList.size());
-        model.put("totalAvgReview", Math.ceilDiv(totalReviews, reviewList.size()));
+        model.put("totalAvgReview", reviewList.isEmpty() ? 0 : Math.ceilDiv(totalReviews, reviewList.size()));
         model.put("ratingMap", ratingMap);
     }
 }
