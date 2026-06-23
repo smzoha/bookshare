@@ -65,6 +65,15 @@
                             <li><hr class="dropdown-divider"></li>
 
                             <li>
+                                <a class="dropdown-item" th:href="@{/readingStats}">
+                                    <i class="fa-solid fa-chart-line fa-fw me-2"></i>
+                                    <span th:text="#{label.reading.stats.title}"></span>
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li>
                                 <form th:action="@{/logout}" method="post">
                                     <button class="dropdown-item text-danger" type="submit">
                                         <i class="fa-solid fa-right-from-bracket fa-fw me-2"></i>
