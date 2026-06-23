@@ -224,6 +224,12 @@
         applyChartTheme();
 
         $(document).on('click', '#themeToggle', () => setTimeout(applyChartTheme, 0));
+
+        $('select[id="yearSelect"]').on('change', (e) => {
+            let select = e.currentTarget, year = $(select).val();
+
+            window.location.href = `/readingStats?year=${year}`;
+        });
     </script>
 </div>
 </body>
