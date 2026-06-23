@@ -43,6 +43,7 @@ BookShare is a social reading platform where users can track books, log reading 
 - Write and like book reviews (star ratings 0–5, rich-text content via TinyMCE)
 - Organize books into built-in shelves (Currently Reading, Want to Read, Read) and custom shelves
 - View your full collection organized by shelf
+- **Reading Statistics dashboard** — per-year stats: books read, pages read, average pages/day, average time-to-finish, longest/shortest/recently-finished books, a monthly completion bar chart (Chart.js), and your personal rating distribution, tracked against your annual Reading Challenge goal
 
 **Social**
 - Send, accept, decline, and revoke friend requests
@@ -131,8 +132,8 @@ Cache statistics are visible on the admin Actuator dashboard.
 | Backend | Java 25, Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
 | Security | Spring Security, Spring Security OAuth2 Client (Google OIDC), JJWT 0.13 (JWT for REST API) |
 | Frontend | Thymeleaf + Layout Dialect, Bootstrap 5, jQuery 3.7.1, FontAwesome |
-| Rich UI | TinyMCE (description editor), FilePond (image upload), Select2 (multi-select), DataTables |
-| Database | PostgreSQL 17, Flyway (migrations V1–V20) |
+| Rich UI | TinyMCE (description editor), FilePond (image upload), Select2 (multi-select), DataTables, Chart.js (reading-stats charts) |
+| Database | PostgreSQL 17, Flyway (migrations V1–V21) |
 | Caching | Caffeine (managed via Spring Cache abstraction) |
 | Email | Spring Mail + Gmail API (Google OAuth2 UserCredentials) |
 | Observability | Spring Boot Actuator, Micrometer |

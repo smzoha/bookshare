@@ -34,6 +34,7 @@ src/main/java/com/zedapps/bookshare/
 │   └── SecurityConfig           # HTTP security rules, form login, OAuth2 OIDC
 ├── controller/
 │   ├── HomeController                      # /, /feed, /admin (MVC)
+│   ├── dashboard/ReadingStatsController    # /readingStats — per-year reading statistics dashboard (MVC)
 │   ├── admin/ActuatorDashboardController   # /admin/actuator/dashboard
 │   ├── api/                                # REST API — all under /api/v1
 │   │   ├── ApiExceptionHandler             # @RestControllerAdvice for api package
@@ -66,7 +67,8 @@ src/main/java/com/zedapps/bookshare/
 ├── editor/                      # PropertyEditors for form binding (Author, Genre, Tag, Image)
 ├── helper/
 │   ├── BookHelper               # Populates ModelMap for book detail page (calls BookService + ShelfService)
-│   └── ProfileHelper            # Populates ModelMap for profile page and connection fragment (calls ProfileService)
+│   ├── ProfileHelper            # Populates ModelMap for profile page and connection fragment (calls ProfileService)
+│   └── ReadingStatsHelper       # Populates ModelMap for reading stats dashboard (challenge, progress, reviews)
 ├── entity/
 │   ├── activity/
 │   │   ├── Activity             # table: activity
@@ -84,6 +86,7 @@ src/main/java/com/zedapps/bookshare/
 │       ├── FriendRequest        # table: friend_request
 │       ├── Login                # table: logins (the user entity)
 │       ├── PasswordResetToken   # table: password_reset_token
+│       ├── ReadingChallenge     # table: reading_challenge (composite key via ReadingChallengeId)
 │       ├── ReadingProgress      # table: reading_progress
 │       ├── Review               # table: review
 │       ├── Shelf                # table: shelf
@@ -126,12 +129,13 @@ src/main/resources/
 ├── application.properties       # Core config (port 6001, JPA, Flyway, caching, actuator)
 ├── application-dev.properties   # Dev DB connection, devtools, mail, imports secret-dev.properties
 ├── secret-dev.properties.example
-├── db/migration/                # Flyway SQL migrations (V1–V20)
+├── db/migration/                # Flyway SQL migrations (V1–V21)
 │   ├── 09_2025/                 # V1–V8_2
 │   ├── 10_2025/                 # V9
 │   ├── 01_2026/                 # V10–V12_1
 │   ├── 02_2026/                 # V13
-│   └── 03_2026/                 # V14–V20
+│   ├── 03_2026/                 # V14–V20
+│   └── 06_2026/                 # V21 (reading_challenge)
 ├── locale/messages*.properties  # i18n: en, fr, de, es, bn
 ├── seed/seed_data.sql           # Manual seed (10 books, 10 authors, genres, tags)
 ├── static/                      # CSS, JS, vendor libs (Bootstrap, jQuery, TinyMCE, etc.)
@@ -163,6 +167,7 @@ src/main/resources/
 | `Image` | `image` | `id`, `fileName`, `contentType`, `content` (LOB byte[]) |
 | `PasswordResetToken` | `password_reset_token` | `id`, `email`, `hashedSignature` (SHA-256), `expiryTimestamp` (10 min), `inactive` |
 | `AuthorRequest` | `author_request` | `id`, FK: `login` |
+| `ReadingChallenge` | `reading_challenge` | composite PK `(login, year)` via `@IdClass(ReadingChallengeId)`, `bookCount` (1–1000 annual goal) |
 
 ### JPA Entity Graphs (important for N+1 avoidance)
 
@@ -197,6 +202,7 @@ A book can only be in one default shelf at a time (enforced in `BookService.addT
 | `/manage/**` | ADMIN or MODERATOR |
 | `/manage/book` | AUTHOR |
 | `/profile/**` | Any authenticated role |
+| `/readingStats` | Any authenticated role |
 | `/book/add*`, `/book/remove*`, `/book/update*`, `/book/like`, `/shelf/add`, `/collection/**` | Any authenticated user |
 | `/resetPasswordRequest`, `/resetPassword` | Anonymous only |
 | `/author/apply` | USER role only |
@@ -334,7 +340,7 @@ Never write to the database in a method annotated `@Cacheable` — the result ma
 Flyway is the only mechanism that touches the schema. `spring.jpa.hibernate.ddl-auto=none`.
 
 **Rules for new migrations:**
-1. File name: `V{N}__{description}.sql` where `N` continues from the current highest version (V20).
+1. File name: `V{N}__{description}.sql` where `N` continues from the current highest version (V21).
 2. Place in `src/main/resources/db/migration/{mon_yyyy}/` matching the current month.
 3. Never modify an existing migration file — Flyway will reject checksum mismatches.
 4. For complex changes that require multiple steps, use sub-versions: `V21__main_change.sql`, `V21_1__followup.sql`.
@@ -378,6 +384,7 @@ templates/
 │   │   ├── resetPasswordRequest.html      # Forgot password form
 │   │   ├── resetPassword.html             # New password form (token-gated)
 │   │   ├── collection.html                # User's shelves and books
+│   │   ├── readingStats.html              # Reading statistics dashboard (Chart.js, year selector)
 │   │   └── fragments/
 │   │       ├── loginComponent.html        # Login form
 │   │       ├── registrationComponent.html # Registration form
