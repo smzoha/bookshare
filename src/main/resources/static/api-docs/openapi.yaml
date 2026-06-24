@@ -372,6 +372,52 @@ components:
         totalPages:
           type: integer
 
+    ReadingStatsDto:
+      type: object
+      properties:
+        challengeBookCount:
+          type: integer
+        booksReadCount:
+          type: integer
+        readCount:
+          type: integer
+        totalPagesRead:
+          type: integer
+          format: int64
+        averageFinishTime:
+          type: integer
+          format: int64
+          description: Average days to finish a book
+        avgPagesPerDay:
+          type: integer
+          format: int64
+        booksReadMap:
+          type: object
+          description: Books completed per month, keyed by month name (JANUARY..DECEMBER)
+          additionalProperties:
+            type: integer
+        longestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        shortestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        latestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        reviewCount:
+          type: integer
+        totalAvgReview:
+          type: integer
+        ratingMap:
+          type: object
+          description: Review count per rating, keyed by rating value (5..1)
+          additionalProperties:
+            type: integer
+
 paths:
 
   /auth/token:
@@ -887,3 +933,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
+
+  /readingStats/{year}:
+    get:
+      tags: [Reading Stats]
+      summary: Get reading statistics for the authenticated user for a given year
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reading statistics for the requested year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingStatsDto'
