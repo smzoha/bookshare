@@ -105,7 +105,7 @@ public class ReadingStatsHelper {
         model.put("longestBook", longestBook);
         model.put("shortestBook", shortestBook);
 
-        model.put("latestBook", Objects.requireNonNull(latestReadingProgress).getBook());
+        model.put("latestBook", Objects.nonNull(latestReadingProgress) ? latestReadingProgress.getBook() : null);
     }
 
     private void setupReviewProperties(LoginDetails loginDetails, int year, Map<String, Object> model) {
