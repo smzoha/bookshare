@@ -32,7 +32,9 @@ public class ReadingStatsHelper {
     private final ReviewRepository reviewRepository;
 
     public void setupReadingStatsReferenceData(LoginDetails loginDetails, Integer year, Map<String, Object> model) {
-        year = Objects.isNull(year) ? LocalDate.now().getYear() : year;
+        if (Objects.isNull(year)) {
+            year = LocalDate.now().getYear();
+        }
 
         Optional<ReadingChallenge> readingChallenge = readingChallengeRepository.getReadingChallengeByLogin_EmailAndYear(
                 loginDetails.getEmail(), year);
