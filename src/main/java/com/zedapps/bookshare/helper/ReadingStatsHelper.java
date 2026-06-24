@@ -10,7 +10,6 @@ import com.zedapps.bookshare.repository.login.ReviewRepository;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +31,7 @@ public class ReadingStatsHelper {
     private final ReadingProgressRepository readingProgressRepository;
     private final ReviewRepository reviewRepository;
 
-    public void setupReadingStatsReferenceData(LoginDetails loginDetails, Integer year, ModelMap model) {
+    public void setupReadingStatsReferenceData(LoginDetails loginDetails, Integer year, Map<String, Object> model) {
         year = Objects.isNull(year) ? LocalDate.now().getYear() : year;
 
         Optional<ReadingChallenge> readingChallenge = readingChallengeRepository.getReadingChallengeByLogin_EmailAndYear(
@@ -50,7 +49,7 @@ public class ReadingStatsHelper {
         setupReviewProperties(loginDetails, year, model);
     }
 
-    private void setupReadingProgressProperties(LoginDetails loginDetails, Integer year, ModelMap model) {
+    private void setupReadingProgressProperties(LoginDetails loginDetails, Integer year, Map<String, Object> model) {
         List<ReadingProgress> readingProgresses = readingProgressRepository.
                 findReadingProgressesByUser_EmailAndEndDateYear(loginDetails.getEmail(), year);
 
@@ -107,7 +106,7 @@ public class ReadingStatsHelper {
         model.put("latestBook", Objects.requireNonNull(latestReadingProgress).getBook());
     }
 
-    private void setupReviewProperties(LoginDetails loginDetails, int year, ModelMap model) {
+    private void setupReviewProperties(LoginDetails loginDetails, int year, Map<String, Object> model) {
         List<Review> reviewList = reviewRepository.findReviewsByUser_EmailAndReviewDateYear(
                 loginDetails.getEmail(), year);
 
