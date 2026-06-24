@@ -5,6 +5,7 @@ import com.zedapps.bookshare.dto.login.RegistrationRequestDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.enums.ActivityType;
+import com.zedapps.bookshare.enums.AuthProvider;
 import com.zedapps.bookshare.enums.Role;
 import com.zedapps.bookshare.repository.image.ImageRepository;
 import com.zedapps.bookshare.repository.login.LoginRepository;
@@ -135,6 +136,8 @@ public class LoginService {
 
         login.setRole(Role.USER);
         login.setActive(true);
+
+        login.setAuthProvider(AuthProvider.LOCAL);
 
         return login;
     }
