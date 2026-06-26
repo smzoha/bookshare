@@ -161,6 +161,10 @@ Cache statistics are visible on the admin Actuator dashboard.
 
 <img src="screenshots/collection.png" alt="Collection" width="700">
 
+**Reading Statistics** — per-year dashboard: books/pages read, average pace and time-to-finish, monthly completion chart, rating distribution, and Reading Challenge progress
+
+<img src="screenshots/reading-stats.png" alt="Reading statistics dashboard" width="700">
+
 ---
 
 ## Getting Started
