@@ -8,16 +8,14 @@ import com.zedapps.bookshare.entity.book.Author;
 import com.zedapps.bookshare.entity.book.Book;
 import com.zedapps.bookshare.entity.book.Genre;
 import com.zedapps.bookshare.entity.book.Tag;
-import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.Review;
-import com.zedapps.bookshare.entity.login.Shelf;
-import com.zedapps.bookshare.entity.login.ShelvedBook;
+import com.zedapps.bookshare.entity.login.*;
 import com.zedapps.bookshare.enums.*;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,6 +129,24 @@ public class TestUtils {
         review.setContent("Review Content");
 
         return review;
+    }
+
+    public static ReadingProgress getReadingProgress(Book book, Login user, long pagesRead,
+                                                     LocalDate startDate, LocalDate endDate, boolean completed) {
+
+        ReadingProgress readingProgress = new ReadingProgress();
+        readingProgress.setBook(book);
+        readingProgress.setUser(user);
+        readingProgress.setPagesRead(pagesRead);
+        readingProgress.setStartDate(startDate);
+        readingProgress.setEndDate(endDate);
+        readingProgress.setCompleted(completed);
+
+        return readingProgress;
+    }
+
+    public static ReadingChallenge getReadingChallenge(Login login, int year, int bookCount) {
+        return new ReadingChallenge(login, year, bookCount);
     }
 
     public static Shelf getShelf(Login login, String name, boolean defaultShelf) {

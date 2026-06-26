@@ -80,12 +80,8 @@ class BookHelperTest {
         book.setGenres(Set.of(genre));
         book.setTags(Set.of(tag));
 
-        readingProgress = new ReadingProgress();
+        readingProgress = TestUtils.getReadingProgress(book, login, 10L, LocalDate.now(), null, false);
         readingProgress.setId(1L);
-        readingProgress.setBook(book);
-        readingProgress.setUser(login);
-        readingProgress.setPagesRead(10L);
-        readingProgress.setStartDate(LocalDate.now());
         login.setReadingProgresses(Set.of(readingProgress));
 
         review = TestUtils.getReview(book, login, 5);

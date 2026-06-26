@@ -18,10 +18,11 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,12 +56,14 @@ public class ReviewRepositoryTest {
     private Book book;
     private Book reviewedBook;
 
+    private Login login;
+
     @BeforeAll
     void setUp() throws InterruptedException {
         Author author = TestUtils.getAuthor("Test", "Author");
         authorRepository.saveAndFlush(author);
 
-        Login login = TestUtils.getLogin("user@test.com", "user", true);
+        login = TestUtils.getLogin("user@test.com", "user", true);
         loginRepository.saveAndFlush(login);
 
         book = TestUtils.getBook("Test Book", "9780451524935", author, Status.ACTIVE);
@@ -100,5 +103,20 @@ public class ReviewRepositoryTest {
         Review oldestReview = reviews.getContent().getLast();
 
         assertTrue(latestReview.getReviewDate().isAfter(oldestReview.getReviewDate()));
+    }
+
+    @Test
+    void findReviewsByUser_EmailAndReviewDateYear_filtersByUserAndYear() {
+        int currentYear = LocalDate.now().getYear();
+        int previousYear = currentYear - 1;
+
+        List<Review> currentYearReviews = reviewRepository.findReviewsByUser_EmailAndReviewDateYear(login.getEmail(), currentYear);
+        assertEquals(5, currentYearReviews.size());
+
+        List<Review> prevYearReviews = reviewRepository.findReviewsByUser_EmailAndReviewDateYear(login.getEmail(), previousYear);
+        assertTrue(prevYearReviews.isEmpty());
+
+        List<Review> otherUserReviews = reviewRepository.findReviewsByUser_EmailAndReviewDateYear("other@test.com", currentYear);
+        assertTrue(otherUserReviews.isEmpty());
     }
 }

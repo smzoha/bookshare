@@ -32,7 +32,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -266,9 +265,11 @@ public class BookControllerTest extends AbstractWebMvcTest {
     void updateProgress_validReadingProgress_redirects() throws Exception {
         Book book = books.getFirst();
 
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 0L, LocalDate.now(), null, false);
+        readingProgress.setId(1L);
+
         when(bookService.saveReadingProgress(any(ReadingProgress.class), any(LoginDetails.class)))
-                .thenReturn(new ReadingProgress(1L, login, book, 0L, LocalDate.now(),
-                        null, false, LocalDateTime.now()));
+                .thenReturn(readingProgress);
 
         mockMvc.perform(post("/book/updateProgress")
                         .param("book.id", "1")

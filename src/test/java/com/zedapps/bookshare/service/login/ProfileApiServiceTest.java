@@ -153,8 +153,10 @@ public class ProfileApiServiceTest {
         Book book = TestUtils.getBook("Book 1", "9780743273565", author, Status.ACTIVE);
         book.setId(1L);
 
-        ReadingProgress readingProgress = new ReadingProgress(1L, login, book, 5L,
-                LocalDate.now(), null, false, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 5L,
+                LocalDate.now(), null, false);
+
+        readingProgress.setId(1L);
 
         when(profileService.getDistinctReadingProgressList(login)).thenReturn(List.of(readingProgress));
 
