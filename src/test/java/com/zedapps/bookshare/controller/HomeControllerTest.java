@@ -77,12 +77,8 @@ public class HomeControllerTest extends AbstractWebMvcTest {
 
         bookList = TestUtils.getBooks(author, Set.of(genre), Set.of(tag));
 
-        readingProgress = new ReadingProgress();
+        readingProgress = TestUtils.getReadingProgress(bookList.getFirst(), login, 10L, LocalDate.now(), null, false);
         readingProgress.setId(1L);
-        readingProgress.setUser(login);
-        readingProgress.setBook(bookList.getFirst());
-        readingProgress.setPagesRead(10L);
-        readingProgress.setStartDate(LocalDate.now());
         readingProgress.setUpdatedAt(LocalDateTime.now());
     }
 

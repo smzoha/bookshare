@@ -284,17 +284,20 @@ public class ProfileServiceTest {
         for (int i = 1, j = 0; i <= 20; i++) {
             LocalDate startDate = LocalDateTime.now().minusDays(i).toLocalDate();
 
-            ReadingProgress readingProgress = new ReadingProgress((long) i, login1, books.get(j),
-                    10L, startDate, null, false, LocalDateTime.now());
+            ReadingProgress readingProgress = TestUtils.getReadingProgress(books.get(j), login1, 10L,
+                    startDate, null, false);
+
+            readingProgress.setId((long) i);
 
             readingProgresses.add(readingProgress);
 
             if (i % 3 == 0) j++; // Trying to add multiple reading progresses per book (i.e. 3)
         }
 
-        completedProgress = new ReadingProgress(100L, login1, books.getLast(),
-                10L, LocalDateTime.now().minusDays(20).toLocalDate(), null,
-                true, LocalDateTime.now());
+        completedProgress = TestUtils.getReadingProgress(books.getLast(), login1, 10L,
+                LocalDateTime.now().minusDays(20).toLocalDate(), null, true);
+
+        completedProgress.setId(100L);
 
         readingProgresses.add(completedProgress);
 

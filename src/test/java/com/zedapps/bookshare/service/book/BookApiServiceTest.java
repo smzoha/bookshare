@@ -27,7 +27,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -262,12 +261,13 @@ public class BookApiServiceTest {
         ReadingProgressRequest rpRequest = new ReadingProgressRequest(1L, 10L,
                 LocalDate.now(), null, false);
 
-        ReadingProgress readingProgress = new ReadingProgress(1L, login, book, 5L, LocalDate.now(), null,
-                false, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 5L, LocalDate.now(), null, false);
+        readingProgress.setId(1L);
 
-        ReadingProgress savedReadingProgress = new ReadingProgress(1L, login, book, 10L,
-                rpRequest.startDate(), null,
-                false, LocalDateTime.now());
+        ReadingProgress savedReadingProgress = TestUtils.getReadingProgress(book, login, 10L,
+                rpRequest.startDate(), null, false);
+
+        savedReadingProgress.setId(1L);
 
         when(readingProgressRepository.findById(readingProgress.getId()))
                 .thenReturn(Optional.of(readingProgress));
@@ -294,9 +294,10 @@ public class BookApiServiceTest {
         ReadingProgressRequest rpRequest = new ReadingProgressRequest(null, 10L,
                 LocalDate.now(), null, false);
 
-        ReadingProgress readingProgress = new ReadingProgress(1L, login, book, 10L,
-                rpRequest.startDate(), null,
-                false, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 10L,
+                rpRequest.startDate(), null, false);
+
+        readingProgress.setId(1L);
 
         when(bookService.saveReadingProgress(any(), eq(loginDetails)))
                 .thenReturn(readingProgress);

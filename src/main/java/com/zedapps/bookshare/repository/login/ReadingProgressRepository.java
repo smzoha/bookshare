@@ -17,6 +17,6 @@ public interface ReadingProgressRepository extends JpaRepository<ReadingProgress
     @Query("FROM ReadingProgress WHERE user.email = :userEmail AND YEAR(endDate) = :endDateYear AND completed = true")
     List<ReadingProgress> findReadingProgressesByUser_EmailAndEndDateYear(String userEmail, int endDateYear);
 
-    @Query("SELECT DISTINCT YEAR(endDate) FROM ReadingProgress WHERE user.email = :userEmail AND endDate IS NOT NULL AND completed = true")
+    @Query("SELECT DISTINCT YEAR(endDate) FROM ReadingProgress WHERE user.email = :userEmail AND endDate IS NOT NULL AND completed = true ORDER BY YEAR(endDate) DESC")
     List<Integer> findReadingProgressYearsByUser_Email(String userEmail);
 }

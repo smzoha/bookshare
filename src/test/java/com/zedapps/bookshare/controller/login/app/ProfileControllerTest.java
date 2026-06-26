@@ -3,9 +3,11 @@ package com.zedapps.bookshare.controller.login.app;
 import com.zedapps.bookshare.controller.AbstractWebMvcTest;
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.ReadingChallenge;
 import com.zedapps.bookshare.entity.login.Shelf;
 import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.helper.ProfileHelper;
+import com.zedapps.bookshare.repository.login.ReadingChallengeRepository;
 import com.zedapps.bookshare.security.WithMockLoginDetails;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
@@ -53,6 +55,9 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
     private ProfileService profileService;
 
     @MockitoBean
+    private ReadingChallengeRepository readingChallengeRepository;
+
+    @MockitoBean
     private LoginService loginService;
 
     @Autowired
@@ -63,6 +68,8 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
 
     private Shelf shelf;
     private Shelf otherShelf;
+
+    private ReadingChallenge readingChallenge;
 
     @BeforeEach
     void setUp() {
@@ -78,6 +85,8 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
         login.setShelves(Set.of(shelf));
         otherLogin.setShelves(Set.of(otherShelf));
 
+        readingChallenge = new ReadingChallenge(login, 2026, 10);
+
         lenient().when(loginService.getLoginByHandle(login.getHandle())).thenReturn(login);
         lenient().when(loginService.getLogin(login.getEmail())).thenReturn(login);
     }
@@ -92,34 +101,28 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
     @Test
     void showProfile_existingHandle_returnsProfileView() throws Exception {
         doAnswer(invocation -> {
-            ModelMap model = invocation.getArgument(2);
-            model.put("login", login);
-            model.put("totalBooks", 0);
-            model.put("readingProgressList", List.of());
-            model.put("connectionsCount", 0);
-            model.put("connections", List.of());
-            model.put("feedDtoList", List.of());
-            model.put("defaultShelves", new LinkedHashMap<>());
-            model.put("shelves", new LinkedHashMap<>());
-            model.put("activeShelf", TestUtils.getShelf(login, "Read", true));
-            model.put("ownProfile", true);
-            model.put("friendReqSent", false);
-            model.put("friendReqReceived", false);
-            model.put("isFriends", false);
-            model.put("showFriendReqBtn", false);
+            populateReferenceData(invocation.getArgument(2), login, true);
 
             return null;
         }).when(profileHelper).setupReferenceData(anyString(), any(LoginDetails.class), any(ModelMap.class));
+
+        doAnswer(invocation -> {
+            ModelMap model = invocation.getArgument(1);
+            model.put("readingChallenge", readingChallenge);
+
+            return null;
+        }).when(profileHelper).putReadingChallengeInModel(eq(login), any(ModelMap.class));
 
         mockMvc.perform(get("/profile/" + login.getHandle()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("login", "totalBooks", "readingProgressList",
                         "connectionsCount", "connections", "feedDtoList", "defaultShelves", "shelves", "activeShelf",
-                        "ownProfile", "friendReqSent", "friendReqReceived", "isFriends", "showFriendReqBtn"))
+                        "ownProfile", "friendReqSent", "friendReqReceived", "isFriends", "showFriendReqBtn", "readingChallenge"))
                 .andExpect(view().name("app/profile/profile"));
 
         verify(loginService).getLoginByHandle("test");
         verify(profileHelper).setupReferenceData(eq(login.getEmail()), any(LoginDetails.class), any(ModelMap.class));
+        verify(profileHelper).putReadingChallengeInModel(eq(login), any(ModelMap.class));
         assertThat(applicationEvents.stream(ActivityEvent.class)).hasSize(1);
     }
 
@@ -187,6 +190,30 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
     }
 
     @Test
+    void performFriendAction_acceptRequest_returnsProfileView() throws Exception {
+        when(loginService.getLoginByHandle(otherLogin.getHandle())).thenReturn(otherLogin);
+
+        doAnswer(invocation -> {
+            populateReferenceData(invocation.getArgument(2), otherLogin, false);
+
+            return null;
+        }).when(profileHelper).setupReferenceData(anyString(), any(LoginDetails.class), any(ModelMap.class));
+
+        mockMvc.perform(post("/profile/friendRequest")
+                        .param("handle", otherLogin.getHandle())
+                        .param("action", ConnectionAction.ACCEPT_FRIEND_REQ.name()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("app/profile/profile"));
+
+        verify(loginService).getLogin(login.getEmail());
+        verify(loginService).getLoginByHandle(otherLogin.getHandle());
+
+        verify(profileService).performConnectionAction(login, otherLogin, ConnectionAction.ACCEPT_FRIEND_REQ);
+        verify(profileHelper).setupReferenceData(eq(otherLogin.getEmail()), any(LoginDetails.class), any(ModelMap.class));
+        verify(profileHelper, never()).setupConnectionRefData(any(ModelMap.class), any(Login.class), any(Login.class));
+    }
+
+    @Test
     void performFriendAction_selfAction_throwsException() {
         assertThrows(ServletException.class,
                 () -> mockMvc.perform(post("/profile/friendRequest")
@@ -198,5 +225,72 @@ public class ProfileControllerTest extends AbstractWebMvcTest {
 
         verify(profileService, never()).performConnectionAction(login, login, ConnectionAction.SEND_FRIEND_REQ);
         verify(profileHelper, never()).setupConnectionRefData(any(ModelMap.class), eq(login), eq(login));
+    }
+
+    @Test
+    void showProfile_otherUserProfile_doesNotPopulateReadingChallenge() throws Exception {
+        when(loginService.getLoginByHandle(otherLogin.getHandle())).thenReturn(otherLogin);
+
+        doAnswer(invocation -> {
+            populateReferenceData(invocation.getArgument(2), otherLogin, false);
+
+            return null;
+        }).when(profileHelper).setupReferenceData(anyString(), any(LoginDetails.class), any(ModelMap.class));
+
+        mockMvc.perform(get("/profile/" + otherLogin.getHandle()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("readingChallenge"))
+                .andExpect(view().name("app/profile/profile"));
+
+        verify(profileHelper).setupReferenceData(eq(otherLogin.getEmail()), any(LoginDetails.class), any(ModelMap.class));
+        verify(profileHelper, never()).putReadingChallengeInModel(any(Login.class), any(ModelMap.class));
+        assertThat(applicationEvents.stream(ActivityEvent.class)).hasSize(1);
+    }
+
+    @Test
+    void saveReadingChallenge_validInput_savesChallengeAndRedirects() throws Exception {
+        mockMvc.perform(post("/profile/readingChallenge")
+                        .param("year", "2026")
+                        .param("bookCount", "10"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/profile/test"));
+
+        verify(loginService).getLogin(login.getEmail());
+        verify(readingChallengeRepository).save(any(ReadingChallenge.class));
+    }
+
+    @Test
+    void saveReadingChallenge_validationErrors_returnsProfileView() throws Exception {
+        doAnswer(invocation -> {
+            populateReferenceData(invocation.getArgument(2), login, true);
+
+            return null;
+        }).when(profileHelper).setupReferenceData(anyString(), any(LoginDetails.class), any(ModelMap.class));
+
+        mockMvc.perform(post("/profile/readingChallenge")
+                        .param("year", "2026")
+                        .param("bookCount", "0"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("app/profile/profile"));
+
+        verify(profileHelper).setupReferenceData(eq(login.getEmail()), any(LoginDetails.class), any(ModelMap.class));
+        verify(readingChallengeRepository, never()).save(any(ReadingChallenge.class));
+    }
+
+    private void populateReferenceData(ModelMap model, Login profileLogin, boolean ownProfile) {
+        model.put("login", profileLogin);
+        model.put("totalBooks", 0);
+        model.put("readingProgressList", List.of());
+        model.put("connectionsCount", 0);
+        model.put("connections", List.of());
+        model.put("feedDtoList", List.of());
+        model.put("defaultShelves", new LinkedHashMap<>());
+        model.put("shelves", new LinkedHashMap<>());
+        model.put("activeShelf", TestUtils.getShelf(profileLogin, "Read", true));
+        model.put("ownProfile", ownProfile);
+        model.put("friendReqSent", false);
+        model.put("friendReqReceived", false);
+        model.put("isFriends", false);
+        model.put("showFriendReqBtn", false);
     }
 }
