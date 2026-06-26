@@ -5,12 +5,15 @@ import com.zedapps.bookshare.controller.AbstractWebMvcTest;
 import com.zedapps.bookshare.dto.api.book.ReadingProgressDto;
 import com.zedapps.bookshare.dto.api.login.ConnectionApiDto;
 import com.zedapps.bookshare.dto.api.login.LoginApiDto;
+import com.zedapps.bookshare.dto.api.login.ReadingChallengeDto;
+import com.zedapps.bookshare.dto.api.login.ReadingChallengeRequest;
 import com.zedapps.bookshare.dto.api.shelf.ShelfDto;
 import com.zedapps.bookshare.entity.login.Login;
 import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.security.WithMockLoginDetails;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.ProfileApiService;
+import com.zedapps.bookshare.service.login.ReadingChallengeApiService;
 import com.zedapps.bookshare.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +25,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -45,6 +50,9 @@ public class ProfileApiControllerTest extends AbstractWebMvcTest {
 
     @MockitoBean
     private ProfileApiService profileApiService;
+
+    @MockitoBean
+    private ReadingChallengeApiService readingChallengeApiService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -108,5 +116,65 @@ public class ProfileApiControllerTest extends AbstractWebMvcTest {
 
         verify(profileApiService).performConnectionAction(any(LoginDetails.class),
                 eq(connectionApiDto));
+    }
+
+    @Test
+    void getReadingChallenge_existingChallenge_returns200WithDto() throws Exception {
+        ReadingChallengeDto readingChallengeDto = new ReadingChallengeDto(login.getEmail(), 2026, 50);
+
+        when(readingChallengeApiService.getReadingChallenge(login.getEmail()))
+                .thenReturn(Optional.of(readingChallengeDto));
+
+        mockMvc.perform(get("/api/v1/profile/readingChallenge"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(login.getEmail()))
+                .andExpect(jsonPath("$.year").value(2026))
+                .andExpect(jsonPath("$.bookCount").value(50));
+
+        verify(readingChallengeApiService).getReadingChallenge(login.getEmail());
+    }
+
+    @Test
+    void getReadingChallenge_noChallenge_returns404() throws Exception {
+        when(readingChallengeApiService.getReadingChallenge(login.getEmail()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/v1/profile/readingChallenge"))
+                .andExpect(status().isNotFound());
+
+        verify(readingChallengeApiService).getReadingChallenge(login.getEmail());
+    }
+
+    @Test
+    void saveReadingChallenge_validRequest_returns200WithDto() throws Exception {
+        ReadingChallengeRequest request = new ReadingChallengeRequest(2026, 50);
+        ReadingChallengeDto readingChallengeDto = new ReadingChallengeDto(login.getEmail(), 2026, 50);
+
+        when(readingChallengeApiService.saveReadingChallenge(any(ReadingChallengeRequest.class),
+                any(LoginDetails.class))).thenReturn(readingChallengeDto);
+
+        mockMvc.perform(post("/api/v1/profile/readingChallenge")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value(login.getEmail()))
+                .andExpect(jsonPath("$.year").value(2026))
+                .andExpect(jsonPath("$.bookCount").value(50));
+
+        verify(readingChallengeApiService).saveReadingChallenge(any(ReadingChallengeRequest.class),
+                any(LoginDetails.class));
+    }
+
+    @Test
+    void saveReadingChallenge_invalidBookCount_returns400WithErrors() throws Exception {
+        ReadingChallengeRequest request = new ReadingChallengeRequest(2026, 0);
+
+        mockMvc.perform(post("/api/v1/profile/readingChallenge")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.bookCount").exists());
+
+        verify(readingChallengeApiService, never()).saveReadingChallenge(any(), any());
     }
 }
