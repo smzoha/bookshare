@@ -219,6 +219,27 @@ components:
             - DECLINE_FRIEND_REQ
             - REMOVE_FRIEND
 
+    ReadingChallengeDto:
+      type: object
+      properties:
+        email:
+          type: string
+        year:
+          type: integer
+        bookCount:
+          type: integer
+
+    ReadingChallengeRequest:
+      type: object
+      required: [bookCount]
+      properties:
+        year:
+          type: integer
+        bookCount:
+          type: integer
+          minimum: 1
+          maximum: 1000
+
     LoginApiDto:
       type: object
       properties:
@@ -350,6 +371,52 @@ components:
           type: integer
         totalPages:
           type: integer
+
+    ReadingStatsDto:
+      type: object
+      properties:
+        challengeBookCount:
+          type: integer
+        booksReadCount:
+          type: integer
+        readCount:
+          type: integer
+        totalPagesRead:
+          type: integer
+          format: int64
+        averageFinishTime:
+          type: integer
+          format: int64
+          description: Average days to finish a book
+        avgPagesPerDay:
+          type: integer
+          format: int64
+        booksReadMap:
+          type: object
+          description: Books completed per month, keyed by month name (JANUARY..DECEMBER)
+          additionalProperties:
+            type: integer
+        longestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        shortestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        latestBook:
+          allOf:
+            - $ref: '#/components/schemas/BookDto'
+          nullable: true
+        reviewCount:
+          type: integer
+        totalAvgReview:
+          type: integer
+        ratingMap:
+          type: object
+          description: Review count per rating, keyed by rating value (5..1)
+          additionalProperties:
+            type: integer
 
 paths:
 
@@ -783,6 +850,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConnectionApiDto'
 
+  /profile/readingChallenge:
+    get:
+      tags: [Profile]
+      summary: Get the reading challenge for the current year for the authenticated user
+      responses:
+        '200':
+          description: Reading challenge found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingChallengeDto'
+        '404':
+          description: No reading challenge set for the current year
+    post:
+      tags: [Profile]
+      summary: Create or update the reading challenge for the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadingChallengeRequest'
+      responses:
+        '200':
+          description: Reading challenge saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingChallengeDto'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDto'
+
   /home/featured:
     get:
       tags: [Home]
@@ -830,3 +933,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDto'
+
+  /readingStats/{year}:
+    get:
+      tags: [Reading Stats]
+      summary: Get reading statistics for the authenticated user for a given year
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reading statistics for the requested year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingStatsDto'

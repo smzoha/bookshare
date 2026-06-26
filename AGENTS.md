@@ -34,15 +34,17 @@ src/main/java/com/zedapps/bookshare/
 │   └── SecurityConfig           # HTTP security rules, form login, OAuth2 OIDC
 ├── controller/
 │   ├── HomeController                      # /, /feed, /admin (MVC)
+│   ├── dashboard/ReadingStatsController    # /readingStats — per-year reading statistics dashboard (MVC)
 │   ├── admin/ActuatorDashboardController   # /admin/actuator/dashboard
 │   ├── api/                                # REST API — all under /api/v1
 │   │   ├── ApiExceptionHandler             # @RestControllerAdvice for api package
 │   │   ├── HomeApiController               # /api/v1/home/featured, /api/v1/home/feed
 │   │   ├── auth/ApiAuthController          # /api/v1/auth/token (JWT issuance)
 │   │   ├── book/BookApiController          # /api/v1/book/**
+│   │   ├── dashboard/ReadingStatsApiController # /api/v1/readingStats/{year}
 │   │   ├── login/AuthorApiController       # /api/v1/author/apply
 │   │   ├── login/LoginApiController        # /api/v1/login/register, /resetPassword/**
-│   │   ├── login/ProfileApiController      # /api/v1/profile/**
+│   │   ├── login/ProfileApiController      # /api/v1/profile/** (incl. reading challenge)
 │   │   └── shelf/ShelfApiController        # /api/v1/shelf/**
 │   ├── book/
 │   │   ├── admin/BookAdminController       # /admin/book
@@ -66,7 +68,8 @@ src/main/java/com/zedapps/bookshare/
 ├── editor/                      # PropertyEditors for form binding (Author, Genre, Tag, Image)
 ├── helper/
 │   ├── BookHelper               # Populates ModelMap for book detail page (calls BookService + ShelfService)
-│   └── ProfileHelper            # Populates ModelMap for profile page and connection fragment (calls ProfileService)
+│   ├── ProfileHelper            # Populates ModelMap for profile page and connection fragment (calls ProfileService)
+│   └── ReadingStatsHelper       # Populates ModelMap for reading stats dashboard (challenge, progress, reviews)
 ├── entity/
 │   ├── activity/
 │   │   ├── Activity             # table: activity
@@ -84,6 +87,7 @@ src/main/java/com/zedapps/bookshare/
 │       ├── FriendRequest        # table: friend_request
 │       ├── Login                # table: logins (the user entity)
 │       ├── PasswordResetToken   # table: password_reset_token
+│       ├── ReadingChallenge     # table: reading_challenge (composite key via ReadingChallengeId)
 │       ├── ReadingProgress      # table: reading_progress
 │       ├── Review               # table: review
 │       ├── Shelf                # table: shelf
@@ -105,6 +109,7 @@ src/main/java/com/zedapps/bookshare/
 │   │   ├── BookAdminService     # CRUD + caching for books, authors, genres, tags
 │   │   ├── BookApiService       # API-specific book reads, review/shelf/progress writes
 │   │   └── BookService          # User-facing reads (paginated lists, related books)
+│   ├── dashboard/ReadingStatsApiService # Assembles ReadingStatsDto for the REST API (reuses ReadingStatsHelper)
 │   ├── image/ImageService
 │   ├── login/
 │   │   ├── AuthorRequestService # Author application validation + save (shared MVC/API)
@@ -114,7 +119,8 @@ src/main/java/com/zedapps/bookshare/
 │   │   ├── LoginService         # Core user load/save; canonical getLogin(email)
 │   │   ├── PasswordResetService
 │   │   ├── ProfileApiService    # Profile read + connection actions for API
-│   │   └── ProfileService       # Profile read + connection actions for MVC
+│   │   ├── ProfileService       # Profile read + connection actions for MVC
+│   │   └── ReadingChallengeApiService # Reading challenge get/save for API
 │   ├── mail/MailService         # Gmail API email sending (@Async)
 │   └── shelf/
 │       ├── ShelfApiService      # Shelf reads/writes for API
@@ -126,12 +132,13 @@ src/main/resources/
 ├── application.properties       # Core config (port 6001, JPA, Flyway, caching, actuator)
 ├── application-dev.properties   # Dev DB connection, devtools, mail, imports secret-dev.properties
 ├── secret-dev.properties.example
-├── db/migration/                # Flyway SQL migrations (V1–V20)
+├── db/migration/                # Flyway SQL migrations (V1–V21)
 │   ├── 09_2025/                 # V1–V8_2
 │   ├── 10_2025/                 # V9
 │   ├── 01_2026/                 # V10–V12_1
 │   ├── 02_2026/                 # V13
-│   └── 03_2026/                 # V14–V20
+│   ├── 03_2026/                 # V14–V20
+│   └── 06_2026/                 # V21 (reading_challenge)
 ├── locale/messages*.properties  # i18n: en, fr, de, es, bn
 ├── seed/seed_data.sql           # Manual seed (10 books, 10 authors, genres, tags)
 ├── static/                      # CSS, JS, vendor libs (Bootstrap, jQuery, TinyMCE, etc.)
@@ -163,6 +170,7 @@ src/main/resources/
 | `Image` | `image` | `id`, `fileName`, `contentType`, `content` (LOB byte[]) |
 | `PasswordResetToken` | `password_reset_token` | `id`, `email`, `hashedSignature` (SHA-256), `expiryTimestamp` (10 min), `inactive` |
 | `AuthorRequest` | `author_request` | `id`, FK: `login` |
+| `ReadingChallenge` | `reading_challenge` | composite PK `(login, year)` via `@IdClass(ReadingChallengeId)`, `bookCount` (1–1000 annual goal) |
 
 ### JPA Entity Graphs (important for N+1 avoidance)
 
@@ -197,6 +205,7 @@ A book can only be in one default shelf at a time (enforced in `BookService.addT
 | `/manage/**` | ADMIN or MODERATOR |
 | `/manage/book` | AUTHOR |
 | `/profile/**` | Any authenticated role |
+| `/readingStats` | Any authenticated role |
 | `/book/add*`, `/book/remove*`, `/book/update*`, `/book/like`, `/shelf/add`, `/collection/**` | Any authenticated user |
 | `/resetPasswordRequest`, `/resetPassword` | Anonymous only |
 | `/author/apply` | USER role only |
@@ -215,6 +224,8 @@ A book can only be in one default shelf at a time (enforced in `BookService.addT
 | Everything else | Authenticated (valid JWT required) |
 
 CSRF is disabled on both chains. The MVC chain uses standard Spring Security sessions; logout at `/logout` clears `JSESSIONID`. The API chain is stateless — no session is created.
+
+The API chain configures no `authenticationEntryPoint`, so an unauthenticated request to a protected `/api/v1/**` route is rejected with **403** (the default `Http403ForbiddenEntryPoint`), not 401 — assert `status().isForbidden()` in API controller tests for the anonymous case.
 
 The authenticated user principal is always a `LoginDetails` object (implements `UserDetails`, `OidcUser`, `OAuth2User`). Retrieve it in controllers with `@AuthenticationPrincipal LoginDetails loginDetails`.
 
@@ -263,7 +274,8 @@ Update the spec whenever you add or change an API endpoint.
 | `ShelfApiController` | `/api/v1/shelf` | `GET /`, `GET /{id}`, `POST /` |
 | `HomeApiController` | `/api/v1/home` | `GET /featured` (public), `GET /feed` |
 | `LoginApiController` | `/api/v1/login` | `POST /register`, `POST /resetPassword/request`, `POST /resetPassword` |
-| `ProfileApiController` | `/api/v1/profile` | `GET /{handle}`, `POST /connect` |
+| `ProfileApiController` | `/api/v1/profile` | `GET /{handle}`, `POST /connect`, `GET|POST /readingChallenge` |
+| `ReadingStatsApiController` | `/api/v1/readingStats` | `GET /{year}` |
 | `AuthorApiController` | `/api/v1/author` | `POST /apply` |
 
 ---
@@ -334,7 +346,7 @@ Never write to the database in a method annotated `@Cacheable` — the result ma
 Flyway is the only mechanism that touches the schema. `spring.jpa.hibernate.ddl-auto=none`.
 
 **Rules for new migrations:**
-1. File name: `V{N}__{description}.sql` where `N` continues from the current highest version (V20).
+1. File name: `V{N}__{description}.sql` where `N` continues from the current highest version (V21).
 2. Place in `src/main/resources/db/migration/{mon_yyyy}/` matching the current month.
 3. Never modify an existing migration file — Flyway will reject checksum mismatches.
 4. For complex changes that require multiple steps, use sub-versions: `V21__main_change.sql`, `V21_1__followup.sql`.
@@ -378,6 +390,7 @@ templates/
 │   │   ├── resetPasswordRequest.html      # Forgot password form
 │   │   ├── resetPassword.html             # New password form (token-gated)
 │   │   ├── collection.html                # User's shelves and books
+│   │   ├── readingStats.html              # Reading statistics dashboard (Chart.js, year selector)
 │   │   └── fragments/
 │   │       ├── loginComponent.html        # Login form
 │   │       ├── registrationComponent.html # Registration form
@@ -794,11 +807,22 @@ void clearRequestContext() {
 | `getLogin(email, handle, active)` | `Login` | `Role.USER`, `AuthProvider.LOCAL`, firstName="Test", lastName="User" |
 | `getAuthor(firstName, lastName)` | `Author` | |
 | `getBook(title, isbn, author, status)` | `Book` | pages=100; single author |
+| `getBooks(author, genres, tags)` | `List<Book>` | One book per `TEST_ISBN_DATA` entry, ids 1..n |
+| `getGenre(name)` | `Genre` | |
+| `getTag(name)` | `Tag` | |
 | `getReview(book, login, rating)` | `Review` | content="Review Content" |
+| `getReadingProgress(book, user, pagesRead, startDate, endDate, completed)` | `ReadingProgress` | id/updatedAt unset (set explicitly when the test needs them) |
+| `getReadingChallenge(login, year, bookCount)` | `ReadingChallenge` | |
 | `getShelf(login, name, defaultShelf)` | `Shelf` | |
 | `getShelvedBook(book, login, shelf)` | `ShelvedBook` | |
 | `getActivityOutboxItem(status)` | `ActivityOutbox` | LOGIN event, referenceId=1 |
 | `getActivity(activityType)` | `Activity` | referenceId=1, no login |
+| `getLoginDetails(email, handle, active)` | `LoginDetails` | security principal built from `getLogin(...)` |
+| `setupSecurityContext(loginDetails)` | `void` | sets `SecurityContextHolder` with a mock `Authentication` |
+| `getRegistrationRequestDto(login)` | `RegistrationRequestDto` | password="plain-password" |
+| `getLoginManageDto(login)` | `LoginManageDto` | password="plain-password" |
+
+`TestUtils.TEST_ISBN_DATA` is a shared list of valid ISBN strings used to build distinct books.
 
 ---
 

@@ -2,6 +2,7 @@ package com.zedapps.bookshare.helper;
 
 import com.zedapps.bookshare.entity.feed.FeedEntry;
 import com.zedapps.bookshare.entity.login.*;
+import com.zedapps.bookshare.repository.login.ReadingChallengeRepository;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.FeedService;
 import com.zedapps.bookshare.service.login.LoginService;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.ModelMap;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,6 +45,9 @@ class ProfileHelperTest {
 
     @Mock
     private FeedService feedService;
+
+    @Mock
+    private ReadingChallengeRepository readingChallengeRepository;
 
     @Mock
     private Page<FeedEntry> feedPage;
@@ -166,14 +171,6 @@ class ProfileHelperTest {
     }
 
     @Test
-    void setupConnectionRefData_ownProfile_hidesConnectionButton() {
-        ModelMap model = new ModelMap();
-        profileHelper.setupConnectionRefData(model, profileLogin, profileLogin);
-
-        assertThat(model.get("ownProfile")).isEqualTo(true);
-    }
-
-    @Test
     void setupShelves_separatesDefaultShelvesFromCustomShelves() {
         LoginDetails loginDetails = TestUtils.getLoginDetails(authLogin.getEmail(), authLogin.getHandle(), true);
         when(loginService.getLogin(profileLogin.getEmail())).thenReturn(profileLogin);
@@ -207,5 +204,30 @@ class ProfileHelperTest {
         profileHelper.setupReferenceData(profileLogin.getEmail(), loginDetails, model);
 
         assertThat(model.get("activeShelf")).isEqualTo(defaultShelf);
+    }
+
+    @Test
+    void putReadingChallengeInModel_existsInDatabase_populateReadingChallengeInModel() {
+        int currentYear = LocalDateTime.now().getYear();
+
+        ReadingChallenge readingChallenge = new ReadingChallenge(profileLogin, currentYear, 10);
+        ReadingChallengeId readingChallengeId = new ReadingChallengeId(profileLogin.getId(), currentYear);
+
+        when(readingChallengeRepository.findById(readingChallengeId)).thenReturn(Optional.of(readingChallenge));
+
+        ModelMap model = new ModelMap();
+        profileHelper.putReadingChallengeInModel(profileLogin, model);
+
+        assertThat(model.containsKey("readingChallenge")).isTrue();
+        assertThat(model.get("readingChallenge")).isEqualTo(readingChallenge);
+    }
+
+    @Test
+    void putReadingChallengeInModel_notFound_populateReadingChallengeInModel() {
+        ModelMap model = new ModelMap();
+        profileHelper.putReadingChallengeInModel(profileLogin, model);
+
+        assertThat(model.containsKey("readingChallenge")).isTrue();
+        assertThat(((ReadingChallenge) model.get("readingChallenge")).getBookCount()).isNull();
     }
 }

@@ -2,17 +2,21 @@ package com.zedapps.bookshare.controller.login.app;
 
 import com.zedapps.bookshare.dto.activity.ActivityEvent;
 import com.zedapps.bookshare.entity.login.Login;
+import com.zedapps.bookshare.entity.login.ReadingChallenge;
 import com.zedapps.bookshare.enums.ActivityType;
 import com.zedapps.bookshare.enums.ConnectionAction;
 import com.zedapps.bookshare.helper.ProfileHelper;
+import com.zedapps.bookshare.repository.login.ReadingChallengeRepository;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.LoginService;
 import com.zedapps.bookshare.service.login.ProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,12 +32,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    private final List<ConnectionAction> FRIEND_ACCEPT_OR_REMOVE_ACTIONS = List.of(ConnectionAction.ACCEPT_FRIEND_REQ,
+    private final List<ConnectionAction> FRIEND_ACCEPT_OR_REMOVE_ACTIONS = List.of(
+            ConnectionAction.ACCEPT_FRIEND_REQ,
             ConnectionAction.REMOVE_FRIEND);
 
     private final ProfileHelper profileHelper;
     private final ProfileService profileService;
     private final LoginService loginService;
+    private final ReadingChallengeRepository readingChallengeRepository;
     private final ApplicationEventPublisher publisher;
 
     @GetMapping
@@ -49,6 +55,10 @@ public class ProfileController {
         Login login = loginService.getLoginByHandle(handle);
 
         profileHelper.setupReferenceData(login.getEmail(), loginDetails, model);
+
+        if (Objects.equals(loginDetails.getHandle(), handle)) {
+            profileHelper.putReadingChallengeInModel(login, model);
+        }
 
         publisher.publishEvent(ActivityEvent.builder()
                 .loginEmail(loginDetails.getEmail())
@@ -111,5 +121,25 @@ public class ProfileController {
 
             return "app/profile/profileInfoFragment :: profileInfoFragment";
         }
+    }
+
+    @PostMapping("/readingChallenge")
+    public String saveReadingChallenge(@Valid @ModelAttribute ReadingChallenge readingChallenge,
+                                       Errors errors,
+                                       @AuthenticationPrincipal LoginDetails loginDetails,
+                                       ModelMap model) {
+
+        Login login = loginService.getLogin(loginDetails.getEmail());
+
+        if (errors.hasErrors()) {
+            profileHelper.setupReferenceData(login.getEmail(), loginDetails, model);
+
+            return "app/profile/profile";
+        }
+
+        readingChallenge.setLogin(login);
+        readingChallengeRepository.save(readingChallenge);
+
+        return "redirect:/profile/" + loginDetails.getHandle();
     }
 }

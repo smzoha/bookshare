@@ -34,7 +34,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -368,8 +367,8 @@ public class BookServiceTest {
     @Test
     void saveReadingProgress_existingIdWithMatchingUser_updatesRecord() {
         Book book = books.getFirst();
-        ReadingProgress readingProgress = new ReadingProgress(1L, login, book, 2L, LocalDate.now(),
-                null, false, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 2L, LocalDate.now(), null, false);
+        readingProgress.setId(1L);
 
         when(readingProgressRepository.findById(anyLong())).thenReturn(Optional.of(readingProgress));
         when(readingProgressRepository.save(any(ReadingProgress.class))).thenReturn(readingProgress);
@@ -386,8 +385,10 @@ public class BookServiceTest {
         Book book = books.getFirst();
 
         Login otherLogin = TestUtils.getLogin("test2@test.com", "test2", true);
-        ReadingProgress readingProgress = new ReadingProgress(1L, otherLogin, book, 2L, LocalDate.now(),
-                null, false, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, otherLogin, 2L, LocalDate.now(),
+                null, false);
+
+        readingProgress.setId(1L);
 
         when(readingProgressRepository.findById(anyLong())).thenReturn(Optional.of(readingProgress));
 
@@ -452,8 +453,8 @@ public class BookServiceTest {
 
     private ReadingProgress saveCompletedReadingProgress() {
         Book book = books.getFirst();
-        ReadingProgress readingProgress = new ReadingProgress(1L, login, book, 2L, LocalDate.now(),
-                null, true, LocalDateTime.now());
+        ReadingProgress readingProgress = TestUtils.getReadingProgress(book, login, 2L, LocalDate.now(), null, true);
+        readingProgress.setId(1L);
 
         when(readingProgressRepository.findById(anyLong())).thenReturn(Optional.of(readingProgress));
         when(readingProgressRepository.save(any(ReadingProgress.class))).thenReturn(readingProgress);

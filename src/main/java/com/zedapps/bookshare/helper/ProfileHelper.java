@@ -2,9 +2,8 @@ package com.zedapps.bookshare.helper;
 
 import com.zedapps.bookshare.dto.feed.FeedDto;
 import com.zedapps.bookshare.entity.feed.FeedEntry;
-import com.zedapps.bookshare.entity.login.Connection;
-import com.zedapps.bookshare.entity.login.Login;
-import com.zedapps.bookshare.entity.login.Shelf;
+import com.zedapps.bookshare.entity.login.*;
+import com.zedapps.bookshare.repository.login.ReadingChallengeRepository;
 import com.zedapps.bookshare.service.auth.LoginDetails;
 import com.zedapps.bookshare.service.login.FeedService;
 import com.zedapps.bookshare.service.login.LoginService;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +32,14 @@ public class ProfileHelper {
     private final LoginService loginService;
     private final ShelfService shelfService;
     private final FeedService feedService;
+    private final ReadingChallengeRepository readingChallengeRepository;
 
     public void setupReferenceData(String profileEmail, LoginDetails loginDetails, ModelMap model) {
         Login profileLogin = loginService.getLogin(profileEmail);
         Login authLogin = loginService.getLogin(loginDetails.getEmail());
 
         model.put("login", profileLogin);
+        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
 
         List<Shelf> shelves = shelfService.getShelvesForCollection(profileEmail);
 
@@ -68,13 +70,19 @@ public class ProfileHelper {
         List<Connection> connections = profileService.getConnectionsByPerson(authLogin);
         boolean isFriends = connections.stream().anyMatch(conn -> conn.getPerson2().equals(profileLogin));
 
-        model.put("ownProfile", Objects.equals(profileLogin, authLogin));
-
         model.put("friendReqReceived", friendReqReceived);
         model.put("friendReqSent", friendReqSent);
 
         model.put("isFriends", isFriends);
         model.put("showFriendReqBtn", !friendReqSent && !friendReqReceived && !isFriends);
+    }
+
+    public void putReadingChallengeInModel(Login profileLogin, ModelMap model) {
+        int currentYear = LocalDateTime.now().getYear();
+        ReadingChallengeId readingChallengeId = new ReadingChallengeId(profileLogin.getId(), currentYear);
+
+        model.put("readingChallenge", readingChallengeRepository.findById(readingChallengeId)
+                .orElse(new ReadingChallenge(profileLogin, currentYear, null)));
     }
 
     private void setupShelves(ModelMap model, List<Shelf> shelves) {

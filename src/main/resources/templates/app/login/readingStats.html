@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{base}">
+<head>
+    <title>Reading Stats</title>
+    <script th:src="@{/js/chart.umd.min.js}"></script>
+</head>
+
+<body>
+<div layout:fragment="pageContent">
+    <div class="container py-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <h2 class="text-bookshare fw-bold m-0">
+                <i class="fa-solid fa-chart-simple me-2"></i><span th:text="#{label.reading.stats.title}"></span>
+            </h2>
+
+            <label class="visually-hidden" for="yearSelect"></label>
+            <select id="yearSelect" class="form-select form-select-sm w-auto">
+                <option th:each="year : ${readingProgressYears}" th:value="${year}" th:text="${year}"></option>
+            </select>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="text-uppercase small fw-semibold text-secondary" th:text="#{label.books.read}"></div>
+                        <div class="fs-2 fw-bold lh-1 text-bookshare" th:text="${booksReadCount}"/>
+                        <div class="small text-secondary mb-1" th:if="${challengeBookCount > 0}">
+                            <span th:text="#{label.goal.params(${booksReadCount}, ${challengeBookCount})}"></span>
+                        </div>
+                        <div class="progress" style="height: 0.5rem;" th:if="${challengeBookCount > 0}">
+                            <div class="progress-bar bg-warning"
+                                 th:style="|width: ${(booksReadCount * 100) / challengeBookCount}%|"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="text-uppercase small fw-semibold text-secondary" th:text="#{label.pages.read}"></div>
+                        <div class="fs-2 fw-bold lh-1 text-bookshare" th:text="${totalPagesRead}"></div>
+                        <div class="small text-secondary">
+                            <span th:text="#{label.average.pages.read.param(${avgPagesPerDay})}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="text-uppercase small fw-semibold text-secondary" th:text="#{label.average.rating.given}"></div>
+                        <div class="fs-2 fw-bold lh-1 text-bookshare">
+                            <span th:text="${totalAvgReview}"></span>
+                            <span class="rating fs-5"><i class="fa-solid fa-star text-warning"></i></span>
+                        </div>
+                        <div class="small text-secondary">
+                            <span th:text="#{label.average.rating.param(${reviewCount})}"></span>&nbsp;
+                            <i class="fa-solid fa-star text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="text-uppercase small fw-semibold text-secondary" th:text="#{label.average.finish.time}"></div>
+                        <div class="fs-2 fw-bold lh-1 text-bookshare">
+                            <span th:text="${averageFinishTime}"></span>&nbsp;<span class="fs-5" th:text="#{label.days}"></span>
+                        </div>
+                        <div class="small text-secondary">
+                            <span th:text="#{label.per.book}"></span>
+                            &middot;
+                            <span th:text="#{label.avg.based.on.reads.param(${readCount})}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts row -->
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fw-semibold mb-3 text-bookshare" th:text="#{label.books.completed.month}"></div>
+                        <div style="height: 280px;">
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fw-semibold mb-3 text-bookshare" th:text="#{label.shortest.longest.read}"></div>
+                        <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                            <img th:src="@{/image/{id}(id=${longestBook.image.id})}"
+                                 th:alt="${longestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${longestBook.image ne null}">
+
+                            <img th:src="@{/img/book-placeholder.png}"
+                                 th:alt="${longestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${longestBook.image eq null}">
+
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-bookshare" th:text="${longestBook.title}"></div>
+                                <div class="small text-secondary" th:text="|#{label.longest} &middot; ${longestBook.pages} #{label.pages}|"></div>
+                            </div>
+                            <span class="badge rounded-pill bg-bookshare text-bookshare" th:text="#{label.longest}"></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 py-2 border-bottom">
+                            <img th:src="@{/image/{id}(id=${shortestBook.image.id})}"
+                                 th:alt="${shortestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${shortestBook.image ne null}">
+
+                            <img th:src="@{/img/book-placeholder.png}"
+                                 th:alt="${shortestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${shortestBook.image eq null}">
+
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-bookshare" th:text="${shortestBook.title}"></div>
+                                <div class="small text-secondary" th:text="|#{label.shortest} &middot; ${shortestBook.pages} #{label.pages}|"></div>
+                            </div>
+                            <span class="badge rounded-pill bg-bookshare text-bookshare" th:text="#{label.shortest}"></span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 py-2">
+                            <img th:src="@{/image/{id}(id=${latestBook.image.id})}"
+                                 th:alt="${latestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${latestBook.image ne null}">
+
+                            <img th:src="@{/img/book-placeholder.png}"
+                                 th:alt="${latestBook.title}"
+                                 class="shelved-book-cover rounded shadow-sm"
+                                 th:if="${latestBook.image eq null}">
+
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-bookshare" th:text="${latestBook.title}"></div>
+                                <div class="small text-secondary" th:text="|${latestBook.pages} #{label.pages}|"></div>
+                            </div>
+
+                            <span class="badge rounded-pill bg-bookshare text-bookshare" th:text="#{label.recently.finished}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="fw-semibold mb-3 text-bookshare" th:text="#{label.rating.distribution}"></div>
+
+                        <div class="d-flex align-items-center gap-2 mb-1 small" th:each="ratingEntry : ${ratingMap.entrySet()}">
+                            <th:block th:each="i : ${#numbers.sequence(1, ratingEntry.key)}">
+                                <li class="fa-solid fa-star text-bookshare"></li>
+                            </th:block>
+
+                            <th:block th:each="i : ${#numbers.sequence(1, (5 - ratingEntry.key))}" th:if="${ratingEntry.key < 5}">
+                                <li class="fa-regular fa-star text-bookshare"></li>
+                            </th:block>
+
+                            <div class="progress flex-grow-1" style="height: 0.55rem;">
+                                <div class="progress-bar bg-warning"
+                                     th:style="|width: ${reviewCount > 0 ? (ratingEntry.value * 100) / reviewCount : 0}%|"></div>
+                            </div>
+
+                            <span class="text-secondary text-end" style="min-width: 22px;" th:text="${ratingEntry.value}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        const booksReadMap = /*[[${booksReadMap}]]*/ {};
+        const monthlyLabels = Object.keys(booksReadMap).map(m => m.charAt(0) + m.slice(1, 3).toLowerCase());
+        const monthlyData = Object.values(booksReadMap);
+
+        const monthlyReadChart = new Chart(document.getElementById('monthlyChart'), {
+            type: 'bar',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Books completed',
+                    data: monthlyData,
+                    backgroundColor: cssVar('--bs-warm-400'),
+                    borderRadius: 4,
+                    maxBarThickness: 28
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {legend: {display: false}},
+                scales: {
+                    x: {grid: {display: false}, ticks: {}},
+                    y: {beginAtZero: true, ticks: {stepSize: 1}, grid: {}}
+                }
+            }
+        });
+
+        function applyChartTheme() {
+            const dark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+            const textColor = cssVar(dark ? '--bs-dark-text' : '--bs-warm-700');
+            const gridColor = cssVar(dark ? '--bs-dark-border' : '--bs-warm-300');
+
+            monthlyReadChart.options.scales.x.ticks.color = textColor;
+            monthlyReadChart.options.scales.y.ticks.color = textColor;
+            monthlyReadChart.options.scales.y.grid.color = gridColor;
+            monthlyReadChart.update();
+        }
+
+        applyChartTheme();
+
+        $(document).on('click', '#themeToggle', () => setTimeout(applyChartTheme, 0));
+
+        $('select[id="yearSelect"]').on('change', (e) => {
+            let select = e.currentTarget, year = $(select).val();
+
+            window.location.href = `/readingStats?year=${year}`;
+        });
+    </script>
+</div>
+</body>
+</html>
