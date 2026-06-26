@@ -69,7 +69,7 @@ BookShare is a social reading platform where users can track books, log reading 
 
 **REST API**
 - Full JWT-authenticated REST API under `/api/v1` for mobile and external clients
-- Covers books, shelves, feed, profiles, author applications, and account management
+- Covers books, shelves, feed, profiles, reading statistics, reading challenges, author applications, and account management
 - OpenAPI 3.0 specification served at `/api-docs/openapi.yaml`
 
 **General**

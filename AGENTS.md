@@ -41,9 +41,10 @@ src/main/java/com/zedapps/bookshare/
 │   │   ├── HomeApiController               # /api/v1/home/featured, /api/v1/home/feed
 │   │   ├── auth/ApiAuthController          # /api/v1/auth/token (JWT issuance)
 │   │   ├── book/BookApiController          # /api/v1/book/**
+│   │   ├── dashboard/ReadingStatsApiController # /api/v1/readingStats/{year}
 │   │   ├── login/AuthorApiController       # /api/v1/author/apply
 │   │   ├── login/LoginApiController        # /api/v1/login/register, /resetPassword/**
-│   │   ├── login/ProfileApiController      # /api/v1/profile/**
+│   │   ├── login/ProfileApiController      # /api/v1/profile/** (incl. reading challenge)
 │   │   └── shelf/ShelfApiController        # /api/v1/shelf/**
 │   ├── book/
 │   │   ├── admin/BookAdminController       # /admin/book
@@ -108,6 +109,7 @@ src/main/java/com/zedapps/bookshare/
 │   │   ├── BookAdminService     # CRUD + caching for books, authors, genres, tags
 │   │   ├── BookApiService       # API-specific book reads, review/shelf/progress writes
 │   │   └── BookService          # User-facing reads (paginated lists, related books)
+│   ├── dashboard/ReadingStatsApiService # Assembles ReadingStatsDto for the REST API (reuses ReadingStatsHelper)
 │   ├── image/ImageService
 │   ├── login/
 │   │   ├── AuthorRequestService # Author application validation + save (shared MVC/API)
@@ -117,7 +119,8 @@ src/main/java/com/zedapps/bookshare/
 │   │   ├── LoginService         # Core user load/save; canonical getLogin(email)
 │   │   ├── PasswordResetService
 │   │   ├── ProfileApiService    # Profile read + connection actions for API
-│   │   └── ProfileService       # Profile read + connection actions for MVC
+│   │   ├── ProfileService       # Profile read + connection actions for MVC
+│   │   └── ReadingChallengeApiService # Reading challenge get/save for API
 │   ├── mail/MailService         # Gmail API email sending (@Async)
 │   └── shelf/
 │       ├── ShelfApiService      # Shelf reads/writes for API
@@ -222,6 +225,8 @@ A book can only be in one default shelf at a time (enforced in `BookService.addT
 
 CSRF is disabled on both chains. The MVC chain uses standard Spring Security sessions; logout at `/logout` clears `JSESSIONID`. The API chain is stateless — no session is created.
 
+The API chain configures no `authenticationEntryPoint`, so an unauthenticated request to a protected `/api/v1/**` route is rejected with **403** (the default `Http403ForbiddenEntryPoint`), not 401 — assert `status().isForbidden()` in API controller tests for the anonymous case.
+
 The authenticated user principal is always a `LoginDetails` object (implements `UserDetails`, `OidcUser`, `OAuth2User`). Retrieve it in controllers with `@AuthenticationPrincipal LoginDetails loginDetails`.
 
 ---
@@ -269,7 +274,8 @@ Update the spec whenever you add or change an API endpoint.
 | `ShelfApiController` | `/api/v1/shelf` | `GET /`, `GET /{id}`, `POST /` |
 | `HomeApiController` | `/api/v1/home` | `GET /featured` (public), `GET /feed` |
 | `LoginApiController` | `/api/v1/login` | `POST /register`, `POST /resetPassword/request`, `POST /resetPassword` |
-| `ProfileApiController` | `/api/v1/profile` | `GET /{handle}`, `POST /connect` |
+| `ProfileApiController` | `/api/v1/profile` | `GET /{handle}`, `POST /connect`, `GET|POST /readingChallenge` |
+| `ReadingStatsApiController` | `/api/v1/readingStats` | `GET /{year}` |
 | `AuthorApiController` | `/api/v1/author` | `POST /apply` |
 
 ---
@@ -801,11 +807,22 @@ void clearRequestContext() {
 | `getLogin(email, handle, active)` | `Login` | `Role.USER`, `AuthProvider.LOCAL`, firstName="Test", lastName="User" |
 | `getAuthor(firstName, lastName)` | `Author` | |
 | `getBook(title, isbn, author, status)` | `Book` | pages=100; single author |
+| `getBooks(author, genres, tags)` | `List<Book>` | One book per `TEST_ISBN_DATA` entry, ids 1..n |
+| `getGenre(name)` | `Genre` | |
+| `getTag(name)` | `Tag` | |
 | `getReview(book, login, rating)` | `Review` | content="Review Content" |
+| `getReadingProgress(book, user, pagesRead, startDate, endDate, completed)` | `ReadingProgress` | id/updatedAt unset (set explicitly when the test needs them) |
+| `getReadingChallenge(login, year, bookCount)` | `ReadingChallenge` | |
 | `getShelf(login, name, defaultShelf)` | `Shelf` | |
 | `getShelvedBook(book, login, shelf)` | `ShelvedBook` | |
 | `getActivityOutboxItem(status)` | `ActivityOutbox` | LOGIN event, referenceId=1 |
 | `getActivity(activityType)` | `Activity` | referenceId=1, no login |
+| `getLoginDetails(email, handle, active)` | `LoginDetails` | security principal built from `getLogin(...)` |
+| `setupSecurityContext(loginDetails)` | `void` | sets `SecurityContextHolder` with a mock `Authentication` |
+| `getRegistrationRequestDto(login)` | `RegistrationRequestDto` | password="plain-password" |
+| `getLoginManageDto(login)` | `LoginManageDto` | password="plain-password" |
+
+`TestUtils.TEST_ISBN_DATA` is a shared list of valid ISBN strings used to build distinct books.
 
 ---
 
