@@ -78,7 +78,7 @@ BookShare is a social reading platform where users can track books, log reading 
 - Internationalization (i18n): English, French, German, Spanish, Bengali
 - Dark / light mode toggle
 - Async activity event system with transactional outbox pattern
-- Request logging to rolling file
+- Structured JSON (ECS) logging to rolling files (human-readable console)
 
 ---
 
@@ -130,14 +130,14 @@ Cache statistics are visible on the admin Actuator dashboard.
 
 | Layer | Technology |
 |---|---|
-| Backend | Java 25, Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
+| Backend | Java 25 (virtual threads), Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
 | Security | Spring Security, Spring Security OAuth2 Client (Google OIDC), JJWT 0.13 (JWT for REST API) |
 | Frontend | Thymeleaf + Layout Dialect, Bootstrap 5, jQuery 3.7.1, FontAwesome |
 | Rich UI | TinyMCE (description editor), FilePond (image upload), Select2 (multi-select), DataTables, Chart.js (reading-stats charts) |
 | Database | PostgreSQL 17, Flyway (migrations V1–V21) |
 | Caching | Caffeine (managed via Spring Cache abstraction) |
 | Email | Spring Mail + Gmail API (Google OAuth2 UserCredentials) |
-| Observability | Spring Boot Actuator, Micrometer |
+| Observability | Spring Boot Actuator, Micrometer, structured JSON (ECS) logging |
 | Build & QA | Gradle (version catalog), Lombok, SpotBugs (MAX effort, build-failing), JaCoCo (enforced 90% line / 80% branch gate) |
 | Testing | JUnit 5, AssertJ, Mockito, Testcontainers (PostgreSQL 17) |
 | Infrastructure | Docker (multi-stage build, eclipse-temurin:25-jre-alpine), Docker Compose |
