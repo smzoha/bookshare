@@ -8,7 +8,7 @@
 ![Build](https://github.com/smzoha/bookshare/actions/workflows/gradle.yml/badge.svg)
 ![Coverage Gate](https://img.shields.io/badge/Coverage_Gate-90%25_line_%7C_80%25_branch-brightgreen.svg)
 ![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)
-![Status](https://img.shields.io/badge/Status-Development-yellow)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 BookShare is a social reading platform where users can track books, log reading progress, write reviews, organize personal shelves, and follow friends' reading activity — all in one place.
 
