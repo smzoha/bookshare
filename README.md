@@ -6,6 +6,7 @@
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)
 ![Build](https://github.com/smzoha/bookshare/actions/workflows/gradle.yml/badge.svg)
+![Coverage Gate](https://img.shields.io/badge/Coverage_Gate-90%25_line_%7C_80%25_branch-brightgreen.svg)
 ![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)
 ![Status](https://img.shields.io/badge/Status-Development-yellow)
 
@@ -137,7 +138,7 @@ Cache statistics are visible on the admin Actuator dashboard.
 | Caching | Caffeine (managed via Spring Cache abstraction) |
 | Email | Spring Mail + Gmail API (Google OAuth2 UserCredentials) |
 | Observability | Spring Boot Actuator, Micrometer |
-| Build & QA | Gradle (version catalog), Lombok, SpotBugs |
+| Build & QA | Gradle (version catalog), Lombok, SpotBugs (MAX effort, build-failing), JaCoCo (enforced 90% line / 80% branch gate) |
 | Testing | JUnit 5, AssertJ, Mockito, Testcontainers (PostgreSQL 17) |
 | Infrastructure | Docker (multi-stage build, eclipse-temurin:25-jre-alpine), Docker Compose |
 
@@ -209,6 +210,8 @@ Flyway runs all migrations automatically on startup. No manual schema setup is r
 ```
 
 Repository-layer tests use Testcontainers to spin up a real PostgreSQL 17 instance — Docker must be running. All other tests (service, controller, helper, filter, validator, utility) use Mockito and run without any infrastructure.
+
+The build enforces quality gates via `./gradlew check`: JaCoCo coverage verification (minimum **90% line / 80% branch** on business logic — config, entities, and DTOs are excluded) and SpotBugs static analysis (MAX effort; the build fails on any finding). The suite spans repository, service, controller, helper, filter, validator, and utility layers and sits comfortably above the enforced thresholds. Both gates run in CI on every push and pull request.
 
 To run a specific test class:
 
