@@ -27,7 +27,7 @@ src/main/java/com/zedapps/bookshare/
 │   ├── AuthEventListener        # @EventListener: handles Spring Security login/logout events
 │   └── FeedEntryListener        # @EventListener: fans out FeedEntry rows to connections
 ├── config/
-│   ├── AsyncConfig              # activityPublishExecutor: core=2, max=5, queue=1000
+│   ├── AsyncConfig              # activityPublishExecutor: virtual threads, concurrencyLimit=10
 │   ├── CacheConfig              # Caffeine cache definitions (see cache table below)
 │   ├── GmailConfig              # Gmail API client bean (OAuth2 credentials + service instance)
 │   ├── LocaleConfig             # CookieLocaleResolver (cookie name: lang, 30-day TTL)
@@ -865,6 +865,8 @@ Local Spring Boot reads DB config from `application-dev.properties` and secrets 
 - **Version string:** The app version is injected at build time via Gradle's `processResources` filter into `application.properties`. Do not hard-code it.
 - **Locale:** Language preference is stored in a cookie named `lang`. The `LocaleConfig` bean provides the `LocaleResolver` and `LocaleChangeInterceptor` (`?lang=` query param triggers a switch).
 - **Request logging:** All HTTP requests are logged to `logs/request.log` by `RequestLogFilter`. This is separate from the main application log.
+- **Structured logging:** Both `logs/request.log` and `logs/server.log` are written as ECS-format JSON via Spring Boot's `StructuredLogEncoder` (configured in `logback-spring.xml`). The `CONSOLE` appender stays plain text for local development. Note: the filter-test `ListAppender` pattern is unaffected — it captures `ILoggingEvent`s before encoding.
+- **Virtual threads:** `spring.threads.virtual.enabled=true` (Java 25) routes Tomcat request handling and scheduling onto virtual threads. The `activityPublishExecutor` is a virtual-thread `SimpleAsyncTaskExecutor` with `concurrencyLimit=10` for backpressure against the Hikari pool.
 - **Outbox retry:** Failed outbox items are retried up to 3 times. After 3 failures, `status = FAILED` and the item is excluded from future processing. Daily cleanup removes stale entries.
 - **Feed window:** The feed only shows activities from the last 30 days. Feed reads are cached per-user for 60 seconds.
 - **SpotBugs:** The build runs SpotBugs static analysis. The exclusion filter is at `config/spotbugs/exclude.xml`. Fix SpotBugs warnings rather than excluding them unless there is a good documented reason.

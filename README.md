@@ -6,8 +6,9 @@
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue.svg?logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg?logo=docker)
 ![Build](https://github.com/smzoha/bookshare/actions/workflows/gradle.yml/badge.svg)
+![Coverage Gate](https://img.shields.io/badge/Coverage_Gate-90%25_line_%7C_80%25_branch-brightgreen.svg)
 ![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)
-![Status](https://img.shields.io/badge/Status-Development-yellow)
+![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 BookShare is a social reading platform where users can track books, log reading progress, write reviews, organize personal shelves, and follow friends' reading activity — all in one place.
 
@@ -77,7 +78,7 @@ BookShare is a social reading platform where users can track books, log reading 
 - Internationalization (i18n): English, French, German, Spanish, Bengali
 - Dark / light mode toggle
 - Async activity event system with transactional outbox pattern
-- Request logging to rolling file
+- Structured JSON (ECS) logging to rolling files (human-readable console)
 
 ---
 
@@ -129,15 +130,15 @@ Cache statistics are visible on the admin Actuator dashboard.
 
 | Layer | Technology |
 |---|---|
-| Backend | Java 25, Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
+| Backend | Java 25 (virtual threads), Spring Boot 3.5.5, Spring MVC, Spring Data JPA / Hibernate |
 | Security | Spring Security, Spring Security OAuth2 Client (Google OIDC), JJWT 0.13 (JWT for REST API) |
 | Frontend | Thymeleaf + Layout Dialect, Bootstrap 5, jQuery 3.7.1, FontAwesome |
 | Rich UI | TinyMCE (description editor), FilePond (image upload), Select2 (multi-select), DataTables, Chart.js (reading-stats charts) |
 | Database | PostgreSQL 17, Flyway (migrations V1–V21) |
 | Caching | Caffeine (managed via Spring Cache abstraction) |
 | Email | Spring Mail + Gmail API (Google OAuth2 UserCredentials) |
-| Observability | Spring Boot Actuator, Micrometer |
-| Build & QA | Gradle (version catalog), Lombok, SpotBugs |
+| Observability | Spring Boot Actuator, Micrometer, structured JSON (ECS) logging |
+| Build & QA | Gradle (version catalog), Lombok, SpotBugs (MAX effort, build-failing), JaCoCo (enforced 90% line / 80% branch gate) |
 | Testing | JUnit 5, AssertJ, Mockito, Testcontainers (PostgreSQL 17) |
 | Infrastructure | Docker (multi-stage build, eclipse-temurin:25-jre-alpine), Docker Compose |
 
@@ -209,6 +210,8 @@ Flyway runs all migrations automatically on startup. No manual schema setup is r
 ```
 
 Repository-layer tests use Testcontainers to spin up a real PostgreSQL 17 instance — Docker must be running. All other tests (service, controller, helper, filter, validator, utility) use Mockito and run without any infrastructure.
+
+The build enforces quality gates via `./gradlew check`: JaCoCo coverage verification (minimum **90% line / 80% branch** on business logic — config, entities, and DTOs are excluded) and SpotBugs static analysis (MAX effort; the build fails on any finding). The suite spans repository, service, controller, helper, filter, validator, and utility layers and sits comfortably above the enforced thresholds. Both gates run in CI on every push and pull request.
 
 To run a specific test class:
 
